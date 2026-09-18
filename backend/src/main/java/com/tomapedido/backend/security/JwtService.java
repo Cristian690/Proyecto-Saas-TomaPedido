@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.tomapedido.backend.entity.User;
@@ -14,11 +15,13 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-    private final SecretKey secretKey = Keys.hmacShaKeyFor(
-            "TomaPedido-Secret-Key-Para-JWT-2026-Muy-Segura".getBytes()
-    );
+    private final SecretKey secretKey;
 
     private final long expiration = 86400000;
+
+    public JwtService(@Value("${app.jwt.secret}") String jwtSecret) {
+        this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
 
     public String generateToken(User user) {
 
