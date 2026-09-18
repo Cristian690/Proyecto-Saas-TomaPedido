@@ -157,6 +157,26 @@ async function loadData() {
     heroWelcomeMessageElement.textContent =
         business.welcomeMessage || "";
 
+    const heroBusinessAddressElement =
+        document.getElementById("hero-business-address");
+
+    const businessAddress =
+        business.address?.trim();
+
+    if (businessAddress) {
+        heroBusinessAddressElement.textContent =
+            `📍 ${businessAddress}`;
+
+        heroBusinessAddressElement.hidden =
+            false;
+    } else {
+        heroBusinessAddressElement.textContent =
+            "";
+
+        heroBusinessAddressElement.hidden =
+            true;
+    }
+
 
     // ================================
     // ESTADO DEL NEGOCIO

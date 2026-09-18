@@ -40,6 +40,11 @@ const productsScreen =
 const productsContainer =
     document.getElementById("products-container");
 
+const categoryFiltersContainer =
+    document.getElementById("products-category-filters");
+
+let selectedCategoryId = "all";
+
 const productFormScreen =
     document.getElementById("product-form-screen");
 
@@ -791,6 +796,11 @@ async function loadProducts() {
                 )
             );
 
+        renderCategoryFilters(
+            categories,
+            products
+        );
+
 
         console.log(
             "Productos cargados:",
@@ -799,7 +809,10 @@ async function loadProducts() {
 
 
         renderProducts(
-            products,
+            filterProductsByCategory(
+                products,
+                categories
+            ),
             categoryMap
         );
 
@@ -818,6 +831,134 @@ async function loadProducts() {
             </p>
         `;
     }
+}
+
+function filterProductsByCategory(
+    products,
+    categories
+) {
+
+    if (selectedCategoryId === "all") {
+        return products;
+    }
+
+    const categoryIds =
+        new Set(
+            categories.map(
+                category => String(category.id)
+            )
+        );
+
+    if (selectedCategoryId === "uncategorized") {
+        return products.filter(
+            product =>
+                !categoryIds.has(
+                    String(product.categoryId)
+                )
+        );
+    }
+
+    return products.filter(
+        product =>
+            String(product.categoryId) ===
+            selectedCategoryId
+    );
+}
+
+function renderCategoryFilters(
+    categories,
+    products
+) {
+
+    const categoryIds =
+        new Set(
+            categories.map(
+                category => String(category.id)
+            )
+        );
+
+    const hasUncategorizedProducts =
+        products.some(
+            product =>
+                !categoryIds.has(
+                    String(product.categoryId)
+                )
+        );
+
+    const filters = [
+        {
+            id: "all",
+            name: "Todas"
+        },
+        ...categories.map(category => ({
+            id: String(category.id),
+            name: category.name
+        }))
+    ];
+
+    if (hasUncategorizedProducts) {
+        filters.push({
+            id: "uncategorized",
+            name: "Sin categoría"
+        });
+    }
+
+    if (
+        !filters.some(
+            filter =>
+                filter.id === selectedCategoryId
+        )
+    ) {
+        selectedCategoryId = "all";
+    }
+
+    categoryFiltersContainer.innerHTML = "";
+
+    filters.forEach(filter => {
+
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+        button.className =
+            "product-category-filter";
+
+        button.textContent = filter.name;
+
+        if (filter.id === selectedCategoryId) {
+            button.classList.add("active");
+        }
+
+        button.addEventListener("click", () => {
+
+            selectedCategoryId = filter.id;
+
+            renderCategoryFilters(
+                categories,
+                products
+            );
+
+            const categoryMap =
+                new Map(
+                    categories.map(
+                        category => [
+                            category.id,
+                            category.name
+                        ]
+                    )
+                );
+
+            renderProducts(
+                filterProductsByCategory(
+                    products,
+                    categories
+                ),
+                categoryMap
+            );
+        });
+
+        categoryFiltersContainer.appendChild(button);
+    });
 }
 
 
