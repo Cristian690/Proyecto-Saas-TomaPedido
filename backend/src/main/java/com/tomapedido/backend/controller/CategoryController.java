@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import com.tomapedido.backend.dto.CategoryResponse;
 import com.tomapedido.backend.dto.CreateCategoryRequest;
@@ -48,5 +49,10 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public void deleteCategory(@PathVariable Long id){
         categoryService.deleteCategory(id);
+    }
+
+    @PatchMapping("/{id}/activate")
+    public void activateCategory(@PathVariable Long id) {
+        categoryService.activateCategory(id);
     }
 }

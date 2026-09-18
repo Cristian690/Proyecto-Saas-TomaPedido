@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TomaPedido</title>
+  <link rel="stylesheet" href="style.css?v=2" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Lucide icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <button class="nav-hamburger" aria-label="Menú">
+      <i data-lucide="menu"></i>
+    </button>
+    <div class="nav-logo">
+      <div>
+        <span class="logo-main" id="business-name">Tu negocio</span>
+        <span class="logo-sub">— TOMA PEDIDOS —</span>
+      </div>
+    </div> 
+    
+  </header>
+
+  <!-- MENÚ HAMBURGUESA -->
+<div class="menu-overlay" id="menu-overlay"></div>
+
+<aside class="side-menu" id="side-menu">
+
+    <div class="side-menu-header">
+        <span>Menú</span>
+
+        <button
+            type="button"
+            id="menu-close"
+            aria-label="Cerrar menú"
+        >
+            <i data-lucide="x"></i>
+        </button>
+    </div>
+
+    <nav class="side-menu-nav">
+
+        <a href="#" id="menu-home">
+            <i data-lucide="house"></i>
+            <span>Inicio</span>
+        </a>
+
+        <a href="#" id="menu-cart">
+            <i data-lucide="shopping-cart"></i>
+            <span>Mi carrito</span>
+        </a>
+
+        <a href="#" id="menu-contact">
+            <i data-lucide="message-circle"></i>
+            <span>Contactar</span>
+        </a>
+
+    </nav>
+
+    <div class="side-menu-footer">
+        <a
+            href="https://tomapedido.com.ar"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Creado con TomaPedido
+        </a>
+    </div>
+
+</aside>
+
+  <!-- HERO -->
+  <section class="hero">
+
+      <div class="hero-text">
+        <p class="hero-sub" id="hero-welcome-message">
+            Bienvenidos a nuestro negocio
+        </p>
+    </div>
+
+      <div class="hero-img">
+
+          <img
+              id="hero-business-logo"
+              src=""
+              alt="Logo del negocio"
+          >
+
+      </div>
+
+  </section>
+
+  <!-- CATEGORÍAS TABS -->
+  <nav class="tabs" id="tabs-container"></nav>
+
+  <!-- MENÚ -->
+  <main class="menu-section">
+
+    <div id="productos-container"></div>
+    <!-- PIZZAS -->
+    
+
+    <!-- EMPANADAS -->
+    
+
+    <!-- BEBIDAS -->
+    
+
+    <!-- PROMOCIONES -->
+    
+  </main>
+
+  <!-- CARRITO FLOTANTE -->
+  <section class="cart-panel" id="cart-panel">
+    <div class="cart-header">
+      <div class="cart-title">
+        <i data-lucide="shopping-cart"></i>
+        <span>Tu carrito</span>
+        <span class="cart-badge" id="cart-badge">0</span>
+      </div>
+      <button class="cart-toggle" id="cart-toggle">Ver carrito <i data-lucide="chevron-up" id="chevron-icon"></i></button>
+    </div>
+
+    <div class="cart-body" id="cart-body">
+      <div id="cart-items"></div>
+
+      <div class="cart-total">
+        <span>Total a pagar</span>
+        <span class="total-amount" id="cart-total">$0</span>
+      </div>
+
+      <a href="#" class="btn-wa btn-wa--green" id="btn-whatsapp">
+        <i data-lucide="message-circle"></i>
+        Enviar pedido por WhatsApp
+      </a>
+      <p class="cart-note">🔒 Tu pedido será confirmado por WhatsApp</p>
+    </div>
+  </section> 
+
+  <!-- Menu datos clientes a WhatsApp -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal-content">
+      <h3>📋 Datos para el pedido</h3>
+
+      <div class="checkout-total">
+        <span>💰 TOTAL DEL PEDIDO</span>
+        <strong id="checkout-total-price">$0</strong>
+      </div>
+      
+      <form id="form-checkout">
+        <label for="customer-name">Nombre *</label>
+        <input type="text" id="customer-name" placeholder="Ej: Cris Aguirre" required />
+
+        <label for="delivery-method">Método de entrega</label>
+        <select id="delivery-method" onchange="toggleDeliveryFields()">
+          <option value="delivery">Envío a domicilio 🛵</option>
+          <option value="pickup">Retirar por el local 🛍️</option>
+        </select>
+
+        <div id="delivery-fields">
+          <label for="customer-address">Dirección *</label>
+          <input type="text" id="customer-address" placeholder="Ej: Av. San Martín 1234" required />
+
+          <label for="customer-notes">Entrecalles o aclaraciones</label>
+          <input type="text" id="customer-notes" placeholder="Ej: Entre Mitre y Roca. Portón negro." />
+        </div>
+
+        <label for="payment-method">Forma de pago</label>
+        <select id="payment-method" onchange="togglePaymentFields()">
+          <option value="Transferencia">Transferencia bancaria / Alias</option>
+          <option value="Efectivo">Efectivo (Paga al recibir)</option>
+        </select>
+
+        <div id="cash-fields" style="display: none;">
+          <label for="cash-amount" style="margin-top: 8px;">¿Con cuánto vas a pagar? *</label>
+          <input type="number" id="cash-amount" placeholder="Ej: 10000" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-cancel" id="btn-close-modal">Cancelar</button>
+          <button type="submit" class="btn-wa btn-wa--green" style="margin-top:0;">Confirmar y Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Modal comercio cerrado -->
+  <div id="closed-business-modal" class="closed-business-modal">
+
+    <div class="closed-business-content">
+
+      <h2>🔴 Estamos cerrados</h2>
+
+      <p>
+        En este momento no estamos tomando pedidos.
+      </p>
+
+      <button type="button" id="btn-close-business-modal">
+        Entendido
+      </button>
+
+    </div>
+
+  </div>
+
+  <script type="module" src="app.js?v=1.0"></script>
+
+</body>
+</html>

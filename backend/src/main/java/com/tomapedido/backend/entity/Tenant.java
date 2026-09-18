@@ -22,7 +22,7 @@ public class Tenant {
     @Column(nullable = false, unique = true, length = 100)
     private String slug;
 
-    @Column(nullable = false, unique = true, length = 150)
+    @Column(unique = true, length = 150)
     private String email;
 
     @Column(nullable = false, length = 20)

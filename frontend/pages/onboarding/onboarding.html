@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TomaPedido - Configuración</title>
+
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+
+    <main class="login-container">
+
+        <section class="login-card">
+
+            <h1>TomaPedido</h1>
+
+            <p class="onboarding-step">
+                Paso 1 de 2
+            </p>
+
+            <h2>📷 Agregá tu logo</h2>
+
+            <label for="business-logo" class="file-button">
+                Seleccionar archivo
+            </label>
+
+            <input
+                type="file"
+                id="business-logo"
+                accept="image/jpeg,image/png,image/webp"
+            >
+
+            <img
+                id="logo-preview"
+                src=""
+                alt="Vista previa del logo"
+                style="display: none;"
+            >
+
+            <button type="button" id="btn-next">
+                Continuar
+            </button>
+
+            <p>
+                <button type="button" id="skip-logo">
+                    Omitir por ahora
+                </button>
+            </p>
+
+            <p id="onboarding-error"></p>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="../../js/onboarding/onboarding.js"></script>
+
+</body>
+
+</html>

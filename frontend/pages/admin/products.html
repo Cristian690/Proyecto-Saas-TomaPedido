@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TomaPedido - Mis productos</title>
+
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+
+    <header class="admin-header">
+        <h1>TomaPedido</h1>
+        <span>Mis productos</span>
+    </header>
+
+    <main class="admin-container">
+
+        <aside class="admin-sidebar">
+
+            <button
+                type="button"
+                id="btn-business"
+                onclick="window.location.href='admin.html'"
+            >
+                Mi negocio
+            </button>
+
+            <button type="button" id="btn-logout">
+                Cerrar sesión
+            </button>
+
+        </aside>
+
+        <section class="admin-content">
+
+            <!-- PANTALLA PRINCIPAL -->
+
+            <div id="products-screen">
+
+                <div class="products-header">
+
+                    <div>
+                        <h2>Mis productos</h2>
+
+                        <p>
+                            Agregá y administrá lo que vendés.
+                        </p>
+                    </div>
+
+                    <button type="button" id="btn-add-product">
+                        ＋ Agregar producto
+                    </button>
+
+                </div>
+
+                <div id="products-container">
+
+                    <div class="empty-products">
+
+                        <div class="empty-products-icon">
+                            🛒
+                        </div>
+
+                        <h3>Todavía no tenés productos</h3>
+
+                        <p>
+                            Agregá tu primer producto para empezar
+                            a armar tu menú.
+                        </p>                        
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORMULARIO -->
+
+            <div id="product-form-screen" style="display: none;">
+
+                <p
+                    class="onboarding-progress"
+                    id="product-step-progress"
+                >
+                    Paso 1 de 4
+                </p>
+
+
+                <!-- PASO 1 -->
+
+                <div id="product-step-1">
+
+                    <h2>
+                        🍕 ¿Cómo se llama tu producto?
+                    </h2>
+
+                    <p>
+                        Escribí el nombre que verán tus clientes.
+                    </p>
+
+                    <input
+                        type="text"
+                        id="product-name"
+                        placeholder="Ej: Pizza Muzarella"
+                        maxlength="100"
+                    >
+
+                    <label for="product-description">
+                        Descripción
+                    </label>
+
+                    <textarea
+                        id="product-description"
+                        placeholder="Ej: Mozzarella, salsa de tomate y aceitunas"
+                        maxlength="200"
+                    ></textarea>
+
+                    <button
+                        type="button"
+                        id="btn-product-name-next"
+                    >
+                        Continuar
+                    </button>
+
+                </div>
+
+
+                <!-- PASO 2 -->
+
+                <div id="product-step-2" style="display: none;">
+
+                    <h2>
+                        💰 ¿Cuánto cuesta?
+                    </h2>
+
+                    <p>
+                        Escribí el precio del producto.
+                    </p>
+
+                    <input
+                        type="number"
+                        id="product-price"
+                        placeholder="Ej: 8500"
+                        min="1"
+                        step="1"
+                    >
+
+                    <button
+                        type="button"
+                        id="btn-product-price-back"
+                    >
+                        Volver
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-product-price-next"
+                    >
+                        Continuar
+                    </button>
+
+                </div>
+
+
+                                <!-- PASO 3 -->
+
+                <div id="product-step-3" style="display: none;">
+
+                    <h2>
+                        📂 ¿Dónde querés poner este producto?
+                    </h2>
+
+                    <p>
+                        Elegí una categoría.
+                    </p>
+
+                    <div
+                        id="category-options"
+                        class="category-options"
+                    >
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Pizzas"
+                        >
+                            🍕
+                            <span>Pizzas</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Empanadas"
+                        >
+                            🥟
+                            <span>Empanadas</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Hamburguesas"
+                        >
+                            🍔
+                            <span>Hamburguesas</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Pastas"
+                        >
+                            🍝
+                            <span>Pastas</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Sandwiches"
+                        >
+                            🥪
+                            <span>Sándwiches</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Bebidas"
+                        >
+                            🥤
+                            <span>Bebidas</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Postres"
+                        >
+                            🍰
+                            <span>Postres</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Helados"
+                        >
+                            🍦
+                            <span>Helados</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Cafeteria"
+                        >
+                            ☕
+                            <span>Cafetería</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Combos"
+                        >
+                            🎁
+                            <span>Combos</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Promociones"
+                        >
+                            🔥
+                            <span>Promociones</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="category-option"
+                            data-category="Otra"
+                        >
+                            ➕
+                            <span>Otra</span>
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="custom-category"
+                        style="display: none;"
+                    >
+
+                        <h3>
+                            ¿Cómo se llama la categoría?
+                        </h3>
+
+                        <input
+                            type="text"
+                            id="custom-category-name"
+                            placeholder="Ej: Tortas"
+                            maxlength="60"
+                        >
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btn-product-category-back"
+                    >
+                        Volver
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-product-category-next"
+                    >
+                        Continuar
+                    </button>
+
+                </div>
+
+
+                <!-- PASO 4 -->
+
+                <div id="product-step-4" style="display: none;">
+
+                    <h2>
+                        📸 ¿Querés agregar una foto?
+                    </h2>
+
+                    <p>
+                        Una foto ayuda a tus clientes a elegir.
+                    </p>
+
+                    <div class="product-photo-actions">
+
+                        <label
+                            for="product-photo"
+                            class="product-photo-button"
+                        >
+                            📷 Subir mi propia foto
+                        </label>
+
+                        <input
+                            type="file"
+                            id="product-photo"
+                            accept="image/*"
+                            hidden
+                        >
+
+                        <button
+                            type="button"
+                            id="btn-default-image"
+                            class="product-photo-button"
+                        >
+                            🖼️ Elegir una imagen de TomaPedido
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="default-images-container"
+                        style="display: none;"
+                    >
+
+                        <h3>
+                            Elegí una imagen
+                        </h3>
+
+                        <div id="default-images-gallery"></div>
+
+                    </div>
+
+                    <div
+                        id="product-photo-preview"
+                        class="product-photo-preview"
+                        style="display: none;"
+                    >
+                        <img
+                            id="product-photo-image"
+                            src=""
+                            alt="Vista previa del producto"
+                        >
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btn-product-photo-back"
+                    >
+                        Volver
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-product-photo-next"
+                    >
+                        Continuar
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-product-photo-skip"
+                    >
+                        Omitir por ahora
+                    </button>
+
+                </div>
+
+
+                <!-- CONFIRMACIÓN -->
+
+                <div
+                    id="product-confirmation"
+                    style="display: none;"
+                >
+
+                    <h2>
+                        🎉 ¡Todo listo!
+                    </h2>
+
+                    <p>
+                        Revisá tu producto antes de agregarlo.
+                    </p>
+
+                    <div class="product-confirmation-card">
+
+                        <div
+                            id="confirmation-image-container"
+                            class="confirmation-image-container"
+                        >
+                            <img
+                                id="confirmation-image"
+                                src=""
+                                alt="Foto del producto"
+                            >
+                        </div>
+
+                        <h3 id="confirmation-name">
+                            Producto
+                        </h3>
+
+                        <p id="confirmation-description">
+                            Descripción
+                        </p>
+
+                        <p id="confirmation-price">
+                            $0
+                        </p>
+
+                        <p id="confirmation-category">
+                            Categoría
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btn-product-confirm-back"
+                    >
+                        Volver
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-product-save"
+                    >
+                        Agregar producto
+                    </button>
+
+                    <p id="product-error"></p>
+
+                </div>
+
+
+                <!-- PRODUCTO GUARDADO -->
+
+                <div
+                    id="product-success"
+                    style="display: none;"
+                >
+
+                    <h2>
+                        🎉 ¡Producto agregado!
+                    </h2>
+
+                    <p>
+                        Tu producto ya forma parte de tu menú.
+                    </p>
+
+                    <button
+                        type="button"
+                        id="btn-add-another-product"
+                    >
+                        ＋ Agregar otro producto
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-view-products"
+                    >
+                        Ver mis productos
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script
+        type="module"
+        src="../../js/admin/products.js?v=1.1"
+    ></script>
+
+</body>
+</html>

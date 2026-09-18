@@ -1,0 +1,11 @@
+# Configuración del editor
+.vscode/
+.idea/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Variables de entorno (para el futuro)
+.env
+.env.*

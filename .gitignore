@@ -1,0 +1,25 @@
+# Java / Maven
+backend/target/
+*.class
+hs_err_pid*.log
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Entorno local
+.env
+.env.*
+
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3

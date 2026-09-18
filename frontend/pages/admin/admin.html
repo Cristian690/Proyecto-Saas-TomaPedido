@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TomaPedido - Admin</title>
+
+    <link rel="stylesheet" href="../../style.css?v=2">
+</head>
+
+<body>
+
+    <header class="admin-header">
+        <h1>TomaPedido</h1>
+        <span>Panel Administrador</span>
+    </header>
+
+
+    <main class="admin-container">
+
+        <aside class="admin-sidebar">
+
+            <button
+                type="button"
+                onclick="window.location.href='admin.html'"
+            >
+                Mi negocio
+            </button>
+            
+            <button type="button" onclick="window.location.href='products.html'">
+                Productos
+            </button>
+
+            <button type="button" id="btn-logout">
+                Cerrar sesión
+            </button>
+
+        </aside>
+
+
+        <section class="admin-content">
+
+            <div class="business-status">
+                <span id="business-status-text">Estado: —</span>
+
+                <button type="button" id="business-status-button">
+                    Cambiar estado
+                </button>
+            </div>
+
+            <div class="public-page-access">
+                <span>👁️ Ver cómo ven tu negocio tus clientes</span>
+
+                <button type="button" id="btn-view-public">
+                    Ver mi página pública
+                </button>
+            </div>
+
+            <h2>Mi negocio</h2>
+
+            <div class="admin-form">
+
+                <label>
+                    Nombre del negocio
+                    <input type="text" id="business-name">
+                </label>
+
+
+                <label>
+                    WhatsApp
+                    <input type="text" id="business-whatsapp">
+                </label>
+
+
+                <label>
+                    Logo
+                    <img
+                        id="business-logo-preview"
+                        class="admin-image-preview"
+                        src=""
+                        alt="Logo actual"
+                    >
+                    <input type="file" id="business-logo" accept="image/*">
+                </label>
+
+
+                <label>
+                    Imagen de portada
+                    <img
+                        id="business-cover-preview"
+                        class="admin-image-preview admin-cover-preview"
+                        src=""
+                        alt="Portada actual"
+                    >
+                    <input type="file" id="business-cover" accept="image/*">
+                </label>
+
+
+                <label>
+                    Color de los botones
+                    <input type="color" id="business-primary-color" value="#e63946">
+                </label>
+
+
+                <label>
+                    Color de fondo
+                    <input 
+                        type="color"
+                        id="business-background-color"
+                        value="#ffffff"
+                    >
+                </label>
+
+
+                <label>
+                    Mensaje de bienvenida
+                    <textarea id="business-welcome-message"></textarea>
+                </label>
+
+
+                <label>
+                    Dirección
+                    <input type="text" id="business-address">
+                </label>
+
+
+                <button id="save-business">
+                    Guardar cambios
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="../../js/admin/admin.js?v=1.1"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TomaPedido - Personalización</title>
+
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+
+    <main class="onboarding-container">
+
+        <section class="onboarding-card">
+
+            <h1>TomaPedido</h1>
+
+            <p class="onboarding-progress">
+                Paso 2 de 2
+            </p>
+
+            <h2>Elegí el color de tu página</h2>
+
+            <div class="color-selector">
+
+            <div class="color-option">
+                <label for="business-background-color">
+                    Color de fondo
+                </label>
+
+                <input
+                    type="color"
+                    id="business-background-color"
+                    value="#ffffff"
+                >
+            </div>
+
+            <div class="color-option">
+                <label for="business-text-color">
+                    Color de las letras
+                </label>
+
+                <input
+                    type="color"
+                    id="business-text-color"
+                    value="#000000"
+                >
+            </div>
+
+        </div>
+
+            <section class="preview-section">
+
+                <h2>Así se verá tu página</h2>
+
+                <div
+                    id="business-preview"
+                    class="business-preview"
+                >
+
+                    <img
+                        id="preview-logo"
+                        src=""
+                        alt="Logo de tu negocio"
+                        class="preview-logo"
+                    >
+
+                    <h3
+                        id="preview-business-name"
+                        class="preview-business-name"
+                    >
+                        Tu negocio
+                    </h3>
+
+                    <p class="preview-message">
+                        Mirá cómo quedará tu página para tus clientes.
+                    </p>
+
+                    <div class="preview-products">
+
+                        <div class="preview-product">
+                            🍕 Producto
+                        </div>
+
+                        <div class="preview-product">
+                            🥤 Bebidas
+                        </div>
+
+                        <div class="preview-product">
+                            🍰 Postres
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <div class="onboarding-actions">
+
+                <button
+                    type="button"
+                    id="btn-back"
+                    class="btn-secondary"
+                >
+                    Atrás
+                </button>
+
+                <button
+                    type="button"
+                    id="btn-finish"
+                    class="btn-primary"
+                >
+                    Finalizar
+                </button>
+
+            </div>
+
+            <p id="onboarding-error"></p>
+
+        </section>
+
+    </main>
+
+    <script
+        type="module"
+        src="../../js/onboarding/onboarding-color.js">
+    </script>
+
+</body>
+
+</html>

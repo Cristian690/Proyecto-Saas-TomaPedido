@@ -1,28 +1,29 @@
 package com.tomapedido.backend.service;
 
-import lombok.*;
-import com.tomapedido.backend.entity.Category;
-import com.tomapedido.backend.entity.Tenant;
-import com.tomapedido.backend.dto.CategoryResponse;
-import com.tomapedido.backend.dto.CreateCategoryRequest;
-import com.tomapedido.backend.repository.CategoryRepository;
-import com.tomapedido.backend.repository.TenantRepository;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.tomapedido.backend.dto.CategoryResponse;
+import com.tomapedido.backend.dto.CreateCategoryRequest;
+import com.tomapedido.backend.entity.Category;
+import com.tomapedido.backend.entity.Tenant;
+import com.tomapedido.backend.repository.CategoryRepository;
+import com.tomapedido.backend.security.SecurityUtils;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final TenantRepository tenantRepository;
-    
-    public CategoryResponse createCategory(CreateCategoryRequest request){       
+    private final SecurityUtils securityUtils;
 
-        Tenant tenant = tenantRepository.findById(request.getTenantId()).orElseThrow();
+    public CategoryResponse createCategory(CreateCategoryRequest request) {
+
+        Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
 
         Category nuevaCategoria = new Category();
 
@@ -35,10 +36,76 @@ public class CategoryService {
         Category savedCategory = categoryRepository.save(nuevaCategoria);
 
         return toResponse(savedCategory);
-
     }
 
-    private CategoryResponse toResponse(Category category){
+    public CategoryResponse getCategoryById(Long id) {
+
+        Long tenantId = securityUtils.getAuthenticatedTenantId();
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow();
+
+        if (!category.getTenant().getId().equals(tenantId)) {
+            throw new IllegalArgumentException("La categoría no pertenece al comercio");
+        }
+
+        return toResponse(category);
+    }
+
+    public List<CategoryResponse> getAllCategories() {
+
+        Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
+
+        List<Category> categories = categoryRepository.findByTenant(tenant);
+
+        List<CategoryResponse> responses = new ArrayList<>();
+
+        for (Category category : categories) {
+            responses.add(toResponse(category));
+        }
+
+        return responses;
+    }
+
+    public CategoryResponse updateCategory(
+            Long id,
+            CreateCategoryRequest request) {
+
+        Long tenantId = securityUtils.getAuthenticatedTenantId();
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow();
+
+        if (!category.getTenant().getId().equals(tenantId)) {
+            throw new IllegalArgumentException("La categoría no pertenece al comercio");
+        }
+
+        category.setName(request.getName());
+        category.setDescription(request.getDescription());
+        category.setImageUrl(request.getImageUrl());
+
+        categoryRepository.save(category);
+
+        return toResponse(category);
+    }
+
+    public void deleteCategory(Long id) {
+
+        Long tenantId = securityUtils.getAuthenticatedTenantId();
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow();
+
+        if (!category.getTenant().getId().equals(tenantId)) {
+            throw new IllegalArgumentException("La categoría no pertenece al comercio");
+        }
+
+        category.setActive(false);
+
+        categoryRepository.save(category);
+    }
+
+    private CategoryResponse toResponse(Category category) {
 
         CategoryResponse categoryResponse = new CategoryResponse();
 
@@ -50,54 +117,22 @@ public class CategoryService {
         categoryResponse.setTenantId(category.getTenant().getId());
 
         return categoryResponse;
-
     }
 
-    public CategoryResponse getCategoryById(Long id){
+    public void activateCategory(Long id) {
 
-        Category category = categoryRepository.findById(id).orElseThrow();
+        Long tenantId = securityUtils.getAuthenticatedTenantId();
 
-        return toResponse(category);
-    }
+        Category category = categoryRepository.findById(id)
+                .orElseThrow();
 
-    public List<CategoryResponse> getAllCategories(){
-
-        List <Category> categories = categoryRepository.findAll();
-        
-        List <CategoryResponse> responses =   new ArrayList<>();
-
-        for (Category category : categories){
-            responses.add(toResponse(category));
+        if (!category.getTenant().getId().equals(tenantId)) {
+            throw new IllegalArgumentException(
+                    "La categoría no pertenece al comercio");
         }
 
-        return responses;
-        
-    }
-
-    public CategoryResponse updateCategory(Long id, CreateCategoryRequest request){
-                
-        Category category = categoryRepository.findById(id).orElseThrow();
-        Tenant tenant = tenantRepository.findById(request.getTenantId()).orElseThrow();
-        
-        category.setName(request.getName());
-        category.setDescription(request.getDescription());
-        category.setImageUrl(request.getImageUrl());
-        category.setTenant(tenant);
-        
-        categoryRepository.save(category);
-
-        return toResponse(category);
-
-    }
-
-    public void deleteCategory(Long id){
-
-        Category category = categoryRepository.findById(id).orElseThrow();
-
-        category.setActive(false);        
+        category.setActive(true);
 
         categoryRepository.save(category);
-
-    } 
-
+    }
 }

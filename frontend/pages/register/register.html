@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TomaPedido - Crear cuenta</title>
+
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+
+    <main class="login-container">
+
+        <section class="login-card">
+
+            <h1>TomaPedido</h1>
+
+            <p>Creá tu página para recibir pedidos</p>
+
+            <form id="register-form">
+
+                <div id="register-step-1">
+
+                    <h2>🏪 ¿Cómo se llama tu negocio?</h2>
+
+                    <p>
+                        Este será el nombre que verán tus clientes.
+                    </p>
+
+                    <input
+                        type="text"
+                        id="register-business-name"
+                        placeholder="Ej: Pizzería La Nonna"
+                        required
+                    >
+
+                    <p>
+                        Paso 1 de 3
+                    </p>
+
+                    <button type="button" id="register-next-1">
+                        Continuar
+                    </button>
+
+                </div>
+
+
+                <div id="register-step-2" style="display: none;">
+
+                    <h2>📱 ¿A qué WhatsApp querés recibir tus pedidos?</h2>
+
+                    <p>
+                        Tus clientes enviarán los pedidos a este número.
+                    </p>
+
+                    <input
+                        type="text"
+                        id="register-phone"
+                        placeholder="Ej: 1177776666"
+                        required
+                    >
+
+                    <p>
+                        Paso 2 de 3
+                    </p>
+
+                    <button type="button" id="register-back-2">
+                        Atrás
+                    </button>
+
+                    <button type="button" id="register-next-2">
+                        Continuar
+                    </button>
+
+                </div>
+
+
+                <div id="register-step-3" style="display: none;">
+
+                    <h2>🔐 Creá una contraseña</h2>
+
+                    <p>
+                        La vas a usar para entrar a tu panel de administración.
+                    </p>
+
+                    <input
+                        type="password"
+                        id="register-password"
+                        placeholder="Elegí una contraseña"
+                        required
+                    >
+
+                    <p>
+                        Paso 3 de 3
+                    </p>
+
+                    <button type="button" id="register-back-3">
+                        Atrás
+                    </button>
+
+                    <button type="submit">
+                        Crear mi página
+                    </button>
+
+                </div>
+
+                <p id="register-error"></p>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="../../js/auth/register.js"></script>
+
+</body>
+
+</html>
