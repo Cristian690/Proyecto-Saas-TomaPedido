@@ -112,6 +112,9 @@ const photoNextButton =
 const photoSkipButton =
     document.getElementById("btn-product-photo-skip");
 
+const defaultImageButton =
+    document.getElementById("btn-default-image");
+
 
 const categoryBackButton =
     document.getElementById("btn-product-category-back");
@@ -310,6 +313,26 @@ function showStep4() {
     productStep4.style.display = "block";
     productConfirmation.style.display = "none";
     productSuccess.style.display = "none";
+
+    updateDefaultImageOption();
+}
+
+function updateDefaultImageOption() {
+
+    const categoryImages =
+        defaultImages[newProduct.categoryName] || [];
+
+    const hasDefaultImages =
+        categoryImages.length > 0;
+
+    defaultImageButton.style.display =
+        hasDefaultImages ? "" : "none";
+
+    if (!hasDefaultImages) {
+        document.getElementById(
+            "default-images-container"
+        ).style.display = "none";
+    }
 }
 
 function showDefaultImages() {
@@ -324,6 +347,11 @@ function showDefaultImages() {
         defaultImages[newProduct.categoryName] || [];
 
     gallery.innerHTML = "";
+
+    if (categoryImages.length === 0) {
+        container.style.display = "none";
+        return;
+    }
 
     if (categoryImages.length === 0) {
         gallery.innerHTML = `
@@ -375,11 +403,9 @@ function showDefaultImages() {
     container.style.display = "block";
 }
 
-document
-    .getElementById("btn-default-image")
-    .addEventListener("click", () => {
-        showDefaultImages();
-    });
+defaultImageButton.addEventListener("click", () => {
+    showDefaultImages();
+});
 
 function showConfirmation() {
 
