@@ -389,7 +389,6 @@ function showDefaultImages() {
 
             gallery.appendChild(button);
         });
-    }
 
     container.style.display = "block";
 }
