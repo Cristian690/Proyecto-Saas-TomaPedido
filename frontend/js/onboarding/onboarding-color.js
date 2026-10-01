@@ -41,14 +41,31 @@ const errorMessage =
 function getContrastTextColor(hexColor) {
     const hex = hexColor.replace("#", "");
 
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
+    const toLinearSrgb = value => {
+        const channel = value / 255;
+
+        return channel <= 0.03928
+            ? channel / 12.92
+            : ((channel + 0.055) / 1.055) ** 2.4;
+    };
 
     const luminance =
-        (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        0.2126 * toLinearSrgb(parseInt(hex.substring(0, 2), 16)) +
+        0.7152 * toLinearSrgb(parseInt(hex.substring(2, 4), 16)) +
+        0.0722 * toLinearSrgb(parseInt(hex.substring(4, 6), 16));
 
-    return luminance > 0.6
+    const darkTextLuminance = toLinearSrgb(17);
+    const whiteTextLuminance = 1;
+
+    const darkTextContrast =
+        (Math.max(luminance, darkTextLuminance) + 0.05) /
+        (Math.min(luminance, darkTextLuminance) + 0.05);
+
+    const whiteTextContrast =
+        (Math.max(luminance, whiteTextLuminance) + 0.05) /
+        (Math.min(luminance, whiteTextLuminance) + 0.05);
+
+    return darkTextContrast > whiteTextContrast
         ? "#111111"
         : "#ffffff";
 }
@@ -136,7 +153,21 @@ async function loadBusiness() {
 
             preview.style.backgroundColor =
                 business.backgroundColor;
+
+            preview.style.color =
+                getContrastTextColor(business.backgroundColor);
         }
+
+        document.querySelectorAll(".preview-product").forEach(
+            product => {
+
+                product.style.backgroundColor =
+                    primaryColorInput.value;
+
+                product.style.color =
+                    getContrastTextColor(primaryColorInput.value);
+            }
+        );
 
     } catch (error) {
 
