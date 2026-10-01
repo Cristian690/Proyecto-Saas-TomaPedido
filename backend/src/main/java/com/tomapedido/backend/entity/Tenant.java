@@ -1,5 +1,6 @@
 package com.tomapedido.backend.entity;
 
+import java.time.LocalDateTime;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +28,17 @@ public class Tenant {
 
     @Column(nullable = false, length = 20)
     private String phone;
+
+    @Column(nullable = false)
+    private LocalDateTime trialStartedAt;
+
+    @Column(nullable = false)
+    private LocalDateTime trialEndsAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    @Builder.Default
+    private TenantStatus status = TenantStatus.TRIAL;
 
     @Column(nullable = false)
     @Builder.Default

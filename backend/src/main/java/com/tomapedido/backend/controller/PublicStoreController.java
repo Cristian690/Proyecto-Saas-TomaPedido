@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/public")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class PublicStoreController {
 

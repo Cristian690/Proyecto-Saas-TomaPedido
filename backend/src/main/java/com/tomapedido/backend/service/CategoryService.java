@@ -20,10 +20,12 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final SecurityUtils securityUtils;
+    private final TenantStatusService tenantStatusService;
 
     public CategoryResponse createCategory(CreateCategoryRequest request) {
 
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
+        tenantStatusService.requireAdministrationAllowed(tenant);
 
         Category nuevaCategoria = new Category();
 
@@ -41,6 +43,8 @@ public class CategoryService {
     public CategoryResponse getCategoryById(Long id) {
 
         Long tenantId = securityUtils.getAuthenticatedTenantId();
+        tenantStatusService.requireAdministrationAllowed(
+                securityUtils.getAuthenticatedUser().getTenant());
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow();
@@ -55,6 +59,7 @@ public class CategoryService {
     public List<CategoryResponse> getAllCategories() {
 
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
+        tenantStatusService.requireAdministrationAllowed(tenant);
 
         List<Category> categories = categoryRepository.findByTenant(tenant);
 
@@ -72,6 +77,8 @@ public class CategoryService {
             CreateCategoryRequest request) {
 
         Long tenantId = securityUtils.getAuthenticatedTenantId();
+        tenantStatusService.requireAdministrationAllowed(
+                securityUtils.getAuthenticatedUser().getTenant());
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow();
@@ -92,6 +99,8 @@ public class CategoryService {
     public void deleteCategory(Long id) {
 
         Long tenantId = securityUtils.getAuthenticatedTenantId();
+        tenantStatusService.requireAdministrationAllowed(
+                securityUtils.getAuthenticatedUser().getTenant());
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow();
@@ -122,6 +131,8 @@ public class CategoryService {
     public void activateCategory(Long id) {
 
         Long tenantId = securityUtils.getAuthenticatedTenantId();
+        tenantStatusService.requireAdministrationAllowed(
+                securityUtils.getAuthenticatedUser().getTenant());
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow();

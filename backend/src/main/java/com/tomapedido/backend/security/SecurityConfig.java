@@ -30,7 +30,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/register", "/auth/login", "/public/**")
+                    .requestMatchers(
+                        "/auth/register",
+                        "/auth/login",
+                        "/auth/check-phone/**",
+                        "/public/**"
+                    )
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/business/**")
                     .permitAll()

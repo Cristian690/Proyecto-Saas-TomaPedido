@@ -6,7 +6,7 @@
 
     <title>TomaPedido - Admin</title>
 
-    <link rel="stylesheet" href="../../style.css?v=2">
+    <link rel="stylesheet" href="../../style.css?v=11">
 </head>
 
 <body>
@@ -23,12 +23,14 @@
 
             <button
                 type="button"
+                class="admin-nav-button admin-nav-button--active"
+                aria-current="page"
                 onclick="window.location.href='admin.html'"
             >
                 Mi negocio
             </button>
             
-            <button type="button" onclick="window.location.href='products.html'">
+            <button type="button" class="admin-nav-button" onclick="window.location.href='products.html'">
                 Productos
             </button>
 
@@ -40,6 +42,25 @@
 
 
         <section class="admin-content">
+
+            <section class="trial-period-notice" id="trial-period-notice" hidden>
+                <span class="trial-period-notice__label">✨ Período de prueba</span>
+                <p id="trial-period-message"></p>
+            </section>
+
+            <section class="trial-ending-notice" id="trial-ending-notice" hidden>
+                <span class="trial-period-notice__label">⏰ Tu prueba termina mañana</span>
+                <p>Continuá usando OrdenFlash por $10.000/mes, sin comisión por pedido.</p>
+                <a id="trial-ending-whatsapp" target="_blank" rel="noopener noreferrer">Hablar por WhatsApp</a>
+            </section>
+
+            <section class="trial-expired-panel" id="trial-expired-panel" hidden>
+                <span>🔒 Tu período de prueba finalizó</span>
+                <p id="trial-expired-message"></p>
+                <a id="trial-expired-whatsapp" target="_blank" rel="noopener noreferrer">Quiero continuar</a>
+            </section>
+
+            <div id="admin-management-content">
 
             <div class="business-status">
                 <span id="business-status-text">Estado: —</span>
@@ -61,73 +82,107 @@
 
             <div class="admin-form">
 
-                <label>
-                    Nombre del negocio
-                    <input type="text" id="business-name">
-                </label>
+                <section class="business-form-section">
+                    <div class="business-form-section-title">
+                        <h3>Datos del negocio</h3>
+                    </div>
 
+                    <div class="business-form-fields">
+                        <label>
+                            Nombre del negocio
+                            <input type="text" id="business-name">
+                        </label>
 
-                <label>
-                    WhatsApp
-                    <input type="text" id="business-whatsapp">
-                </label>
+                        <label>
+                            WhatsApp
+                            <input type="text" id="business-whatsapp">
+                        </label>
 
+                        <label>
+                            Dirección
+                            <input type="text" id="business-address">
+                        </label>
+                    </div>
+                </section>
 
-                <label>
-                    Logo
-                    <img
-                        id="business-logo-preview"
-                        class="admin-image-preview"
-                        src=""
-                        alt="Logo actual"
-                    >
-                    <input type="file" id="business-logo" accept="image/*">
-                </label>
+                <section class="business-form-section">
+                    <div class="business-form-section-title">
+                        <h3>Identidad visual</h3>
+                    </div>
 
+                    <div class="business-form-fields">
+                        <label>
+                            Logo
+                            <img
+                                id="business-logo-preview"
+                                class="admin-image-preview"
+                                src=""
+                                alt="Logo actual"
+                            >
+                            <input type="file" id="business-logo" accept="image/*">
+                        </label>
 
-                <label>
-                    Imagen de portada
-                    <img
-                        id="business-cover-preview"
-                        class="admin-image-preview admin-cover-preview"
-                        src=""
-                        alt="Portada actual"
-                    >
-                    <input type="file" id="business-cover" accept="image/*">
-                </label>
+                        <label>
+                            Imagen de portada
+                            <img
+                                id="business-cover-preview"
+                                class="admin-image-preview admin-cover-preview"
+                                src=""
+                                alt="Portada actual"
+                            >
+                            <input type="file" id="business-cover" accept="image/*">
+                        </label>
+                    </div>
+                </section>
 
+                <section class="business-form-section">
+                    <div class="business-form-section-title">
+                        <h3>Apariencia</h3>
+                    </div>
 
-                <label>
-                    Color de los botones
-                    <input type="color" id="business-primary-color" value="#e63946">
-                </label>
+                    <div class="business-form-fields business-color-fields">
+                        <label class="business-color-field">
+                            Color de los botones
+                            <input type="color" id="business-primary-color" value="#e63946">
+                        </label>
 
+                        <label class="business-color-field">
+                            Color de fondo
+                            <input
+                                type="color"
+                                id="business-background-color"
+                                value="#ffffff"
+                            >
+                        </label>
+                    </div>
+                </section>
 
-                <label>
-                    Color de fondo
-                    <input 
-                        type="color"
-                        id="business-background-color"
-                        value="#ffffff"
-                    >
-                </label>
+                <section class="business-form-section">
+                    <div class="business-form-section-title">
+                        <h3>Mensaje</h3>
+                    </div>
 
-
-                <label>
-                    Mensaje de bienvenida
-                    <textarea id="business-welcome-message"></textarea>
-                </label>
-
-
-                <label>
-                    Dirección
-                    <input type="text" id="business-address">
-                </label>
+                    <div class="business-form-fields">
+                        <label>
+                            Mensaje de bienvenida
+                            <textarea id="business-welcome-message"></textarea>
+                        </label>
+                    </div>
+                </section>
 
 
                 <button id="save-business">
                     Guardar cambios
                 </button>
+
+                <p
+                    id="business-save-message"
+                    style="display: none;"
+                >
+                    ✅ Cambios guardados correctamente.
+                </p>
+
+            </div>
 
             </div>
 
@@ -135,6 +190,6 @@
 
     </main>
 
-    <script type="module" src="../../js/admin/admin.js?v=1.1"></script>
+    <script type="module" src="../../js/admin/admin.js?v=1.3"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-console.log("ONBOARDING LOGO JS CARGADO");
+import { API_URL } from "../api/api.js";
 
 const token = localStorage.getItem("token");
 const businessSlug = localStorage.getItem("businessSlug");
@@ -8,6 +8,12 @@ const logoInput =
 
 const logoPreview =
     document.getElementById("logo-preview");
+
+const coverInput =
+    document.getElementById("business-cover");
+
+const coverPreview =
+    document.getElementById("cover-preview");
 
 const nextButton =
     document.getElementById("btn-next");
@@ -20,10 +26,11 @@ const errorMessage =
 
 
 // ====================================
-// LOGO ACTUAL
+// ARCHIVOS ACTUALES
 // ====================================
 
 let existingLogoUrl = null;
+let existingCoverUrl = null;
 
 
 // ====================================
@@ -35,7 +42,7 @@ async function loadBusiness() {
     try {
 
         const response = await fetch(
-            `http://192.168.100.32:8080/business/${businessSlug}`
+            `${API_URL}/business/${businessSlug}`
         );
 
         if (!response.ok) {
@@ -73,6 +80,28 @@ async function loadBusiness() {
             );
         }
 
+
+        // ================================
+        // CARGAR PORTADA EXISTENTE
+        // ================================
+
+        if (business.coverUrl) {
+
+            existingCoverUrl =
+                business.coverUrl;
+
+            coverPreview.src =
+                business.coverUrl;
+
+            coverPreview.style.display =
+                "block";
+
+            console.log(
+                "Portada existente cargada:",
+                existingCoverUrl
+            );
+        }
+
     } catch (error) {
 
         console.error(
@@ -87,7 +116,7 @@ async function loadBusiness() {
 
 
 // ====================================
-// MOSTRAR PREVIEW AL SELECCIONAR ARCHIVO
+// PREVIEW DEL LOGO
 // ====================================
 
 logoInput.addEventListener("change", () => {
@@ -113,6 +142,104 @@ logoInput.addEventListener("change", () => {
 
 
 // ====================================
+// PREVIEW DE LA PORTADA
+// ====================================
+
+coverInput.addEventListener("change", () => {
+
+    errorMessage.textContent = "";
+
+    const file =
+        coverInput.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    const imageUrl =
+        URL.createObjectURL(file);
+
+    coverPreview.src =
+        imageUrl;
+
+    coverPreview.style.display =
+        "block";
+});
+
+
+// ====================================
+// SUBIR IMAGEN A CLOUDINARY
+// ====================================
+
+async function uploadImage(file) {
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "file",
+        file
+    );
+
+    formData.append(
+        "upload_preset",
+        "tomapedido_uploads"
+    );
+
+    const response =
+        await fetch(
+            "https://api.cloudinary.com/v1_1/y2zsd3jg/image/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+    if (!response.ok) {
+
+        throw new Error(
+            "No se pudo subir la imagen."
+        );
+    }
+
+    const data =
+        await response.json();
+
+    return data.secure_url;
+}
+
+
+// ====================================
+// GUARDAR PERSONALIZACIÓN
+// ====================================
+
+async function saveCustomization(data) {
+
+    const response =
+        await fetch(
+            `${API_URL}/business/customization`,
+            {
+                method: "PATCH",
+
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+
+                body: JSON.stringify(data)
+            }
+        );
+
+    if (!response.ok) {
+
+        throw new Error(
+            "No se pudo guardar la imagen."
+        );
+    }
+}
+
+
+// ====================================
 // CONTINUAR
 // ====================================
 
@@ -120,118 +247,51 @@ nextButton.addEventListener("click", async () => {
 
     errorMessage.textContent = "";
 
-    const file =
+    const logoFile =
         logoInput.files[0];
 
-
-    // ====================================
-    // SI NO HAY ARCHIVO NUEVO
-    // ====================================
-
-    if (!file) {
-
-        // Ya existe un logo guardado
-        if (existingLogoUrl) {
-
-            window.location.href =
-                "onboarding-color.html";
-
-            return;
-        }
-
-        // No existe ningún logo
-        errorMessage.textContent =
-            "Seleccioná un logo antes de continuar.";
-
-        return;
-    }
+    const coverFile =
+        coverInput.files[0];
 
 
     try {
 
         // ================================
-        // SUBIR LOGO A CLOUDINARY
+        // GUARDAR LOGO NUEVO
         // ================================
 
-        const formData =
-            new FormData();
+        if (logoFile) {
 
-        formData.append(
-            "file",
-            file
-        );
+            const logoUrl =
+                await uploadImage(logoFile);
 
-        formData.append(
-            "upload_preset",
-            "tomapedido_uploads"
-        );
+            await saveCustomization({
+                logoUrl
+            });
 
-
-        const cloudinaryResponse =
-            await fetch(
-                "https://api.cloudinary.com/v1_1/y2zsd3jg/image/upload",
-                {
-                    method: "POST",
-                    body: formData
-                }
-            );
-
-
-        if (!cloudinaryResponse.ok) {
-
-            throw new Error(
-                "No se pudo subir el logo."
+            console.log(
+                "Logo guardado correctamente"
             );
         }
 
 
-        const cloudinaryData =
-            await cloudinaryResponse.json();
-
-
-        console.log(
-            "Logo subido a Cloudinary:",
-            cloudinaryData
-        );
-
-
-        const logoUrl =
-            cloudinaryData.secure_url;
-
-
         // ================================
-        // GUARDAR LOGO EN EL BACKEND
+        // GUARDAR PORTADA NUEVA
         // ================================
 
-        const response =
-            await fetch(
-                "http://192.168.100.32:8080/business/customization",
-                {
-                    method: "PATCH",
+        if (coverFile) {
 
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
+            const coverUrl =
+                await uploadImage(coverFile);
 
-                    body: JSON.stringify({
-                        logoUrl
-                    })
-                }
-            );
+            await saveCustomization({
+                coverUrl
+            });
 
-
-        if (!response.ok) {
-
-            throw new Error(
-                "No se pudo guardar el logo."
+            console.log(
+                "Portada guardada correctamente"
             );
         }
-
-
-        console.log(
-            "Logo guardado correctamente"
-        );
 
 
         // ================================
@@ -241,11 +301,10 @@ nextButton.addEventListener("click", async () => {
         window.location.href =
             "onboarding-color.html";
 
-
     } catch (error) {
 
         console.error(
-            "Error guardando logo:",
+            "Error guardando imágenes:",
             error
         );
 

@@ -8,9 +8,10 @@ import com.tomapedido.backend.service.AuthService;
 import com.tomapedido.backend.dto.LoginRequest;
 import com.tomapedido.backend.dto.LoginResponse;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final AuthService authService;
@@ -20,12 +21,17 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public RegisterResponse register(@RequestBody RegisterRequest request) {
+    public RegisterResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
     }
 
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @GetMapping("/check-phone/{phone}")
+    public boolean checkPhone(@PathVariable String phone) {
+        return authService.phoneExists(phone);
     }
 }

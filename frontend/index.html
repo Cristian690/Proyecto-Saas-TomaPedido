@@ -3,13 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffffff">
   <title>TomaPedido</title>
-  <link rel="stylesheet" href="style.css?v=2" />
+  
+  
+  <link rel="stylesheet" href="style.css?v=3" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Lucide icons via CDN -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
 <body>
+
+  <section class="public-store-unavailable" id="public-store-unavailable" hidden>
+    <h1>Esta tienda no se encuentra disponible actualmente.</h1>
+    <p>No se pudo acceder al catálogo en este momento.</p>
+  </section>
+  
 
   <!-- NAVBAR -->
   <header class="navbar">
@@ -21,7 +30,16 @@
         <span class="logo-main" id="business-name">Tu negocio</span>
         <span class="logo-sub">— TOMA PEDIDOS —</span>
       </div>
-    </div> 
+    </div>
+
+    <a
+      class="nav-admin-panel"
+      id="nav-admin-panel"
+      href="pages/admin/admin.html"
+      hidden
+    >
+      ← Panel
+    </a>
     
   </header>
 
@@ -117,6 +135,8 @@
   </main>
 
   <!-- CARRITO FLOTANTE -->
+  <div id="cart-overlay"></div>
+  
   <section class="cart-panel" id="cart-panel">
     <div class="cart-header">
       <div class="cart-title">
@@ -180,6 +200,7 @@
         <div id="cash-fields" style="display: none;">
           <label for="cash-amount" style="margin-top: 8px;">¿Con cuánto vas a pagar? *</label>
           <input type="number" id="cash-amount" placeholder="Ej: 10000" />
+          <p id="cash-error" style="display: none; color: #d32f2f; margin-top: 6px;"></p>
         </div>
 
         <div class="modal-actions">
@@ -208,7 +229,7 @@
 
   </div>
 
-  <script type="module" src="app.js?v=1.0"></script>
+  <script type="module" src="app.js?v=1.2"></script>
 
 </body>
 </html>

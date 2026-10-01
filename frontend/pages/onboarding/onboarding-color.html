@@ -7,6 +7,10 @@
 
     <title>TomaPedido - Personalización</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="../../style.css">
 </head>
 
@@ -26,31 +30,31 @@
 
             <div class="color-selector">
 
-            <div class="color-option">
-                <label for="business-background-color">
-                    Color de fondo
-                </label>
+                <div class="color-option">
+                    <label for="business-background-color">
+                        Color de fondo
+                    </label>
 
-                <input
-                    type="color"
-                    id="business-background-color"
-                    value="#ffffff"
-                >
+                    <input
+                        type="color"
+                        id="business-background-color"
+                        value="#ffffff"
+                    >
+                </div>
+
+                <div class="color-option">
+                    <label for="business-primary-color">
+                        Color de botones
+                    </label>
+
+                    <input
+                        type="color"
+                        id="business-primary-color"
+                        value="#e63946"
+                    >
+                </div>
+
             </div>
-
-            <div class="color-option">
-                <label for="business-text-color">
-                    Color de las letras
-                </label>
-
-                <input
-                    type="color"
-                    id="business-text-color"
-                    value="#000000"
-                >
-            </div>
-
-        </div>
 
             <section class="preview-section">
 
@@ -61,12 +65,24 @@
                     class="business-preview"
                 >
 
-                    <img
-                        id="preview-logo"
-                        src=""
-                        alt="Logo de tu negocio"
-                        class="preview-logo"
-                    >
+                    <div class="preview-hero">
+
+                        <img
+                            id="preview-cover"
+                            src=""
+                            alt="Portada de tu negocio"
+                            class="preview-cover"
+                            style="display: none;"
+                        >
+
+                        <img
+                            id="preview-logo"
+                            src=""
+                            alt="Logo de tu negocio"
+                            class="preview-logo"
+                        >
+
+                    </div>
 
                     <h3
                         id="preview-business-name"
@@ -75,9 +91,19 @@
                         Tu negocio
                     </h3>
 
-                    <p class="preview-message">
-                        Mirá cómo quedará tu página para tus clientes.
+                    <p
+                        id="preview-welcome-message"
+                        class="preview-welcome-message"
+                    >
                     </p>
+
+                    <p
+                        id="preview-address"
+                        class="preview-address"
+                    >
+                    </p>
+
+                    
 
                     <div class="preview-products">
 

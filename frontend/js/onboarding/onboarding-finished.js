@@ -1,3 +1,5 @@
+import { API_URL } from "../api/api.js";
+
 const businessSlug = localStorage.getItem("businessSlug");
 
 const viewPageButton = document.getElementById("btn-view-page");
@@ -19,7 +21,7 @@ async function loadBusiness() {
     try {
 
         const response = await fetch(
-            `http://192.168.100.32:8080/business/${businessSlug}`
+            `${API_URL}/business/${businessSlug}`
         );
 
         if (!response.ok) {
@@ -75,7 +77,7 @@ async function loadBusiness() {
 viewPageButton.addEventListener("click", () => {
 
     window.location.href =
-        `../../index.html?business=${encodeURIComponent(businessSlug)}`;
+        `../../index.html?business=${encodeURIComponent(businessSlug)}&admin=true`;
 
 });
 

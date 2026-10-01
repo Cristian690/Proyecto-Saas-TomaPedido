@@ -6,11 +6,11 @@ import com.tomapedido.backend.entity.TenantConfig;
 import com.tomapedido.backend.service.TenantConfigService;
 import com.tomapedido.backend.dto.BusinessCustomizationRequest;
 import com.tomapedido.backend.dto.BusinessStatusRequest;
+import com.tomapedido.backend.dto.PublicTenantConfigResponse;
 //import com.tomapedido.backend.dto.BusinessCustomizationRequest;
 
 @RestController
 @RequestMapping("/business")
-@CrossOrigin(origins = "*")
 public class TenantConfigController {
 
     private final TenantConfigService tenantConfigService;
@@ -25,7 +25,7 @@ public class TenantConfigController {
     }
 
     @GetMapping("/{slug}")
-    public TenantConfig getTenantConfig(@PathVariable String slug) {
+    public PublicTenantConfigResponse getTenantConfig(@PathVariable String slug) {
         return tenantConfigService.getTenantConfigBySlug(slug);
     }
 

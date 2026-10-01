@@ -6,7 +6,11 @@
 
     <title>TomaPedido - Mis productos</title>
 
-    <link rel="stylesheet" href="../../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../style.css?v=11">
 </head>
 
 <body>
@@ -23,9 +27,18 @@
             <button
                 type="button"
                 id="btn-business"
+                class="admin-nav-button"
                 onclick="window.location.href='admin.html'"
             >
                 Mi negocio
+            </button>
+
+            <button
+                type="button"
+                class="admin-nav-button admin-nav-button--active"
+                aria-current="page"
+            >
+                Productos
             </button>
 
             <button type="button" id="btn-logout">
@@ -62,7 +75,10 @@
                     aria-label="Filtrar productos por categoría"
                 ></div>
 
+                <p id="product-status-message"></p>
+
                 <div id="products-container">
+                    
 
                     <div class="empty-products">
 
@@ -349,15 +365,30 @@
                     <div class="product-photo-actions">
 
                         <label
-                            for="product-photo"
+                            for="product-photo-camera"
                             class="product-photo-button"
                         >
-                            📷 Subir mi propia foto
+                            📷 Sacar una foto
                         </label>
 
                         <input
                             type="file"
-                            id="product-photo"
+                            id="product-photo-camera"
+                            accept="image/*"
+                            capture="environment"
+                            hidden
+                        >
+
+                        <label
+                            for="product-photo-gallery"
+                            class="product-photo-button"
+                        >
+                            🖼️ Elegir de mi galería
+                        </label>
+
+                        <input
+                            type="file"
+                            id="product-photo-gallery"
                             accept="image/*"
                             hidden
                         >
@@ -485,6 +516,13 @@
 
                 </div>
 
+                <button
+                    type="button"
+                    id="btn-product-cancel"
+                >
+                    Cancelar
+                </button>
+
 
                 <!-- PRODUCTO GUARDADO -->
 
@@ -525,7 +563,7 @@
 
     <script
         type="module"
-        src="../../js/admin/products.js?v=1.1"
+        src="../../js/admin/products.js?v=1.6"
     ></script>
 
 </body>

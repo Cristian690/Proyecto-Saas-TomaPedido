@@ -1,15 +1,18 @@
-console.log("Products admin loaded");
+import { API_URL } from "../api/api.js";
 
 import { defaultImages } from "../default-images/default-images.js";
 
 const token = localStorage.getItem("token");
+
+console.log("🔥 PRODUCTS.JS CARGADO", new Date().toISOString());
+console.log("🔥 TOKEN AL ENTRAR:", token);
 
 if (!token) {
     window.location.href = "../login/login.html";
 }
 
 function handleUnauthorized(response) {
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401) {
         localStorage.removeItem("token");
         localStorage.removeItem("businessSlug");
         localStorage.removeItem("businessName");
@@ -20,12 +23,15 @@ function handleUnauthorized(response) {
         return true;
     }
 
+    if (response.status === 403) {
+        window.location.href = "admin.html";
+
+        return true;
+    }
+
     return false;
 }
 
-
-const API_URL =
-    "http://192.168.100.32:8080";
 
 const CLOUDINARY_URL =
     "https://api.cloudinary.com/v1_1/y2zsd3jg/image/upload";
@@ -83,8 +89,11 @@ const productDescriptionInput =
 const productPriceInput =
     document.getElementById("product-price");
 
-const productPhotoInput =
-    document.getElementById("product-photo");
+const productPhotoCameraInput =
+    document.getElementById("product-photo-camera");
+
+const productPhotoGalleryInput =
+    document.getElementById("product-photo-gallery");
 
 const productPhotoPreview =
     document.getElementById("product-photo-preview");
@@ -154,6 +163,30 @@ const confirmationCategory =
 const productError =
     document.getElementById("product-error");
 
+const productStatusMessage =
+    document.getElementById("product-status-message");
+
+function showProductMessage(productId, message) {
+
+    const card =
+        document.querySelector(
+            `.product-card[data-product-id="${productId}"]`
+        );
+
+    if (!card) {
+        return;
+    }
+
+    const statusMessage =
+        card.querySelector(".product-status-message");
+
+    if (!statusMessage) {
+        return;
+    }
+
+    statusMessage.textContent = message;
+}
+
 
 const confirmationBackButton =
     document.getElementById("btn-product-confirm-back");
@@ -168,6 +201,9 @@ const addAnotherProductButton =
 const viewProductsButton =
     document.getElementById("btn-view-products");
 
+const cancelProductButton =
+    document.getElementById("btn-product-cancel");
+
 
 const newProduct = {
     name: "",
@@ -180,7 +216,33 @@ const newProduct = {
 
 let editingProduct = null;
 
+function setCancelButtonVisible(isVisible) {
+
+    cancelProductButton.hidden = !isVisible;
+}
+
+function showProductsList() {
+
+    setCancelButtonVisible(false);
+    productSuccess.style.display = "none";
+    productFormScreen.style.display = "none";
+    productsScreen.style.display = "grid";
+}
+
+function cancelProductForm() {
+
+    resetProduct();
+    history.replaceState({ productForm: false }, "");
+    showProductsList();
+
+    void loadProducts();
+}
+
 function openProductForm() {
+
+    resetProduct();
+
+    history.pushState({ productForm: true }, "");
 
     productsScreen.style.display = "none";
     productFormScreen.style.display = "block";
@@ -192,6 +254,8 @@ function openProductForm() {
 }
 
 function openEditProduct(product, categoryName) {
+
+    history.pushState({ productForm: true }, "");
 
     editingProduct = product;
 
@@ -208,7 +272,8 @@ function openEditProduct(product, categoryName) {
     productSuccess.style.display = "none";
     productError.textContent = "";
 
-    productPhotoInput.value = "";
+    productPhotoCameraInput.value = "";
+    productPhotoGalleryInput.value = "";
 
     if (product.imageUrl) {
         productPhotoImage.src = product.imageUrl;
@@ -223,6 +288,7 @@ function openEditProduct(product, categoryName) {
 
 function showStep1() {
 
+    setCancelButtonVisible(true);
     stepProgress.textContent = "Paso 1 de 4";
 
     productStep1.style.display = "block";
@@ -244,6 +310,7 @@ function showStep1() {
 
 function showStep2() {
 
+    setCancelButtonVisible(true);
     stepProgress.textContent = "Paso 2 de 4";
 
     productStep1.style.display = "none";
@@ -265,6 +332,7 @@ function showStep2() {
 
 function showStep3() {
 
+    setCancelButtonVisible(true);
     stepProgress.textContent = "Paso 3 de 4";
 
     productStep1.style.display = "none";
@@ -305,6 +373,7 @@ function showStep3() {
 
 function showStep4() {
 
+    setCancelButtonVisible(true);
     stepProgress.textContent = "Paso 4 de 4";
 
     productStep1.style.display = "none";
@@ -389,6 +458,7 @@ function showDefaultImages() {
 
             gallery.appendChild(button);
         });
+    }
 
     container.style.display = "block";
 }
@@ -401,6 +471,7 @@ document
 
 function showConfirmation() {
 
+    setCancelButtonVisible(true);
     stepProgress.textContent = "";
 
     productStep1.style.display = "none";
@@ -467,14 +538,18 @@ function resetProduct() {
     editingProduct = null;
 
     newProduct.name = "";
+    newProduct.description = "";
     newProduct.price = null;
     newProduct.imageFile = null;
     newProduct.defaultImageUrl = "";
     newProduct.categoryName = "";
 
     productNameInput.value = "";
+    productDescriptionInput.value = "";
     productPriceInput.value = "";
-    productPhotoInput.value = "";
+
+    productPhotoCameraInput.value = "";
+    productPhotoGalleryInput.value = "";
 
     productPhotoPreview.style.display =
         "none";
@@ -698,6 +773,7 @@ async function saveProduct() {
         productSuccess.style.display =
             "block";
 
+        setCancelButtonVisible(false);
         stepProgress.textContent = "";
 
     } catch (error) {
@@ -1036,6 +1112,7 @@ function renderProducts(
         card.className =
             "product-card";
 
+        card.dataset.productId = product.id;
 
         const mainRow =
             document.createElement(
@@ -1094,6 +1171,16 @@ function renderProducts(
         name.textContent =
             product.name;
 
+        const descriptionText =
+            product.description?.trim();
+
+        let description = null;
+
+        if (descriptionText) {
+            description = document.createElement("p");
+            description.className = "product-description";
+            description.textContent = descriptionText;
+        }
 
         const category =
             document.createElement(
@@ -1122,6 +1209,10 @@ function renderProducts(
         info.appendChild(
             name
         );
+
+        if (description) {
+            info.appendChild(description);
+        }
 
         info.appendChild(
             category
@@ -1155,7 +1246,7 @@ function renderProducts(
                 localStorage.getItem("token");
 
             if (!token) {
-                alert("No hay una sesión iniciada.");
+                console.error("No hay una sesión iniciada.");
                 return;
             }
 
@@ -1189,13 +1280,19 @@ function renderProducts(
                     );
                 }
 
-                alert(
-                    product.active
-                        ? "Producto desactivado."
-                        : "Producto activado."
-                );
+                product.active = !product.active;
 
-                await loadProducts();
+                toggleButton.textContent =
+                    product.active
+                        ? "✓ Activado"
+                        : "✓ Desactivado";
+
+                setTimeout(() => {
+                    toggleButton.textContent =
+                        product.active
+                            ? "Desactivar"
+                            : "Activar";
+                }, 1500);
 
             } catch (error) {
 
@@ -1203,14 +1300,18 @@ function renderProducts(
                     "Error cambiando estado del producto:",
                     error
                 );
-
-                alert(error.message);
+                
             }
         });
+
+        const statusMessage = document.createElement("p");
+
+        statusMessage.className = "product-status-message";
 
         card.appendChild(mainRow);
         card.appendChild(editButton);
         card.appendChild(toggleButton);
+        card.appendChild(statusMessage);
 
         productsContainer.appendChild(card);
     });
@@ -1309,40 +1410,59 @@ priceNextButton.addEventListener(
 );
 
 
-productPhotoInput.addEventListener(
+function handleProductPhotoChange(input) {
+
+    const file =
+        input.files[0];
+
+
+    if (!file) {
+
+        return;
+    }
+
+
+    newProduct.imageFile =
+        file;
+
+    newProduct.defaultImageUrl = "";
+
+    const imageUrl =
+        URL.createObjectURL(file);
+
+
+    productPhotoImage.src =
+        imageUrl;
+
+
+    productPhotoPreview.style.display =
+        "block";
+
+
+    console.log(
+        "Foto seleccionada:",
+        file
+    );
+}
+
+
+productPhotoCameraInput.addEventListener(
     "change",
     () => {
 
-        const file =
-            productPhotoInput.files[0];
+        handleProductPhotoChange(
+            productPhotoCameraInput
+        );
+    }
+);
 
 
-        if (!file) {
+productPhotoGalleryInput.addEventListener(
+    "change",
+    () => {
 
-            return;
-        }
-
-
-        newProduct.imageFile =
-            file;
-
-        newProduct.defaultImageUrl = "";
-
-        const imageUrl =
-            URL.createObjectURL(file);
-
-
-        productPhotoImage.src =
-            imageUrl;
-
-
-        productPhotoPreview.style.display =
-            "block";
-
-
-        console.log(
-            "Foto seleccionada:",
-            file
+        handleProductPhotoChange(
+            productPhotoGalleryInput
         );
     }
 );
@@ -1529,19 +1649,27 @@ viewProductsButton.addEventListener(
     "click",
     async () => {
 
-        productSuccess.style.display =
-            "none";
-
-        productsScreen.style.display =
-            "block";
-
-        productFormScreen.style.display =
-            "none";
-
+        showProductsList();
 
         await loadProducts();
     }
 );
+
+cancelProductButton.addEventListener(
+    "click",
+    cancelProductForm
+);
+
+window.addEventListener("popstate", () => {
+
+    if (productFormScreen.style.display === "none") {
+        return;
+    }
+
+    showProductsList();
+
+    void loadProducts();
+});
 
 document
     .getElementById("btn-logout")

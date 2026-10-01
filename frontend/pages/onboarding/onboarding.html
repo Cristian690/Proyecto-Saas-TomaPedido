@@ -7,6 +7,10 @@
 
     <title>TomaPedido - Configuración</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="../../style.css">
 </head>
 
@@ -22,7 +26,10 @@
                 Paso 1 de 2
             </p>
 
-            <h2>📷 Agregá tu logo</h2>
+            <h2>
+                <span class="onboarding-icon">📷</span>
+                Agregá tu logo
+            </h2>
 
             <label for="business-logo" class="file-button">
                 Seleccionar archivo
@@ -32,6 +39,7 @@
                 type="file"
                 id="business-logo"
                 accept="image/jpeg,image/png,image/webp"
+                hidden
             >
 
             <img
@@ -40,6 +48,33 @@
                 alt="Vista previa del logo"
                 style="display: none;"
             >
+
+            <hr class="onboarding-divider">
+
+            <h2>
+                <span class="onboarding-icon">🖼️</span>
+                Agregá una imagen de portada
+            </h2>
+
+            <label for="business-cover" class="file-button">
+                Seleccionar archivo
+            </label>
+
+            <input
+                type="file"
+                id="business-cover"
+                accept="image/jpeg,image/png,image/webp"
+                hidden
+            >
+
+            <img
+                id="cover-preview"
+                src=""
+                alt="Vista previa de la portada"
+                style="display: none;"
+            >
+
+            <hr class="onboarding-divider">
 
             <button type="button" id="btn-next">
                 Continuar

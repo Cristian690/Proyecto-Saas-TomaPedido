@@ -30,6 +30,7 @@ lucide.createIcons();
 
 const params = new URLSearchParams(window.location.search);
 const slug = params.get("business");
+const openedFromAdmin = params.get("admin") === "true";
 
 let businessOpen = true;
 let currentBusiness = null;
@@ -40,9 +41,50 @@ if (!slug) {
 }
 
 
+function setupAdminPreview() {
+
+    if (!openedFromAdmin) {
+        return;
+    }
+
+    document.body.classList.add("admin-preview");
+    document.getElementById("nav-admin-panel").hidden = false;
+}
+
+
+function renderEmptyProductsState() {
+
+    const productsContainer =
+        document.getElementById("productos-container");
+
+    const tabsContainer =
+        document.getElementById("tabs-container");
+
+    tabsContainer.hidden = true;
+
+    if (openedFromAdmin) {
+        productsContainer.innerHTML = `
+            <section class="public-store-empty public-store-empty--admin">
+                <h2>🛒 Tu tienda todavía no tiene productos</h2>
+                <p>Agregá tus primeros productos para empezar a recibir pedidos.</p>
+                <a href="pages/admin/products.html">Agregar mi primer producto</a>
+            </section>
+        `;
+
+        return;
+    }
+
+    productsContainer.innerHTML = `
+        <section class="public-store-empty">
+            <p>🛒 Todavía no hay productos disponibles.</p>
+        </section>
+    `;
+}
+
+
 async function loadData() {
 
-    const business = await getBusiness(slug);
+    const business = await getBusiness(slug);    
 
     function getContrastTextColor(hexColor) {
         const hex = hexColor.replace("#", "");
@@ -58,6 +100,7 @@ async function loadData() {
             ? "#111111"
             : "#ffffff";
     }
+
 
     currentBusiness = business;
 
@@ -82,7 +125,11 @@ async function loadData() {
     );
 
     document.body.style.backgroundColor =
-        business.backgroundColor;
+        business.backgroundColor;    
+    
+    
+
+    document.body.classList.add("page-ready");
 
     document.title = business.name;
 
@@ -98,11 +145,8 @@ async function loadData() {
         business.name;
 
 
-    
-
-
     // ================================
-   // PORTADA Y LOGO DEL HERO
+    // PORTADA Y LOGO DEL HERO
     // ================================
 
     const heroElement =
@@ -164,12 +208,15 @@ async function loadData() {
         business.address?.trim();
 
     if (businessAddress) {
+
         heroBusinessAddressElement.textContent =
             `📍 ${businessAddress}`;
 
         heroBusinessAddressElement.hidden =
             false;
+
     } else {
+
         heroBusinessAddressElement.textContent =
             "";
 
@@ -249,6 +296,12 @@ async function loadData() {
     );
 
 
+    if (productsFromApi.length === 0) {
+        renderEmptyProductsState();
+        return;
+    }
+
+
     // ================================
     // CATEGORÍAS
     // ================================
@@ -291,6 +344,12 @@ async function loadData() {
     renderCart();
 }
 
+function showPublicStoreUnavailable() {
+
+    document.getElementById("public-store-unavailable").hidden = false;
+    document.body.classList.add("public-store-unavailable-active");
+}
+
 
 window.addToCart = addToCart;
 window.changeQty = changeQty;
@@ -316,6 +375,7 @@ const whatsappButton =
         "btn-whatsapp"
     );
 
+
 whatsappButton.addEventListener(
     "click",
     async (e) => {
@@ -340,14 +400,17 @@ whatsappButton.addEventListener(
                 return;
             }
 
+
             if (
                 Object.keys(getCart()).length === 0
             ) {
                 return;
             }
 
+
             const items =
                 Object.entries(getCart());
+
 
             const totalPrice =
                 items.reduce(
@@ -356,13 +419,34 @@ whatsappButton.addEventListener(
                     0
                 );
 
+
             document.getElementById(
                 "checkout-total-price"
             ).textContent =
                 `$${totalPrice.toLocaleString("es-AR")}`;
 
+
+            document.getElementById("cart-body").style.display =
+                "none";
+
+            document.getElementById("cart-overlay").style.display =
+                "none";
+
+
             modal.style.display =
                 "flex";
+
+            document.body.style.overflow =
+                "hidden";
+
+
+            // Guardamos el estado del checkout
+            history.pushState(
+                { checkout: true },
+                "",
+                "#checkout"
+            );
+
 
         } catch (error) {
 
@@ -386,10 +470,105 @@ document
         "click",
         () => {
 
-            modal.style.display =
-                "none";
+            if (
+                history.state &&
+                history.state.checkout
+            ) {
+
+                history.back();
+
+            } else {
+
+                modal.style.display =
+                    "none";
+
+                document.body.style.overflow =
+                    "";
+            }
         }
     );
+
+
+// ====================================
+// BOTÓN ATRÁS DEL CELULAR
+// ====================================
+
+window.addEventListener(
+    "popstate",
+    (event) => {
+
+        const cartBody =
+            document.getElementById("cart-body");
+
+        const cartOverlay =
+            document.getElementById("cart-overlay");
+
+        const cartToggle =
+            document.getElementById("cart-toggle");
+
+
+        // ============================
+        // CHECKOUT
+        // ============================
+
+        if (
+            modal.style.display === "flex"
+        ) {
+
+            modal.style.display =
+                "none";
+
+
+            // Volvemos al carrito
+            if (
+                event.state &&
+                event.state.cart
+            ) {
+
+                cartBody.style.display =
+                    "block";
+
+                cartOverlay.style.display =
+                    "block";
+
+                cartToggle.innerHTML =
+                    'Ocultar carrito <i data-lucide="chevron-down" id="chevron-icon"></i>';
+
+                document.body.style.overflow =
+                    "hidden";
+
+            } else {
+
+                document.body.style.overflow =
+                    "";
+            }
+
+
+            lucide.createIcons();
+
+            return;
+        }
+
+
+        // ============================
+        // CARRITO
+        // ============================
+
+        cartBody.style.display =
+            "none";
+
+        cartOverlay.style.display =
+            "none";
+
+        document.body.style.overflow =
+            "";
+
+        cartToggle.innerHTML =
+            'Ver carrito <i data-lucide="chevron-up" id="chevron-icon"></i>';
+
+        lucide.createIcons();
+    }
+);
 
 
 // ====================================
@@ -473,7 +652,7 @@ function togglePaymentFields() {
     if (method === "Efectivo") {
 
         cashFields.style.display =
-            "block";       
+            "block";
 
     } else {
 
@@ -602,6 +781,7 @@ document
                         "cash-amount"
                     ).value.trim();
 
+
                 // Si queda vacío, se considera simplemente efectivo
                 if (cashInput === "") {
 
@@ -617,14 +797,23 @@ document
                         cashAmount -
                         totalPrice;
 
+
                     if (vuelto < 0) {
 
-                        alert(
-                            `El monto ingresado ($${cashAmount.toLocaleString("es-AR")}) es menor al total del pedido ($${totalPrice.toLocaleString("es-AR")}).`
-                        );
+                        const cashError =
+                            document.getElementById(
+                                "cash-error"
+                            );
+
+                        cashError.textContent =
+                            `El monto ingresado ($${cashAmount.toLocaleString("es-AR")}) es menor al total del pedido ($${totalPrice.toLocaleString("es-AR")}).`;
+
+                        cashError.style.display =
+                            "block";
 
                         return;
                     }
+
 
                     detallePago =
                         `Efectivo (Paga con: $${cashAmount.toLocaleString("es-AR")} | Vuelto: $${vuelto.toLocaleString("es-AR")})`;
@@ -669,15 +858,22 @@ document
             const mensajeTextoPlano =
                 `🏪 *NUEVO PEDIDO - ${currentBusiness.name}*\n\n${msgCliente}\n\n🛒 *Detalle del Pedido:*\n${msgProductos}\n\n💰 *Total a pagar: $${totalPrice.toLocaleString("es-AR")}*`;
 
-            
 
             const mensajeCodificado =
                 encodeURIComponent(
                     mensajeTextoPlano
                 );
 
-            console.log("MENSAJE ORIGINAL:", mensajeTextoPlano);
-            console.log("MENSAJE CODIFICADO:", mensajeCodificado);
+
+            console.log(
+                "MENSAJE ORIGINAL:",
+                mensajeTextoPlano
+            );
+
+            console.log(
+                "MENSAJE CODIFICADO:",
+                mensajeCodificado
+            );
 
 
             // ============================
@@ -688,16 +884,36 @@ document
                 currentBusiness.whatsapp
                     .replace(/\D/g, "");
 
+
             if (telefonoNegocio.startsWith("549")) {
+
                 // Ya está en formato internacional
-            } else if (telefonoNegocio.startsWith("54")) {
-                telefonoNegocio = "549" + telefonoNegocio.substring(2);
-            } else if (telefonoNegocio.startsWith("0")) {
-                telefonoNegocio = telefonoNegocio.substring(1);
+
+            } else if (
+                telefonoNegocio.startsWith("54")
+            ) {
+
+                telefonoNegocio =
+                    "549" +
+                    telefonoNegocio.substring(2);
+
+            } else if (
+                telefonoNegocio.startsWith("0")
+            ) {
+
+                telefonoNegocio =
+                    telefonoNegocio.substring(1);
             }
 
-            if (telefonoNegocio.startsWith("11") && telefonoNegocio.length === 10) {
-                telefonoNegocio = "549" + telefonoNegocio;
+
+            if (
+                telefonoNegocio.startsWith("11") &&
+                telefonoNegocio.length === 10
+            ) {
+
+                telefonoNegocio =
+                    "549" +
+                    telefonoNegocio;
             }
 
 
@@ -719,6 +935,9 @@ document
 
             modal.style.display =
                 "none";
+
+            document.body.style.overflow =
+                "";
         }
     );
 
@@ -734,39 +953,45 @@ document
         () => {
 
             const body =
-                document.getElementById(
-                    "cart-body"
-                );
-
-
-            const icon =
-                document.getElementById(
-                    "chevron-icon"
-                );
-
+                document.getElementById("cart-body");
 
             const open =
                 body.style.display !== "none" &&
                 body.style.display !== "";
 
 
-            body.style.display =
-                open
-                    ? "none"
-                    : "block";
+            if (!open) {
 
-            document.getElementById("cart-toggle").innerHTML =
-                open
-                    ? 'Ver carrito <i data-lucide="chevron-up" id="chevron-icon"></i>'
-                    : 'Ocultar carrito <i data-lucide="chevron-down" id="chevron-icon"></i>';
+                body.style.display =
+                    "block";
+
+                document.body.style.overflow =
+                    "hidden";
+
+                document.getElementById("cart-overlay").style.display =
+                    "block";
+
+                document.getElementById("cart-toggle").innerHTML =
+                    'Ocultar carrito <i data-lucide="chevron-down" id="chevron-icon"></i>';
+
+                history.pushState(
+                    { cart: true },
+                    "",
+                    "#cart"
+                );
+
+            } else {
+
+                history.back();
+            }
+
 
             lucide.createIcons();
-
-
         }
     );
 
-    // ====================================
+
+// ====================================
 // MENÚ HAMBURGUESA
 // ====================================
 
@@ -820,8 +1045,10 @@ menuOverlay.addEventListener(
     closeMenu
 );
 
+
 const menuHome =
     document.getElementById("menu-home");
+
 
 menuHome.addEventListener(
     "click",
@@ -839,8 +1066,13 @@ menuHome.addEventListener(
     }
 );
 
+
 const menuCart =
     document.getElementById("menu-cart");
+
+const cartOverlay =
+    document.getElementById("cart-overlay");
+
 
 menuCart.addEventListener(
     "click",
@@ -849,6 +1081,7 @@ menuCart.addEventListener(
         e.preventDefault();
 
         closeMenu();
+
 
         const cartPanel =
             document.getElementById("cart-panel");
@@ -859,17 +1092,34 @@ menuCart.addEventListener(
         const cartToggle =
             document.getElementById("cart-toggle");
 
+
         if (
             cartBody.style.display === "none" ||
             cartBody.style.display === ""
         ) {
-            cartBody.style.display = "block";
+
+            cartBody.style.display =
+                "block";
+
+            cartOverlay.style.display =
+                "block";
+
+            document.body.style.overflow =
+                "hidden";
 
             cartToggle.innerHTML =
                 'Ocultar carrito <i data-lucide="chevron-down" id="chevron-icon"></i>';
+
+            history.pushState(
+                { cart: true },
+                "",
+                "#cart"
+            );
         }
 
+
         lucide.createIcons();
+
 
         cartPanel.scrollIntoView({
             behavior: "smooth",
@@ -879,8 +1129,10 @@ menuCart.addEventListener(
     }
 );
 
+
 const menuContact =
     document.getElementById("menu-contact");
+
 
 menuContact.addEventListener(
     "click",
@@ -890,34 +1142,53 @@ menuContact.addEventListener(
 
         closeMenu();
 
+
         if (!currentBusiness) {
             return;
         }
 
+
         let telefonoNegocio =
-            currentBusiness.whatsapp.replace(/\D/g, "");
+            currentBusiness.whatsapp
+                .replace(/\D/g, "");
+
 
         if (telefonoNegocio.startsWith("549")) {
+
             // Ya está en formato internacional
-        } else if (telefonoNegocio.startsWith("54")) {
+
+        } else if (
+            telefonoNegocio.startsWith("54")
+        ) {
+
             telefonoNegocio =
-                "549" + telefonoNegocio.substring(2);
-        } else if (telefonoNegocio.startsWith("0")) {
+                "549" +
+                telefonoNegocio.substring(2);
+
+        } else if (
+            telefonoNegocio.startsWith("0")
+        ) {
+
             telefonoNegocio =
                 telefonoNegocio.substring(1);
         }
+
 
         if (
             telefonoNegocio.startsWith("11") &&
             telefonoNegocio.length === 10
         ) {
+
             telefonoNegocio =
-                "549" + telefonoNegocio;
+                "549" +
+                telefonoNegocio;
         }
+
 
         if (!telefonoNegocio) {
             return;
         }
+
 
         window.open(
             `https://api.whatsapp.com/send/?phone=${telefonoNegocio}`,
@@ -927,4 +1198,9 @@ menuContact.addEventListener(
     }
 );
 
-loadData();
+
+setupAdminPreview(); 
+
+loadData().catch(error => { 
+    showPublicStoreUnavailable(); 
+});

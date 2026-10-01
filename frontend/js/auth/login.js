@@ -1,3 +1,5 @@
+import { API_URL } from "../api/api.js";
+
 const form = document.getElementById("login-form");
 const errorMessage = document.getElementById("login-error");
 
@@ -10,7 +12,7 @@ form.addEventListener("submit", async (event) => {
 
     try {
 
-        const response = await fetch("http://192.168.100.32:8080/auth/login", {
+        const response = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

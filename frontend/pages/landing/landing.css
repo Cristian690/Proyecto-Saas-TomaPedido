@@ -1,0 +1,531 @@
+:root {
+    --landing-red: #d72b2b;
+    --landing-red-dark: #b01e1e;
+    --landing-green: #25d366;
+    --landing-black: #111111;
+    --landing-white: #ffffff;
+    --landing-soft: #f5f5f5;
+    --landing-muted: #666666;
+    --landing-border: #e0e0e0;
+    --landing-radius: 12px;
+    --landing-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+    --landing-font: 'Poppins', sans-serif;
+    --landing-logo-width: 180px;
+    --landing-logo-width-footer: 132px;
+    --landing-benefit-icon-size: 58px;
+    --landing-benefit-icon-font-size: 1.85rem;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body.landing-page {
+    margin: 0;
+    min-width: 320px;
+    overflow-x: hidden;
+    background: var(--landing-white);
+    color: var(--landing-black);
+    font-family: var(--landing-font);
+}
+
+.landing-header,
+.landing-footer,
+.landing-hero,
+.landing-section,
+.landing-final-cta {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.landing-header {
+    min-height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.landing-brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.landing-header .landing-brand {
+    transform: translate(2px, 22px);
+}
+
+.landing-logo {
+    display: block;
+    width: var(--landing-logo-width);
+    height: auto;
+}
+
+.landing-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid var(--landing-border);
+    border-radius: 8px;
+    background: var(--landing-white);
+    color: var(--landing-black);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 40px;
+}
+
+.landing-client-login {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.landing-client-login > span {
+    color: var(--landing-muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.landing-login:hover,
+.landing-footer a:hover {
+    color: var(--landing-red);
+}
+
+.landing-login:hover {
+    border-color: var(--landing-red);
+    color: var(--landing-red);
+}
+
+.landing-hero {
+    display: grid;
+    gap: 34px;
+    padding-top: 46px;
+    padding-bottom: 56px;
+    background: linear-gradient(160deg, #ffffff 0%, #fff6f6 100%);
+}
+
+.landing-hero__content {
+    max-width: 620px;
+}
+
+.landing-eyebrow {
+    margin: 0 0 12px;
+    color: var(--landing-red);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.landing-hero h1,
+.landing-section h2,
+.landing-final-cta h2 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.13;
+}
+
+.landing-hero h1 {
+    font-size: clamp(2.05rem, 9vw, 4rem);
+}
+
+.landing-lead,
+.landing-final-cta > p:not(.landing-eyebrow) {
+    margin: 18px 0 0;
+    color: var(--landing-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.landing-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 50px;
+    margin-top: 27px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.96rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.landing-button:hover {
+    transform: translateY(-1px);
+}
+
+.landing-button--primary {
+    background: var(--landing-red);
+    color: var(--landing-white);
+    box-shadow: 0 7px 18px rgba(215, 43, 43, 0.22);
+}
+
+.landing-button--primary:hover {
+    background: var(--landing-red-dark);
+}
+
+.landing-pricing-note {
+    display: inline-block;
+    margin: 14px 0 0;
+    padding: 12px 16px;
+    border: 1px solid #f0d0d0;
+    border-radius: 10px;
+    background: #fff1f1;
+    color: var(--landing-black);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.landing-pricing-note strong {
+    font-weight: 800;
+}
+
+.landing-hero__visual {
+    display: flex;
+    justify-content: center;
+}
+
+.landing-phone {
+    width: min(76vw, 330px);
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.landing-phone img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+}
+
+.landing-section {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-top: 58px;
+    padding-bottom: 58px;
+}
+
+.landing-section__heading {
+    max-width: 550px;
+}
+
+.landing-section h2,
+.landing-final-cta h2 {
+    font-size: clamp(1.65rem, 6vw, 2.55rem);
+}
+
+.landing-benefits__grid {
+    display: grid;
+    gap: 13px;
+    margin-top: 30px;
+}
+
+.landing-benefit-card {
+    padding: 21px;
+    border: 1px solid var(--landing-border);
+    border-radius: var(--landing-radius);
+    background: var(--landing-white);
+    box-shadow: var(--landing-shadow);
+}
+
+.landing-benefit-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--landing-benefit-icon-size);
+    height: var(--landing-benefit-icon-size);
+    border-radius: 10px;
+    background: #fff1f1;
+    font-size: var(--landing-benefit-icon-font-size);
+}
+
+.landing-benefit-card__icon img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.landing-benefit-card h3,
+.landing-steps h3 {
+    margin: 15px 0 6px;
+    font-size: 1rem;
+}
+
+.landing-contact {
+    display: grid;
+    gap: 22px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 34px 20px;
+    border-radius: var(--landing-radius);
+    background: var(--landing-soft);
+}
+
+.landing-contact h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 5vw, 2.1rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+}
+
+.landing-contact > div > p:not(.landing-eyebrow) {
+    margin: 12px 0 0;
+    color: var(--landing-muted);
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.landing-button--whatsapp {
+    align-self: center;
+    margin: 0;
+    background: var(--landing-white);
+    border: 1px solid var(--landing-green);
+    color: #168b43;
+}
+
+.landing-button--whatsapp:hover {
+    background: #effcf4;
+}
+
+.landing-benefit-card p,
+.landing-steps p {
+    margin: 0;
+    color: var(--landing-muted);
+    font-size: 0.86rem;
+    line-height: 1.55;
+}
+
+.landing-steps {
+    border-top: 1px solid var(--landing-border);
+}
+
+.landing-steps__list {
+    display: grid;
+    gap: 17px;
+    margin: 30px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.landing-steps__list li {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.landing-steps__list li > span {
+    flex: 0 0 34px;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--landing-red);
+    color: var(--landing-white);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.landing-steps h3 {
+    margin: 2px 0 5px;
+}
+
+.landing-final-cta {
+    padding-top: 58px;
+    padding-bottom: 58px;
+    background: var(--landing-red);
+    color: var(--landing-white);
+    text-align: center;
+}
+
+.landing-final-cta .landing-eyebrow,
+.landing-final-cta > p:not(.landing-eyebrow) {
+    color: var(--landing-white);
+}
+
+.landing-final-cta > p:not(.landing-eyebrow) {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.landing-button--light {
+    background: var(--landing-white);
+    color: var(--landing-red);
+}
+
+.landing-button--light:hover {
+    background: #fff1f1;
+}
+
+.landing-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    align-items: center;
+    text-align: center;
+}
+
+.landing-footer > div:first-child {
+    text-align: center;
+}
+
+.landing-footer p,
+.landing-footer small {
+    display: block;
+    margin: 8px 0 0;
+    color: var(--landing-muted);
+    font-size: 0.78rem;
+}
+
+.landing-footer .landing-logo {
+    width: var(--landing-logo-width-footer);
+}
+
+.landing-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 22px;
+    align-items: center;
+    justify-content: center;
+}
+
+.landing-footer__links a {
+    color: var(--landing-black);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.landing-footer__links small {
+    margin: 0;
+}
+
+@media (max-width: 719px) {
+    .landing-client-login {
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        transform: translateY(15px);
+    }
+
+    .landing-client-login > span {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--landing-black);
+        text-align: center;
+    }
+
+    .landing-login {
+        margin-top: 0;
+    }
+
+    
+}
+
+@media (min-width: 720px) {
+
+    .landing-header,
+    .landing-footer,
+    .landing-hero,
+    .landing-section,
+    .landing-final-cta {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+    .landing-hero {
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 0.72fr);
+        align-items: center;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding-top: 40px;
+        padding-bottom: 20px;
+    }
+
+    
+    .landing-hero__visual {
+        justify-content: flex-end;
+    }
+
+    .landing-logo {
+        width: 300px;
+    }
+
+    .landing-login {
+        margin-top: 0;
+    }
+
+    .landing-header {
+        max-width: 1000px;
+    }
+
+
+    .landing-phone {
+        width: min(29vw, 335px);
+        height: 510px;
+    }
+
+    .landing-benefits__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .landing-steps__list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 50px;
+    }
+
+    .landing-contact {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        margin-bottom: 26px;
+        padding: 38px 40px;
+    }
+
+    .landing-footer {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+}
+
+
+
+@media (min-width: 1000px) {
+
+    .landing-benefits__grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .landing-section {
+        padding-top: 84px;
+        padding-bottom: 84px;
+    }
+
+    .landing-benefits {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+
+}

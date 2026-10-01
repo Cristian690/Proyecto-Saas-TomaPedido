@@ -7,6 +7,10 @@
 
     <title>TomaPedido - Crear cuenta</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="../../style.css">
 </head>
 
@@ -20,7 +24,7 @@
 
             <p>Creá tu página para recibir pedidos</p>
 
-            <form id="register-form">
+            <form id="register-form" autocomplete="off">
 
                 <div id="register-step-1">
 
@@ -33,9 +37,20 @@
                     <input
                         type="text"
                         id="register-business-name"
+                        autocomplete="off"
                         placeholder="Ej: Pizzería La Nonna"
                         required
                     >
+
+                    <label for="register-welcome-message">
+                        👋 Mensaje de bienvenida
+                    </label>
+
+                    <textarea
+                        id="register-welcome-message"
+                        placeholder="Ej: Hola, somos Pizzería El Manjar. ¡Hacé tu pedido!"
+                        
+                    ></textarea>
 
                     <p>
                         Paso 1 de 3
@@ -67,13 +82,13 @@
                         Paso 2 de 3
                     </p>
 
-                    <button type="button" id="register-back-2">
-                        Atrás
-                    </button>
-
                     <button type="button" id="register-next-2">
                         Continuar
                     </button>
+
+                    <button type="button" id="register-back-2">
+                        Atrás
+                    </button>                    
 
                 </div>
 
@@ -86,23 +101,18 @@
                         La vas a usar para entrar a tu panel de administración.
                     </p>
 
-                    <input
-                        type="password"
-                        id="register-password"
-                        placeholder="Elegí una contraseña"
-                        required
-                    >
+                    <div id="password-fields"></div>
 
                     <p>
                         Paso 3 de 3
                     </p>
 
-                    <button type="button" id="register-back-3">
-                        Atrás
-                    </button>
-
                     <button type="submit">
                         Crear mi página
+                    </button>
+
+                    <button type="button" id="register-back-3">
+                        Atrás
                     </button>
 
                 </div>

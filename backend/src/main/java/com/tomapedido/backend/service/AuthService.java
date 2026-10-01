@@ -1,5 +1,6 @@
 package com.tomapedido.backend.service;
 
+import java.time.LocalDateTime;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.tomapedido.backend.security.JwtService;
@@ -42,19 +43,27 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
+    public boolean phoneExists(String phone) {
+        return tenantRepository.findByPhone(phone).isPresent();
+    }
+
     public RegisterResponse register(RegisterRequest request) {
 
         if (tenantRepository.findByPhone(request.getPhone()).isPresent()) {
-            throw new IllegalArgumentException("El número de teléfono ya está registrado");
+            throw new IllegalArgumentException("El número ya está en uso");
         }
 
         String slug = generateUniqueSlug(request.getBusinessName());
+
+        LocalDateTime trialStartedAt = LocalDateTime.now();
 
         Tenant tenant = Tenant.builder()
                 .businessName(request.getBusinessName())
                 .slug(slug)
                 .email(request.getEmail())
                 .phone(request.getPhone())
+                .trialStartedAt(trialStartedAt)
+                .trialEndsAt(trialStartedAt.plusDays(14))
                 .active(true)
                 .build();
 
@@ -79,7 +88,7 @@ public class AuthService {
         config.setBackgroundColor("#ffffff");
         config.setWelcomeMessage("");
         config.setAddress("");
-        config.setOpen(false);
+        config.setOpen(true);
         config.setTenant(tenant);
         
         tenantConfigRepository.save(config);
@@ -120,7 +129,8 @@ public class AuthService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Teléfono o contraseña incorrectos"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!Boolean.TRUE.equals(user.getTenant().getActive())
+                || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Teléfono o contraseña incorrectos");
         }
 

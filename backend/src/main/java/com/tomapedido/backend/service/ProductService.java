@@ -23,6 +23,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SecurityUtils securityUtils;
+    private final TenantStatusService tenantStatusService;
 
     private ProductResponse toResponse(Product product) {
 
@@ -42,6 +43,7 @@ public class ProductService {
     public ProductResponse createProduct(CreateProductRequest request) {
 
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
+        tenantStatusService.requireAdministrationAllowed(tenant);
 
         Category category = categoryRepository
                 .findByNameAndTenant(request.getCategoryName(), tenant)
@@ -75,6 +77,8 @@ public class ProductService {
     public ProductResponse getProductById(Long id) {
 
         Long tenantId = securityUtils.getAuthenticatedTenantId();
+        tenantStatusService.requireAdministrationAllowed(
+                securityUtils.getAuthenticatedUser().getTenant());
 
         Product product = productRepository.findById(id)
                 .orElseThrow();
@@ -90,6 +94,7 @@ public class ProductService {
     public List<ProductResponse> getAllProducts() {
 
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
+        tenantStatusService.requireAdministrationAllowed(tenant);
 
         List<Product> products = productRepository.findByTenant(tenant);
 
@@ -107,6 +112,8 @@ public class ProductService {
             CreateProductRequest request) {
 
         Long tenantId = securityUtils.getAuthenticatedTenantId();
+        tenantStatusService.requireAdministrationAllowed(
+                securityUtils.getAuthenticatedUser().getTenant());
 
         Product product = productRepository.findById(id)
                 .orElseThrow();
@@ -144,6 +151,8 @@ public class ProductService {
     public void deleteProduct(Long id) {
 
         Long tenantId = securityUtils.getAuthenticatedTenantId();
+        tenantStatusService.requireAdministrationAllowed(
+                securityUtils.getAuthenticatedUser().getTenant());
 
         Product product = productRepository.findById(id)
                 .orElseThrow();
@@ -161,6 +170,8 @@ public class ProductService {
     public void activateProduct(Long id) {
 
         Long tenantId = securityUtils.getAuthenticatedTenantId();
+        tenantStatusService.requireAdministrationAllowed(
+                securityUtils.getAuthenticatedUser().getTenant());
 
         Product product = productRepository.findById(id)
                 .orElseThrow();
