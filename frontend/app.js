@@ -48,7 +48,22 @@ function setupAdminPreview() {
     }
 
     document.body.classList.add("admin-preview");
-    document.getElementById("nav-admin-panel").hidden = false;
+
+    const adminPanelLink =
+        document.getElementById("nav-admin-panel");
+
+    adminPanelLink.hidden = false;
+
+    adminPanelLink.addEventListener("click", event => {
+
+        if (!window.opener) {
+            return;
+        }
+
+        event.preventDefault();
+        window.opener.focus();
+        window.close();
+    });
 }
 
 
