@@ -10,24 +10,25 @@ export function getCategories() {
 
 export function renderTabs() {
     const tabsContainer = document.getElementById("tabs-container");
+    const fragment = document.createDocumentFragment();
 
-    tabsContainer.innerHTML = `
-        <button
-            class="tab tab--active"
-            data-cat="all"
-        >
-            Todas
-        </button>
+    const allTab = document.createElement("button");
+    allTab.className = "tab tab--active";
+    allTab.dataset.cat = "all";
+    allTab.type = "button";
+    allTab.textContent = "Todas";
+    fragment.appendChild(allTab);
 
-        ${categories.map(category => `
-            <button
-                class="tab"
-                data-cat="${category.id}"
-            >
-                ${category.nombre}
-            </button>
-        `).join("")}
-    `;
+    categories.forEach(category => {
+        const tab = document.createElement("button");
+        tab.className = "tab";
+        tab.dataset.cat = String(category.id);
+        tab.type = "button";
+        tab.textContent = category.nombre;
+        fragment.appendChild(tab);
+    });
+
+    tabsContainer.replaceChildren(fragment);
 }
 
 export function initTabs(onCategorySelected) {

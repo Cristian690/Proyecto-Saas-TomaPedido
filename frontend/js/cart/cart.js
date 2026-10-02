@@ -1,5 +1,21 @@
 let cart = {};
 
+function setSafeImageSource(image, imageUrl) {
+    if (!imageUrl) {
+        return;
+    }
+
+    try {
+        const url = new URL(imageUrl, window.location.origin);
+
+        if (url.protocol === "http:" || url.protocol === "https:") {
+            image.src = url.href;
+        }
+    } catch {
+        // Una URL inválida no debe convertirse en contenido ejecutable.
+    }
+}
+
 export function addToCart(id, products) {
     const product = products.find(p => p.id == id);
 
@@ -57,41 +73,70 @@ export function renderCart() {
     badge.style.display = totalQty > 0 ? "inline-flex" : "none";
 
     if (items.length === 0) {
-        cartItemsEl.innerHTML =
-            '<p class="cart-empty">Tu carrito está vacío 🛒</p>';
+        const emptyCart = document.createElement("p");
+        emptyCart.className = "cart-empty";
+        emptyCart.textContent = "Tu carrito está vacío 🛒";
+        cartItemsEl.replaceChildren(emptyCart);
     } else {
-        cartItemsEl.innerHTML = items.map(([id, item]) => `
-            <div class="cart-item">
-                <img
-                    src="${item.img}"
-                    alt="${item.name}"
-                    class="cart-item-img"
-                />
+        const fragment = document.createDocumentFragment();
 
-                <div class="cart-item-info">
-                    <span class="cart-item-name">${item.name}</span>
+        items.forEach(([id, item]) => {
+            const cartItem = document.createElement("div");
+            cartItem.className = "cart-item";
 
-                    <span class="cart-item-price">
-                        $${item.price.toLocaleString("es-AR")}
-                    </span>
-                </div>
+            const image = document.createElement("img");
+            image.className = "cart-item-img";
+            image.alt = item.name || "";
+            setSafeImageSource(image, item.img);
 
-                <div class="cart-item-controls">
-                    <button onclick="changeQty('${id}', -1)">−</button>
+            const info = document.createElement("div");
+            info.className = "cart-item-info";
 
-                    <span>${item.qty}</span>
+            const name = document.createElement("span");
+            name.className = "cart-item-name";
+            name.textContent = item.name;
 
-                    <button onclick="changeQty('${id}', 1)">+</button>
+            const price = document.createElement("span");
+            price.className = "cart-item-price";
+            price.textContent = `$${item.price.toLocaleString("es-AR")}`;
+            info.append(name, price);
 
-                    <button
-                        class="cart-item-delete"
-                        onclick="removeItem('${id}')"
-                    >
-                        <i data-lucide="trash-2"></i>
-                    </button>
-                </div>
-            </div>
-        `).join("");
+            const controls = document.createElement("div");
+            controls.className = "cart-item-controls";
+
+            const decreaseButton = document.createElement("button");
+            decreaseButton.type = "button";
+            decreaseButton.textContent = "−";
+            decreaseButton.addEventListener("click", () => changeQty(id, -1));
+
+            const quantity = document.createElement("span");
+            quantity.textContent = item.qty;
+
+            const increaseButton = document.createElement("button");
+            increaseButton.type = "button";
+            increaseButton.textContent = "+";
+            increaseButton.addEventListener("click", () => changeQty(id, 1));
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.className = "cart-item-delete";
+            deleteButton.addEventListener("click", () => removeItem(id));
+
+            const deleteIcon = document.createElement("i");
+            deleteIcon.setAttribute("data-lucide", "trash-2");
+            deleteButton.appendChild(deleteIcon);
+
+            controls.append(
+                decreaseButton,
+                quantity,
+                increaseButton,
+                deleteButton
+            );
+            cartItem.append(image, info, controls);
+            fragment.appendChild(cartItem);
+        });
+
+        cartItemsEl.replaceChildren(fragment);
     }
 
     totalEl.textContent =
