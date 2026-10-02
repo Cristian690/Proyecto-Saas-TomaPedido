@@ -24,7 +24,7 @@ public class Product {
     @Column(nullable = false, length = 100)
     private String description;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
     @Column(length = 200)
@@ -33,13 +33,15 @@ public class Product {
     @Column(nullable = false, length = 100)
     private int stock;
 
-    @Column
+    @Column(nullable = false)
     @Builder.Default
     private boolean active = true;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Category category;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Tenant tenant;
 }

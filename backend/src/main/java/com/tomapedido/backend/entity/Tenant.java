@@ -26,7 +26,7 @@ public class Tenant {
     @Column(unique = true, length = 150)
     private String email;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, unique = true, length = 20)
     private String phone;
 
     @Column(nullable = false)
@@ -36,7 +36,7 @@ public class Tenant {
     private LocalDateTime trialEndsAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(nullable = false, length = 20)
     @Builder.Default
     private TenantStatus status = TenantStatus.TRIAL;
 
