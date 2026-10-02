@@ -40,6 +40,10 @@ public class TenantStatusService {
     }
 
     public boolean isPublicStoreAvailable(Tenant tenant) {
+        if (!Boolean.TRUE.equals(tenant.getActive())) {
+            return false;
+        }
+
         TenantStatus status = getCurrentStatus(tenant);
 
         return status == TenantStatus.TRIAL || status == TenantStatus.ACTIVE;
