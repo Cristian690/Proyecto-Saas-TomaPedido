@@ -3,10 +3,12 @@ package com.tomapedido.backend.entity;
 import java.math.BigDecimal;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Check;
 import lombok.*;
 
 @Entity
 @Table(name="products")
+@Check(constraints = "price > 0 AND stock >= 0")
 @Getter
 @Setter
 @NoArgsConstructor
