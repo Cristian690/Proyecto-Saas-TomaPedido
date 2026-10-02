@@ -3,6 +3,7 @@ package com.tomapedido.backend.service;
 import java.time.LocalDateTime;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.tomapedido.backend.security.JwtService;
 
 import com.tomapedido.backend.dto.RegisterRequest;
@@ -47,6 +48,7 @@ public class AuthService {
         return tenantRepository.findByPhone(phone).isPresent();
     }
 
+    @Transactional
     public RegisterResponse register(RegisterRequest request) {
 
         if (tenantRepository.findByPhone(request.getPhone()).isPresent()) {
