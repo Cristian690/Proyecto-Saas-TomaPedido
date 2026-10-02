@@ -7,7 +7,7 @@
   <title>OrdenFlash</title>
   
   
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=4" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Lucide icons via CDN -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -203,6 +203,8 @@
           <p id="cash-error" style="display: none; color: #d32f2f; margin-top: 6px;"></p>
         </div>
 
+        <p id="checkout-validation-error" class="checkout-validation-error" role="alert" hidden></p>
+
         <div class="modal-actions">
           <button type="button" class="btn-modal-cancel" id="btn-close-modal">Cancelar</button>
           <button type="submit" class="btn-wa btn-wa--green" style="margin-top:0;">Confirmar y Enviar</button>
@@ -229,7 +231,7 @@
 
   </div>
 
-  <script type="module" src="app.js?v=1.2"></script>
+  <script type="module" src="app.js?v=1.3"></script>
 
 </body>
 </html>

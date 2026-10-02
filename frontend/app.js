@@ -380,6 +380,17 @@ const modal =
         "checkout-modal"
     );
 
+const checkoutValidationError =
+    document.getElementById(
+        "checkout-validation-error"
+    );
+
+function showCheckoutValidationError(message) {
+
+    checkoutValidationError.textContent = message;
+    checkoutValidationError.hidden = false;
+}
+
 
 // ====================================
 // BOTÓN WHATSAPP
@@ -706,15 +717,107 @@ document
     .getElementById("form-checkout")
     .addEventListener(
         "submit",
-        (e) => {
+        async (e) => {
 
             e.preventDefault();
+            checkoutValidationError.hidden = true;
 
 
             if (!currentBusiness) {
 
                 alert(
                     "No se pudo cargar la información del negocio."
+                );
+
+                return;
+            }
+
+            try {
+
+                const businessActual =
+                    await getBusiness(slug);
+
+                if (!businessActual.open) {
+
+                    modal.style.display = "none";
+                    document.body.style.overflow = "";
+
+                    document.getElementById(
+                        "closed-business-modal"
+                    ).style.display = "flex";
+
+                    return;
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Error comprobando estado del negocio:",
+                    error
+                );
+
+                return;
+            }
+
+            try {
+
+                const productosActuales =
+                    await getProducts(slug);
+
+                const productosPorId =
+                    new Map(
+                        productosActuales.map(
+                            product => [
+                                String(product.id),
+                                product
+                            ]
+                        )
+                    );
+
+                const inconsistencias = [];
+
+                Object.entries(getCart()).forEach(
+                    ([productId, item]) => {
+
+                        const productoActual =
+                            productosPorId.get(productId);
+
+                        if (!productoActual) {
+                            inconsistencias.push(
+                                `${item.name} ya no está disponible.`
+                            );
+
+                            return;
+                        }
+
+                        if (
+                            Number(productoActual.price) !==
+                            Number(item.price)
+                        ) {
+                            inconsistencias.push(
+                                `${item.name} cambió de $${Number(item.price).toLocaleString("es-AR")} a $${Number(productoActual.price).toLocaleString("es-AR")}.`
+                            );
+                        }
+                    }
+                );
+
+                if (inconsistencias.length > 0) {
+                    showCheckoutValidationError(
+                        `Revisá tu pedido:\n${inconsistencias.join("\n")}`
+                    );
+
+                    return;
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Error verificando productos del pedido:",
+                    error
+                );
+
+                showCheckoutValidationError(
+                    "No se pudo verificar tu pedido. Intentá nuevamente."
                 );
 
                 return;
