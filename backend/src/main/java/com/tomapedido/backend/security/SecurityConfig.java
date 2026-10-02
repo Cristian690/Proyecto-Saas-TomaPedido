@@ -40,6 +40,16 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/business/**")
                     .permitAll()
+                    .requestMatchers("/products/**", "/categories/**", "/tenant/trial")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/business")
+                    .hasRole("ADMIN")
+                    .requestMatchers(
+                        HttpMethod.PATCH,
+                        "/business/status",
+                        "/business/customization"
+                    )
+                    .hasRole("ADMIN")
                     .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
