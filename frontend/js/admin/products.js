@@ -5,7 +5,7 @@ import { defaultImages } from "../default-images/default-images.js";
 const token = localStorage.getItem("token");
 
 console.log("🔥 PRODUCTS.JS CARGADO", new Date().toISOString());
-console.log("🔥 TOKEN AL ENTRAR:", token);
+
 
 if (!token) {
     window.location.href = "../login/login.html";
