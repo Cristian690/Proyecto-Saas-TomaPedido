@@ -2,6 +2,7 @@ package com.tomapedido.backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,6 +41,14 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/business/**")
                     .permitAll()
                     .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                    .authenticationEntryPoint((request, response, exception) ->
+                        response.sendError(HttpStatus.UNAUTHORIZED.value())
+                    )
+                    .accessDeniedHandler((request, response, exception) ->
+                        response.sendError(HttpStatus.FORBIDDEN.value())
+                    )
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,
