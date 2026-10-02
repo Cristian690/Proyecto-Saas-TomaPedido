@@ -11,6 +11,7 @@ import com.tomapedido.backend.repository.TenantRepository;
 import com.tomapedido.backend.security.SecurityUtils;
 import com.tomapedido.backend.dto.BusinessStatusRequest;
 import com.tomapedido.backend.dto.BusinessCustomizationRequest;
+import com.tomapedido.backend.dto.BusinessConfigRequest;
 import com.tomapedido.backend.dto.PublicTenantConfigResponse;
 
 @Service
@@ -65,7 +66,7 @@ public class TenantConfigService {
                 config.isOpen());
     }
 
-    public TenantConfig saveTenantConfig(TenantConfig tenantConfig) {
+    public TenantConfig saveTenantConfig(BusinessConfigRequest request) {
 
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
         tenantStatusService.requireAdministrationAllowed(tenant);
@@ -73,19 +74,30 @@ public class TenantConfigService {
         return tenantConfigRepository.findByTenant(tenant)
                 .map(existingTenantConfig -> {
 
-                    existingTenantConfig.setName(tenantConfig.getName());
-                    existingTenantConfig.setWhatsapp(tenantConfig.getWhatsapp());
-                    existingTenantConfig.setLogoUrl(tenantConfig.getLogoUrl());
-                    existingTenantConfig.setCoverUrl(tenantConfig.getCoverUrl());
-                    existingTenantConfig.setPrimaryColor(tenantConfig.getPrimaryColor());
-                    existingTenantConfig.setBackgroundColor(tenantConfig.getBackgroundColor());
-                    existingTenantConfig.setWelcomeMessage(tenantConfig.getWelcomeMessage());
-                    existingTenantConfig.setAddress(tenantConfig.getAddress());                    
+                    existingTenantConfig.setName(request.getName());
+                    existingTenantConfig.setWhatsapp(request.getWhatsapp());
+                    existingTenantConfig.setLogoUrl(request.getLogoUrl());
+                    existingTenantConfig.setCoverUrl(request.getCoverUrl());
+                    existingTenantConfig.setPrimaryColor(request.getPrimaryColor());
+                    existingTenantConfig.setBackgroundColor(request.getBackgroundColor());
+                    existingTenantConfig.setWelcomeMessage(request.getWelcomeMessage());
+                    existingTenantConfig.setAddress(request.getAddress());
 
                     return tenantConfigRepository.save(existingTenantConfig);
                 })
                 .orElseGet(() -> {
 
+                    TenantConfig tenantConfig = new TenantConfig();
+
+                    tenantConfig.setName(request.getName());
+                    tenantConfig.setWhatsapp(request.getWhatsapp());
+                    tenantConfig.setLogoUrl(request.getLogoUrl());
+                    tenantConfig.setCoverUrl(request.getCoverUrl());
+                    tenantConfig.setPrimaryColor(request.getPrimaryColor());
+                    tenantConfig.setBackgroundColor(request.getBackgroundColor());
+                    tenantConfig.setWelcomeMessage(request.getWelcomeMessage());
+                    tenantConfig.setAddress(request.getAddress());
+                    tenantConfig.setOpen(request.isOpen());
                     tenantConfig.setTenant(tenant);
 
                     return tenantConfigRepository.save(tenantConfig);
@@ -102,7 +114,7 @@ public class TenantConfigService {
                         new IllegalArgumentException(
                                 "El comercio todavía no tiene configuración"));
 
-        config.setOpen(request.isOpen());
+        config.setOpen(request.getOpen());
 
         return tenantConfigRepository.save(config);
     }

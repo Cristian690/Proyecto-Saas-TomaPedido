@@ -6,8 +6,10 @@ import com.tomapedido.backend.entity.TenantConfig;
 import com.tomapedido.backend.service.TenantConfigService;
 import com.tomapedido.backend.dto.BusinessCustomizationRequest;
 import com.tomapedido.backend.dto.BusinessStatusRequest;
+import com.tomapedido.backend.dto.BusinessConfigRequest;
 import com.tomapedido.backend.dto.PublicTenantConfigResponse;
-//import com.tomapedido.backend.dto.BusinessCustomizationRequest;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/business")
@@ -20,8 +22,9 @@ public class TenantConfigController {
     }
 
     @PostMapping
-    public TenantConfig saveTenantConfig(@RequestBody TenantConfig tenantConfig) {
-        return tenantConfigService.saveTenantConfig(tenantConfig);
+    public TenantConfig saveTenantConfig(
+            @Valid @RequestBody BusinessConfigRequest request) {
+        return tenantConfigService.saveTenantConfig(request);
     }
 
     @GetMapping("/{slug}")
@@ -31,14 +34,14 @@ public class TenantConfigController {
 
     @PatchMapping("/status")
     public TenantConfig updateBusinessStatus(
-            @RequestBody BusinessStatusRequest request) {
+            @Valid @RequestBody BusinessStatusRequest request) {
 
         return tenantConfigService.updateBusinessStatus(request);
     }
 
     @PatchMapping("/customization")
     public TenantConfig updateCustomization(
-            @RequestBody BusinessCustomizationRequest request) {
+            @Valid @RequestBody BusinessCustomizationRequest request) {
 
         return tenantConfigService.updateCustomization(request);
     }

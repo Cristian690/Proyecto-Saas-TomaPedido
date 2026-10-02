@@ -1,5 +1,6 @@
 package com.tomapedido.backend.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,5 +8,6 @@ import lombok.Setter;
 @Setter
 public class BusinessStatusRequest {
 
-    private boolean open;
+    @NotNull(message = "El estado de apertura es obligatorio")
+    private Boolean open;
 }

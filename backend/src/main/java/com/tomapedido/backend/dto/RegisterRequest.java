@@ -1,5 +1,6 @@
 package com.tomapedido.backend.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -18,8 +19,10 @@ public class RegisterRequest {
     private String phone;
 
     @NotBlank(message = "La contraseña es obligatoria")
-    @Size(max = 72, message = "La contraseña no puede superar los 72 caracteres")
+    @Size(min = 8, max = 72, message = "La contraseña debe tener entre 8 y 72 caracteres")
     private String password;
 
+    @Email(message = "El email debe tener un formato válido")
+    @Size(max = 150, message = "El email no puede superar los 150 caracteres")
     private String email;
 }
