@@ -12,6 +12,7 @@ import com.tomapedido.backend.security.SecurityUtils;
 import com.tomapedido.backend.dto.BusinessStatusRequest;
 import com.tomapedido.backend.dto.BusinessCustomizationRequest;
 import com.tomapedido.backend.dto.BusinessConfigRequest;
+import com.tomapedido.backend.dto.BusinessConfigResponse;
 import com.tomapedido.backend.dto.PublicTenantConfigResponse;
 
 @Service
@@ -66,12 +67,26 @@ public class TenantConfigService {
                 config.isOpen());
     }
 
-    public TenantConfig saveTenantConfig(BusinessConfigRequest request) {
+    private BusinessConfigResponse toBusinessConfigResponse(TenantConfig config) {
+        return new BusinessConfigResponse(
+                config.getId(),
+                config.getName(),
+                config.getWhatsapp(),
+                config.getLogoUrl(),
+                config.getCoverUrl(),
+                config.getPrimaryColor(),
+                config.getBackgroundColor(),
+                config.getWelcomeMessage(),
+                config.getAddress(),
+                config.isOpen());
+    }
+
+    public BusinessConfigResponse saveTenantConfig(BusinessConfigRequest request) {
 
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
         tenantStatusService.requireAdministrationAllowed(tenant);
 
-        return tenantConfigRepository.findByTenant(tenant)
+        TenantConfig savedConfig = tenantConfigRepository.findByTenant(tenant)
                 .map(existingTenantConfig -> {
 
                     existingTenantConfig.setName(request.getName());
@@ -102,9 +117,11 @@ public class TenantConfigService {
 
                     return tenantConfigRepository.save(tenantConfig);
                 });
+
+        return toBusinessConfigResponse(savedConfig);
     }
 
-    public TenantConfig updateBusinessStatus(BusinessStatusRequest request) {
+    public BusinessConfigResponse updateBusinessStatus(BusinessStatusRequest request) {
 
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
         tenantStatusService.requireAdministrationAllowed(tenant);
@@ -116,10 +133,10 @@ public class TenantConfigService {
 
         config.setOpen(request.getOpen());
 
-        return tenantConfigRepository.save(config);
+        return toBusinessConfigResponse(tenantConfigRepository.save(config));
     }
 
-    public TenantConfig updateCustomization(
+    public BusinessConfigResponse updateCustomization(
             BusinessCustomizationRequest request) {
 
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
@@ -150,6 +167,6 @@ public class TenantConfigService {
             config.setWelcomeMessage(request.getWelcomeMessage());
         }
 
-        return tenantConfigRepository.save(config);
+        return toBusinessConfigResponse(tenantConfigRepository.save(config));
     }
 }

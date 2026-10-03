@@ -2,11 +2,11 @@ package com.tomapedido.backend.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.tomapedido.backend.entity.TenantConfig;
 import com.tomapedido.backend.service.TenantConfigService;
 import com.tomapedido.backend.dto.BusinessCustomizationRequest;
 import com.tomapedido.backend.dto.BusinessStatusRequest;
 import com.tomapedido.backend.dto.BusinessConfigRequest;
+import com.tomapedido.backend.dto.BusinessConfigResponse;
 import com.tomapedido.backend.dto.PublicTenantConfigResponse;
 
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ public class TenantConfigController {
     }
 
     @PostMapping
-    public TenantConfig saveTenantConfig(
+    public BusinessConfigResponse saveTenantConfig(
             @Valid @RequestBody BusinessConfigRequest request) {
         return tenantConfigService.saveTenantConfig(request);
     }
@@ -33,14 +33,14 @@ public class TenantConfigController {
     }
 
     @PatchMapping("/status")
-    public TenantConfig updateBusinessStatus(
+    public BusinessConfigResponse updateBusinessStatus(
             @Valid @RequestBody BusinessStatusRequest request) {
 
         return tenantConfigService.updateBusinessStatus(request);
     }
 
     @PatchMapping("/customization")
-    public TenantConfig updateCustomization(
+    public BusinessConfigResponse updateCustomization(
             @Valid @RequestBody BusinessCustomizationRequest request) {
 
         return tenantConfigService.updateCustomization(request);
