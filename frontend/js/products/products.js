@@ -4,19 +4,43 @@ export function setProducts(data) {
     products = data;
 }
 
-function setSafeImageSource(image, imageUrl) {
+function createImagePlaceholder(className, alt) {
+    const placeholder = document.createElement("div");
+
+    placeholder.className = `${className} product-image-placeholder`;
+    placeholder.setAttribute("role", "img");
+    placeholder.setAttribute(
+        "aria-label",
+        alt ? `Imagen no disponible de ${alt}` : "Imagen no disponible"
+    );
+
+    return placeholder;
+}
+
+export function createProductImage(imageUrl, alt, className) {
     if (!imageUrl) {
-        return;
+        return createImagePlaceholder(className, alt);
     }
 
     try {
         const url = new URL(imageUrl, window.location.origin);
 
-        if (url.protocol === "http:" || url.protocol === "https:") {
-            image.src = url.href;
+        if (url.protocol !== "http:" && url.protocol !== "https:") {
+            return createImagePlaceholder(className, alt);
         }
+
+        const image = document.createElement("img");
+        image.className = className;
+        image.alt = alt;
+        image.addEventListener("error", () => {
+            image.replaceWith(createImagePlaceholder(className, alt));
+        }, { once: true });
+        image.src = url.href;
+
+        return image;
     } catch {
         // Una URL inválida no debe convertirse en contenido ejecutable.
+        return createImagePlaceholder(className, alt);
     }
 }
 
@@ -44,10 +68,11 @@ export function renderProducts(categories, onAddToCart) {
             const mainRow = document.createElement("div");
             mainRow.className = "product-main-row";
 
-            const image = document.createElement("img");
-            image.className = "product-img";
-            image.alt = product.nombre || "";
-            setSafeImageSource(image, product.imagen);
+            const image = createProductImage(
+                product.imagen,
+                product.nombre || "",
+                "product-img"
+            );
 
             const info = document.createElement("div");
             info.className = "product-info";

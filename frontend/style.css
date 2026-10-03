@@ -419,6 +419,19 @@ body {
   flex-shrink: 0;
 }
 
+.product-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-light);
+  color: var(--gray-text);
+}
+
+.product-image-placeholder::before {
+  content: "🖼";
+  font-size: 1.25rem;
+}
+
 .product-info {
   flex: 1;
   min-width: 0;

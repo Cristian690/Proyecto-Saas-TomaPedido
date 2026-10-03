@@ -1,20 +1,6 @@
+import { createProductImage } from "../products/products.js?v=1.0";
+
 let cart = {};
-
-function setSafeImageSource(image, imageUrl) {
-    if (!imageUrl) {
-        return;
-    }
-
-    try {
-        const url = new URL(imageUrl, window.location.origin);
-
-        if (url.protocol === "http:" || url.protocol === "https:") {
-            image.src = url.href;
-        }
-    } catch {
-        // Una URL inválida no debe convertirse en contenido ejecutable.
-    }
-}
 
 export function addToCart(id, products) {
     const product = products.find(p => p.id == id);
@@ -84,10 +70,11 @@ export function renderCart() {
             const cartItem = document.createElement("div");
             cartItem.className = "cart-item";
 
-            const image = document.createElement("img");
-            image.className = "cart-item-img";
-            image.alt = item.name || "";
-            setSafeImageSource(image, item.img);
+            const image = createProductImage(
+                item.img,
+                item.name || "",
+                "cart-item-img"
+            );
 
             const info = document.createElement("div");
             info.className = "cart-item-info";

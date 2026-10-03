@@ -23,7 +23,7 @@ import {
     removeItem,
     renderCart,
     getCart
-} from "./js/cart/cart.js?v=1.0";
+} from "./js/cart/cart.js?v=1.1";
 
 
 lucide.createIcons();
