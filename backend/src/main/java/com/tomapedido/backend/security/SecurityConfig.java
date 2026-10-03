@@ -38,10 +38,6 @@ public class SecurityConfig {
                         "/public/**"
                     )
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/business/**")
-                    .permitAll()
-                    .requestMatchers("/products/**", "/categories/**", "/tenant/trial")
-                    .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.POST, "/business")
                     .hasRole("ADMIN")
                     .requestMatchers(
@@ -49,6 +45,10 @@ public class SecurityConfig {
                         "/business/status",
                         "/business/customization"
                     )
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/business/*")
+                    .permitAll()
+                    .requestMatchers("/products/**", "/categories/**", "/tenant/trial")
                     .hasRole("ADMIN")
                     .anyRequest().authenticated()
                 )
