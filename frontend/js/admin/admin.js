@@ -1,4 +1,5 @@
 import { API_URL } from "../api/api.js";
+import { getOptimizedCloudinaryUrl } from "../images/cloudinary.js?v=1.0";
 
 const CLOUDINARY_URL =
     "https://api.cloudinary.com/v1_1/y2zsd3jg/image/upload";
@@ -231,7 +232,10 @@ document
 
                 document.getElementById(
                     "business-logo-preview"
-                ).src = business.logo;
+                ).src = getOptimizedCloudinaryUrl(
+                    business.logo,
+                    "f_auto,q_auto,w_300,c_fit"
+                );
 
                 document.getElementById(
                     "business-logo-preview"
@@ -248,7 +252,10 @@ document
 
                 document.getElementById(
                     "business-cover-preview"
-                ).src = business.cover;
+                ).src = getOptimizedCloudinaryUrl(
+                    business.cover,
+                    "f_auto,q_auto,w_1200,c_fill"
+                );
 
                 document.getElementById(
                     "business-cover-preview"
@@ -473,7 +480,10 @@ fetch(
         if (business.logo) {
 
             logoPreview.src =
-                business.logo;
+                getOptimizedCloudinaryUrl(
+                    business.logo,
+                    "f_auto,q_auto,w_300,c_fit"
+                );
 
             logoPreview.style.display =
                 "block";
@@ -483,7 +493,10 @@ fetch(
         if (business.cover) {
 
             coverPreview.src =
-                business.cover;
+                getOptimizedCloudinaryUrl(
+                    business.cover,
+                    "f_auto,q_auto,w_1200,c_fill"
+                );
 
             coverPreview.style.display =
                 "block";

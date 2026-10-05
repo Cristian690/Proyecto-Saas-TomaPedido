@@ -1,4 +1,5 @@
 import { API_URL } from "../api/api.js";
+import { getOptimizedCloudinaryUrl } from "../images/cloudinary.js?v=1.0";
 
 const token = localStorage.getItem("token");
 const businessSlug = localStorage.getItem("businessSlug");
@@ -69,7 +70,10 @@ async function loadBusiness() {
                 business.logoUrl;
 
             logoPreview.src =
-                business.logoUrl;
+                getOptimizedCloudinaryUrl(
+                    business.logoUrl,
+                    "f_auto,q_auto,w_300,c_fit"
+                );
 
             logoPreview.style.display =
                 "block";
@@ -91,7 +95,10 @@ async function loadBusiness() {
                 business.coverUrl;
 
             coverPreview.src =
-                business.coverUrl;
+                getOptimizedCloudinaryUrl(
+                    business.coverUrl,
+                    "f_auto,q_auto,w_1200,c_fill"
+                );
 
             coverPreview.style.display =
                 "block";

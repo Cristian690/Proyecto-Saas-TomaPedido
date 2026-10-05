@@ -4,6 +4,8 @@ import {
     getProducts
 } from "./js/api/api.js?v=1.0";
 
+import { getOptimizedCloudinaryUrl } from "./js/images/cloudinary.js?v=1.0";
+
 import {
     setCategories,
     getCategories,
@@ -15,7 +17,7 @@ import {
     setProducts,
     renderProducts,
     products
-} from "./js/products/products.js?v=1.1";
+} from "./js/products/products.js?v=1.2";
 
 import {
     addToCart,
@@ -23,7 +25,7 @@ import {
     removeItem,
     renderCart,
     getCart
-} from "./js/cart/cart.js?v=1.2";
+} from "./js/cart/cart.js?v=1.3";
 
 
 lucide.createIcons();
@@ -175,7 +177,10 @@ async function loadData() {
     if (business.coverUrl) {
 
         heroElement.style.backgroundImage =
-            `url("${business.coverUrl}")`;
+            `url("${getOptimizedCloudinaryUrl(
+                business.coverUrl,
+                "f_auto,q_auto,w_1200,c_fill"
+            )}")`;
 
         heroElement.style.backgroundSize =
             "cover";
@@ -194,7 +199,10 @@ async function loadData() {
     if (business.logoUrl) {
 
         heroBusinessLogoElement.src =
-            business.logoUrl;
+            getOptimizedCloudinaryUrl(
+                business.logoUrl,
+                "f_auto,q_auto,w_300,c_fit"
+            );
 
         heroBusinessLogoElement.style.display =
             "block";

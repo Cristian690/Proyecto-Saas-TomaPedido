@@ -1,4 +1,5 @@
 import { API_URL } from "../api/api.js";
+import { getOptimizedCloudinaryUrl } from "../images/cloudinary.js?v=1.0";
 
 const businessSlug = localStorage.getItem("businessSlug");
 
@@ -48,7 +49,10 @@ async function loadBusiness() {
         if (business.logoUrl) {
 
             finishedLogo.src =
-                business.logoUrl;
+                getOptimizedCloudinaryUrl(
+                    business.logoUrl,
+                    "f_auto,q_auto,w_300,c_fit"
+                );
 
             finishedLogo.style.display =
                 "block";

@@ -1,4 +1,4 @@
-import { createProductImage } from "../products/products.js?v=1.1";
+import { createProductImage } from "../products/products.js?v=1.2";
 
 let cart = {};
 

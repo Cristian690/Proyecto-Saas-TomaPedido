@@ -1,3 +1,5 @@
+import { getOptimizedCloudinaryUrl } from "../images/cloudinary.js?v=1.0";
+
 export let products = [];
 
 export function setProducts(data) {
@@ -24,24 +26,10 @@ function getImageSource(imageUrl, cloudinaryTransformation) {
         return null;
     }
 
-    if (url.hostname !== "res.cloudinary.com") {
-        return url.href;
-    }
-
-    const uploadPath = "/image/upload/";
-    const uploadPathIndex = url.pathname.indexOf(uploadPath);
-
-    if (uploadPathIndex === -1) {
-        return url.href;
-    }
-
-    const transformationStart = uploadPathIndex + uploadPath.length;
-    url.pathname =
-        `${url.pathname.slice(0, transformationStart)}` +
-        `${cloudinaryTransformation}/` +
-        url.pathname.slice(transformationStart);
-
-    return url.href;
+    return getOptimizedCloudinaryUrl(
+        url.href,
+        cloudinaryTransformation
+    );
 }
 
 export function createProductImage(
