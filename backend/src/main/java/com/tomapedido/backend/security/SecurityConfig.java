@@ -82,7 +82,8 @@ public class SecurityConfig {
                         .allowedOrigins(
                                 "http://localhost:5500",
                                 "http://127.0.0.1:5500",
-                                "http://192.168.100.32:5500"
+                                "http://192.168.100.32:5500",
+                                "https://ordenflash-web.onrender.com"
                         )
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*");
