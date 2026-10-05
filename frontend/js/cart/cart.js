@@ -1,4 +1,4 @@
-import { createProductImage } from "../products/products.js?v=1.0";
+import { createProductImage } from "../products/products.js?v=1.1";
 
 let cart = {};
 
@@ -73,7 +73,8 @@ export function renderCart() {
             const image = createProductImage(
                 item.img,
                 item.name || "",
-                "cart-item-img"
+                "cart-item-img",
+                "f_auto,q_auto,w_88,h_88,c_fill"
             );
 
             const info = document.createElement("div");

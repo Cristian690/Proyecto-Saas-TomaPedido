@@ -17,15 +17,50 @@ function createImagePlaceholder(className, alt) {
     return placeholder;
 }
 
-export function createProductImage(imageUrl, alt, className) {
+function getImageSource(imageUrl, cloudinaryTransformation) {
+    const url = new URL(imageUrl, window.location.origin);
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+        return null;
+    }
+
+    if (url.hostname !== "res.cloudinary.com") {
+        return url.href;
+    }
+
+    const uploadPath = "/image/upload/";
+    const uploadPathIndex = url.pathname.indexOf(uploadPath);
+
+    if (uploadPathIndex === -1) {
+        return url.href;
+    }
+
+    const transformationStart = uploadPathIndex + uploadPath.length;
+    url.pathname =
+        `${url.pathname.slice(0, transformationStart)}` +
+        `${cloudinaryTransformation}/` +
+        url.pathname.slice(transformationStart);
+
+    return url.href;
+}
+
+export function createProductImage(
+    imageUrl,
+    alt,
+    className,
+    cloudinaryTransformation
+) {
     if (!imageUrl) {
         return createImagePlaceholder(className, alt);
     }
 
     try {
-        const url = new URL(imageUrl, window.location.origin);
+        const source = getImageSource(
+            imageUrl,
+            cloudinaryTransformation
+        );
 
-        if (url.protocol !== "http:" && url.protocol !== "https:") {
+        if (!source) {
             return createImagePlaceholder(className, alt);
         }
 
@@ -35,7 +70,7 @@ export function createProductImage(imageUrl, alt, className) {
         image.addEventListener("error", () => {
             image.replaceWith(createImagePlaceholder(className, alt));
         }, { once: true });
-        image.src = url.href;
+        image.src = source;
 
         return image;
     } catch {
@@ -71,7 +106,8 @@ export function renderProducts(categories, onAddToCart) {
             const image = createProductImage(
                 product.imagen,
                 product.nombre || "",
-                "product-img"
+                "product-img",
+                "f_auto,q_auto,w_160,h_160,c_fill"
             );
 
             const info = document.createElement("div");

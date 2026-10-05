@@ -15,7 +15,7 @@ import {
     setProducts,
     renderProducts,
     products
-} from "./js/products/products.js?v=1.0";
+} from "./js/products/products.js?v=1.1";
 
 import {
     addToCart,
@@ -23,7 +23,7 @@ import {
     removeItem,
     renderCart,
     getCart
-} from "./js/cart/cart.js?v=1.1";
+} from "./js/cart/cart.js?v=1.2";
 
 
 lucide.createIcons();
