@@ -23,3 +23,6 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+
+# Backups locales de PostgreSQL
+backend/backups/
