@@ -29,3 +29,34 @@ export async function getProducts(slug) {
 
     return await response.json();
 }
+
+export async function confirmCheckout(slug, checkoutData) {
+    const response = await fetch(
+        `${API_URL}/public/${slug}/checkout/confirm`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(checkoutData)
+        }
+    );
+
+    if (!response.ok) {
+        let details = null;
+
+        try {
+            details = await response.json();
+        } catch {
+            // La respuesta de error no contiene JSON utilizable.
+        }
+
+        const error = new Error("No se pudo confirmar el pedido");
+        error.status = response.status;
+        error.details = details;
+
+        throw error;
+    }
+
+    return await response.json();
+}

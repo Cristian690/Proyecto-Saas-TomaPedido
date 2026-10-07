@@ -1,7 +1,8 @@
 import {
     getBusiness,
     getCategories as fetchCategories,
-    getProducts
+    getProducts,
+    confirmCheckout
 } from "./js/api/api.js?v=1.0";
 
 import { getOptimizedCloudinaryUrl } from "./js/images/cloudinary.js?v=1.0";
@@ -944,6 +945,76 @@ document
                     detallePago =
                         `Efectivo (Paga con: $${cashAmount.toLocaleString("es-AR")} | Vuelto: $${vuelto.toLocaleString("es-AR")})`;
                 }
+            }
+
+            const cashAmountValue =
+                document.getElementById(
+                    "cash-amount"
+                ).value.trim();
+
+            try {
+
+                await confirmCheckout(
+                    slug,
+                    {
+                        customerName: name,
+                        deliveryMethod: method,
+                        address,
+                        deliveryNotes: notes,
+                        paymentMethod: payment,
+                        cashAmount: payment === "Efectivo" && cashAmountValue !== ""
+                            ? Number(cashAmountValue)
+                            : null,
+                        items: items.map(
+                            ([productId, item]) => ({
+                                productId: Number(productId),
+                                quantity: item.qty
+                            })
+                        )
+                    }
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Error confirmando el pedido:",
+                    error
+                );
+
+                if (error.status === 409) {
+
+                    const conflictItems = error.details?.items || [];
+
+                    if (error.details?.code === "INSUFFICIENT_STOCK") {
+                        const details = conflictItems.map(item =>
+                            `${item.name || "El producto"}: solicitaste ${item.requestedQuantity} y hay ${item.availableQuantity} disponible(s).`
+                        );
+
+                        showCheckoutValidationError(
+                            `No hay stock suficiente.\n${details.join("\n")}`
+                        );
+
+                    } else if (error.details?.code === "PRODUCT_UNAVAILABLE") {
+
+                        showCheckoutValidationError(
+                            "Uno de los productos ya no está disponible. Revisá tu carrito."
+                        );
+
+                    } else {
+
+                        showCheckoutValidationError(
+                            "No se pudo confirmar el pedido. Intentá nuevamente."
+                        );
+                    }
+
+                } else {
+
+                    showCheckoutValidationError(
+                        "No se pudo confirmar el pedido. Intentá nuevamente."
+                    );
+                }
+
+                return;
             }
 
 

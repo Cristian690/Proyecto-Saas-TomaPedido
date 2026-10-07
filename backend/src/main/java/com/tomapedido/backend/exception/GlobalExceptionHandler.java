@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.validation.FieldError;
 import com.tomapedido.backend.dto.ValidationError;
+import com.tomapedido.backend.dto.CheckoutConflictResponse;
 
 
 @RestControllerAdvice
@@ -24,6 +25,14 @@ public class GlobalExceptionHandler {
             error.getDefaultMessage()
         );
 
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(CheckoutConflictException.class)
+    public CheckoutConflictResponse handleCheckoutConflict(
+            CheckoutConflictException ex) {
+
+        return ex.getResponse();
     }
 
 }
