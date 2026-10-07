@@ -60,3 +60,22 @@ export async function confirmCheckout(slug, checkoutData) {
 
     return await response.json();
 }
+
+export async function getOrders() {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_URL}/orders`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) {
+        const error = new Error("No se pudieron obtener los pedidos");
+        error.status = response.status;
+
+        throw error;
+    }
+
+    return await response.json();
+}

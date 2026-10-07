@@ -2941,6 +2941,142 @@ input[type="file"][hidden] {
     font-size: 1rem;
 }
 
+/* ====================================
+   ADMIN - PEDIDOS
+   ==================================== */
+
+.orders-header {
+    padding: 18px;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.orders-header h2 {
+    margin: 0;
+}
+
+.orders-header p {
+    margin: 4px 0 0;
+    color: var(--gray-text);
+    font-size: 0.85rem;
+}
+
+.orders-status-message {
+    margin: 14px 0 0;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff1f1;
+    color: #a61b1b;
+}
+
+.orders-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.order-card,
+.orders-empty-state {
+    padding: 18px;
+    background: var(--white);
+    border: 1px solid var(--gray-mid);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
+
+.order-card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.order-card-header h3,
+.order-card p,
+.order-items {
+    margin: 0;
+}
+
+.order-card-header h3 {
+    font-size: 1rem;
+}
+
+.order-card-header time {
+    color: var(--gray-text);
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+.order-customer {
+    margin-top: 12px !important;
+    font-weight: 700;
+}
+
+.order-items {
+    display: grid;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--gray-mid);
+    border-bottom: 1px solid var(--gray-mid);
+    list-style: none;
+}
+
+.order-items li,
+.order-detail {
+    color: var(--gray-text);
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
+.order-total {
+    margin-top: 12px !important;
+    color: var(--black);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.order-details {
+    display: grid;
+    gap: 4px;
+    margin-top: 12px;
+}
+
+.order-detail strong {
+    color: var(--black);
+}
+
+.order-status {
+    display: inline-block;
+    margin-top: 14px !important;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: var(--gray-light);
+    color: var(--black);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.orders-empty-state {
+    color: var(--gray-text);
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .order-card,
+    .orders-empty-state,
+    .orders-header {
+        padding: 14px;
+    }
+
+    .order-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
 #products-container > .product-card > button {
     min-height: 40px;
     padding: 9px 12px;

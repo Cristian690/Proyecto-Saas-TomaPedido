@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>OrdenFlash - Pedidos</title>
+
+    <link rel="stylesheet" href="../../style.css?v=14">
+</head>
+
+<body>
+
+    <header class="admin-header">
+        <h1>OrdenFlash</h1>
+        <span>Mis pedidos</span>
+    </header>
+
+    <main class="admin-container">
+
+        <aside class="admin-sidebar">
+            <button
+                type="button"
+                class="admin-nav-button"
+                onclick="window.location.href='admin.html'"
+            >
+                Mi negocio
+            </button>
+
+            <button
+                type="button"
+                class="admin-nav-button"
+                onclick="window.location.href='products.html'"
+            >
+                Productos
+            </button>
+
+            <button
+                type="button"
+                class="admin-nav-button admin-nav-button--active"
+                aria-current="page"
+            >
+                Pedidos
+            </button>
+
+            <button type="button" id="btn-logout">
+                Cerrar sesión
+            </button>
+        </aside>
+
+        <section class="admin-content">
+            <section class="orders-header">
+                <h2>Mis pedidos</h2>
+                <p>Consultá los pedidos recibidos en tu tienda.</p>
+            </section>
+
+            <p id="orders-status-message" class="orders-status-message" role="alert" hidden></p>
+
+            <div id="orders-container" class="orders-list" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <script type="module" src="../../js/admin/orders.js?v=1.0"></script>
+</body>
+</html>
