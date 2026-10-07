@@ -2926,6 +2926,13 @@ input[type="file"][hidden] {
     white-space: nowrap;
 }
 
+#products-container .product-stock {
+    grid-column: 1 / -1;
+    color: var(--gray-text);
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
 #products-container .product-price {
     grid-column: 2;
     margin: 0;

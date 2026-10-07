@@ -89,6 +89,9 @@ const productDescriptionInput =
 const productPriceInput =
     document.getElementById("product-price");
 
+const productStockInput =
+    document.getElementById("product-stock");
+
 const productPhotoCameraInput =
     document.getElementById("product-photo-camera");
 
@@ -209,6 +212,7 @@ const newProduct = {
     name: "",
     description: "",
     price: null,
+    stock: 0,
     imageFile: null,
     defaultImageUrl: "",
     categoryName: ""
@@ -262,6 +266,7 @@ function openEditProduct(product, categoryName) {
     newProduct.name = product.name;
     newProduct.description = product.description || "";
     newProduct.price = Number(product.price);
+    newProduct.stock = Number(product.stock ?? 0);
     newProduct.imageFile = null;
     newProduct.defaultImageUrl = "";
     newProduct.categoryName = categoryName;
@@ -325,6 +330,9 @@ function showStep2() {
         productPriceInput.value =
             newProduct.price;
     }
+
+    productStockInput.value =
+        newProduct.stock;
 
     productPriceInput.focus();
 }
@@ -539,6 +547,7 @@ function resetProduct() {
     newProduct.name = "";
     newProduct.description = "";
     newProduct.price = null;
+    newProduct.stock = 0;
     newProduct.imageFile = null;
     newProduct.defaultImageUrl = "";
     newProduct.categoryName = "";
@@ -546,6 +555,7 @@ function resetProduct() {
     productNameInput.value = "";
     productDescriptionInput.value = "";
     productPriceInput.value = "";
+    productStockInput.value = "0";
 
     productPhotoCameraInput.value = "";
     productPhotoGalleryInput.value = "";
@@ -676,6 +686,9 @@ async function saveProduct() {
 
             price:
                 newProduct.price,
+
+            stock:
+                newProduct.stock,
 
             imageUrl:
                 imageUrl,
@@ -1204,6 +1217,17 @@ function renderProducts(
                 product.price
             ).toLocaleString("es-AR")}`;
 
+        const stock =
+            document.createElement(
+                "span"
+            );
+
+        stock.className =
+            "product-stock";
+
+        stock.textContent =
+            `Stock: ${product.stock}`;
+
 
         info.appendChild(
             name
@@ -1212,6 +1236,10 @@ function renderProducts(
         if (description) {
             info.appendChild(description);
         }
+
+        info.appendChild(
+            stock
+        );
 
         info.appendChild(
             category
@@ -1380,6 +1408,11 @@ priceNextButton.addEventListener(
                 productPriceInput.value
             );
 
+        const stock =
+            Number(
+                productStockInput.value
+            );
+
 
         if (
             !price ||
@@ -1393,9 +1426,24 @@ priceNextButton.addEventListener(
             return;
         }
 
+        if (
+            !Number.isInteger(stock) ||
+            stock < 0
+        ) {
+
+            alert(
+                "Ingresá un stock válido"
+            );
+
+            return;
+        }
+
 
         newProduct.price =
             price;
+
+        newProduct.stock =
+            stock;
 
 
         console.log(

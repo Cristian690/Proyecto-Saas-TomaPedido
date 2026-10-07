@@ -33,7 +33,8 @@ public class ProductService {
         response.setName(product.getName());
         response.setDescription(product.getDescription());
         response.setPrice(product.getPrice());
-        response.setImageUrl(product.getImageUrl());    
+        response.setStock(product.getStock());
+        response.setImageUrl(product.getImageUrl());
         response.setActive(product.isActive());
         response.setCategoryId(product.getCategory().getId());
 
@@ -64,6 +65,7 @@ public class ProductService {
         newProduct.setName(request.getName());
         newProduct.setDescription(request.getDescription());
         newProduct.setPrice(request.getPrice());
+        newProduct.setStock(request.getStock());
         newProduct.setImageUrl(request.getImageUrl());
         newProduct.setActive(true);
         newProduct.setCategory(category);
@@ -140,6 +142,7 @@ public class ProductService {
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
+        product.setStock(request.getStock());
         product.setImageUrl(request.getImageUrl());
         product.setCategory(category);
 
