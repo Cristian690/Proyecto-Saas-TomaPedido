@@ -131,6 +131,7 @@ export function renderCart() {
         "$" + totalPrice.toLocaleString("es-AR");
 
     lucide.createIcons();
+    window.dispatchEvent(new Event("cartchange"));
 }
 
 export function getCart() {

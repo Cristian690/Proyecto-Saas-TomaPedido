@@ -18,7 +18,7 @@ import {
     setProducts,
     renderProducts,
     products
-} from "./js/products/products.js?v=1.2";
+} from "./js/products/products.js?v=1.3";
 
 import {
     addToCart,
@@ -26,7 +26,7 @@ import {
     removeItem,
     renderCart,
     getCart
-} from "./js/cart/cart.js?v=1.3";
+} from "./js/cart/cart.js?v=1.4";
 
 
 lucide.createIcons();
@@ -346,7 +346,9 @@ async function loadData() {
 
         renderProducts(
             selectedCategory,
-            addToCart
+            addToCart,
+            changeQty,
+            id => getCart()[id]?.qty || 0
         );
     });
 
@@ -357,7 +359,9 @@ async function loadData() {
 
     renderProducts(
         getCategories(),
-        id => addToCart(id, products)
+        id => addToCart(id, products),
+        changeQty,
+        id => getCart()[id]?.qty || 0
     );
 
 

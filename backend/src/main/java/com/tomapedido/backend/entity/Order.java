@@ -2,6 +2,7 @@ package com.tomapedido.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,7 +65,7 @@ public class Order {
     @PrePersist
     private void setCreatedAt() {
         if (createdAt == null) {
-            createdAt = LocalDateTime.now();
+            createdAt = LocalDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires"));
         }
     }
 }

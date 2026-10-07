@@ -2,6 +2,12 @@ import { getOptimizedCloudinaryUrl } from "../images/cloudinary.js?v=1.0";
 
 export let products = [];
 
+let currentCategories = [];
+let currentOnAddToCart = null;
+let currentOnChangeQuantity = null;
+let currentGetQuantity = null;
+let cartChangeListenerInitialized = false;
+
 export function setProducts(data) {
     products = data;
 }
@@ -67,7 +73,32 @@ export function createProductImage(
     }
 }
 
-export function renderProducts(categories, onAddToCart) {
+export function renderProducts(
+    categories,
+    onAddToCart,
+    onChangeQuantity = null,
+    getQuantity = null
+) {
+    currentCategories = categories;
+    currentOnAddToCart = onAddToCart;
+    currentOnChangeQuantity = onChangeQuantity;
+    currentGetQuantity = getQuantity;
+
+    if (!cartChangeListenerInitialized) {
+        window.addEventListener("cartchange", () => {
+            if (currentOnAddToCart) {
+                renderProducts(
+                    currentCategories,
+                    currentOnAddToCart,
+                    currentOnChangeQuantity,
+                    currentGetQuantity
+                );
+            }
+        });
+
+        cartChangeListenerInitialized = true;
+    }
+
     const container = document.getElementById("productos-container");
     const fragment = document.createDocumentFragment();
 
@@ -111,15 +142,56 @@ export function renderProducts(categories, onAddToCart) {
             price.className = "product-price";
             price.textContent = `$${product.precio.toLocaleString("es-AR")}`;
 
-            const addButton = document.createElement("button");
-            addButton.className = "btn-agregar";
-            addButton.type = "button";
-            addButton.textContent = "Agregar";
-            addButton.addEventListener("click", () => {
-                onAddToCart(String(product.id), products);
-            });
+            const actions = document.createElement("div");
+            actions.className = "btn-container-dinamico";
 
-            info.append(name, description, price, addButton);
+            const renderQuantityControls = () => {
+                const productId = String(product.id);
+                const quantity = currentGetQuantity?.(productId) || 0;
+
+                if (quantity === 0) {
+                    const addButton = document.createElement("button");
+                    addButton.className = "btn-agregar";
+                    addButton.type = "button";
+                    addButton.textContent = "Agregar";
+                    addButton.addEventListener("click", () => {
+                        onAddToCart(productId, products);
+                    });
+
+                    actions.replaceChildren(addButton);
+                    return;
+                }
+
+                const controls = document.createElement("div");
+                controls.className = "card-control-qty";
+
+                const decreaseButton = document.createElement("button");
+                decreaseButton.type = "button";
+                decreaseButton.textContent = "−";
+                decreaseButton.setAttribute("aria-label", `Quitar una unidad de ${product.nombre}`);
+                decreaseButton.addEventListener("click", () => {
+                    currentOnChangeQuantity?.(productId, -1);
+                });
+
+                const quantityValue = document.createElement("span");
+                quantityValue.className = "card-qty-num";
+                quantityValue.textContent = quantity;
+
+                const increaseButton = document.createElement("button");
+                increaseButton.type = "button";
+                increaseButton.textContent = "+";
+                increaseButton.setAttribute("aria-label", `Agregar una unidad de ${product.nombre}`);
+                increaseButton.addEventListener("click", () => {
+                    currentOnChangeQuantity?.(productId, 1);
+                });
+
+                controls.append(decreaseButton, quantityValue, increaseButton);
+                actions.replaceChildren(controls);
+            };
+
+            renderQuantityControls();
+
+            info.append(name, description, price, actions);
             mainRow.append(image, info);
             card.appendChild(mainRow);
             menuCategory.appendChild(card);
