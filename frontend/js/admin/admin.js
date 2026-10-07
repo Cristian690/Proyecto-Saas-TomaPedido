@@ -42,6 +42,63 @@ const business = {
     open: false
 };
 
+let shareMessageTimeout;
+
+function getPublicStoreUrl() {
+
+    const slug = localStorage.getItem("businessSlug");
+
+    if (!slug) {
+        return null;
+    }
+
+    const publicStoreUrl = new URL("../../index.html", window.location.href);
+
+    publicStoreUrl.searchParams.set("business", slug);
+
+    return publicStoreUrl.toString();
+}
+
+function showShareMessage(message) {
+
+    const shareMessage = document.getElementById("business-share-message");
+
+    clearTimeout(shareMessageTimeout);
+
+    shareMessage.textContent = message;
+    shareMessage.hidden = false;
+
+    shareMessageTimeout = setTimeout(() => {
+        shareMessage.hidden = true;
+    }, 3000);
+}
+
+async function copyPublicStoreUrl(url) {
+
+    if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        return;
+    }
+
+    const temporaryInput = document.createElement("textarea");
+
+    temporaryInput.value = url;
+    temporaryInput.setAttribute("readonly", "");
+    temporaryInput.style.position = "fixed";
+    temporaryInput.style.opacity = "0";
+
+    document.body.appendChild(temporaryInput);
+    temporaryInput.select();
+
+    const copied = document.execCommand("copy");
+
+    temporaryInput.remove();
+
+    if (!copied) {
+        throw new Error("No se pudo copiar el enlace");
+    }
+}
+
 function getContinuationWhatsappUrl() {
 
     const businessName = localStorage.getItem("businessName") || "mi comercio";
@@ -428,6 +485,12 @@ function loadBusinessConfig() {
 const businessSlug =
     localStorage.getItem("businessSlug");
 
+const publicStoreUrl = getPublicStoreUrl();
+
+if (publicStoreUrl) {
+    document.getElementById("business-public-url").value = publicStoreUrl;
+}
+
 fetch(
     `${API_URL}/business/${businessSlug}`,
     {
@@ -676,6 +739,43 @@ document
                 error
             );
 
+        }
+    });
+
+
+document
+    .getElementById("btn-share-store")
+    .addEventListener("click", async () => {
+
+        const publicStoreUrl = getPublicStoreUrl();
+
+        if (!publicStoreUrl) {
+            showShareMessage("No se encontró el enlace público del negocio.");
+            return;
+        }
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: "Mi tienda online",
+                    text: "Visitá mi tienda online y hacé tu pedido.",
+                    url: publicStoreUrl
+                });
+
+                return;
+            } catch (error) {
+                if (error.name === "AbortError") {
+                    return;
+                }
+            }
+        }
+
+        try {
+            await copyPublicStoreUrl(publicStoreUrl);
+            showShareMessage("✅ Enlace copiado al portapapeles.");
+        } catch (error) {
+            console.error("Error copying public store URL:", error);
+            showShareMessage("No se pudo copiar el enlace. Intentá nuevamente.");
         }
     });
 
