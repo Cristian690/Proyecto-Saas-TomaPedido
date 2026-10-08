@@ -51,6 +51,12 @@ public class AuthService {
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
 
+        if (request.getPhone() == null
+                || !request.getPhone().matches("\\d{10}")) {
+            throw new IllegalArgumentException(
+                    "El teléfono debe tener exactamente 10 dígitos");
+        }
+
         if (tenantRepository.findByPhone(request.getPhone()).isPresent()) {
             throw new IllegalArgumentException("El número ya está en uso");
         }

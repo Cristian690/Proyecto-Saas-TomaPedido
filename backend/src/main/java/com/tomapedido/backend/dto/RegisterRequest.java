@@ -2,6 +2,7 @@ package com.tomapedido.backend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class RegisterRequest {
 
     @NotBlank(message = "El teléfono es obligatorio")
     @Size(max = 20, message = "El teléfono no puede superar los 20 caracteres")
+    @Pattern(regexp = "^\\d{10}$", message = "El teléfono debe tener exactamente 10 dígitos")
     private String phone;
 
     @NotBlank(message = "La contraseña es obligatoria")

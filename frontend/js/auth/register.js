@@ -6,17 +6,27 @@ const errorMessage = document.getElementById("register-error");
 const step1 = document.getElementById("register-step-1");
 const step2 = document.getElementById("register-step-2");
 const step3 = document.getElementById("register-step-3");
+const stepConfirm = document.getElementById("register-step-confirm");
 
 const nextButton1 = document.getElementById("register-next-1");
 const nextButton2 = document.getElementById("register-next-2");
 const backButton2 = document.getElementById("register-back-2");
 const backButton3 = document.getElementById("register-back-3");
+const confirmCreateButton = document.getElementById("register-confirm-create");
+const confirmBackButton = document.getElementById("register-confirm-back");
 
 const passwordFields = document.getElementById("password-fields");
+const phoneConfirmation = document.getElementById("register-phone-confirmation");
+
+let registrationConfirmed = false;
 
 
 // Crear campos de contraseña cuando entramos al Paso 3
 function createPasswordFields() {
+
+    if (document.getElementById("register-password")) {
+        return;
+    }
 
     passwordFields.innerHTML = `
         <input
@@ -37,6 +47,10 @@ function createPasswordFields() {
             required
         >
     `;
+}
+
+function isValidPhone(phone) {
+    return /^\d{10}$/.test(phone);
 }
 
 
@@ -63,7 +77,7 @@ nextButton1.addEventListener("click", () => {
 nextButton2.addEventListener("click", async () => {
 
     const phone =
-        document.getElementById("register-phone").value.trim();
+        document.getElementById("register-phone").value;
 
     if (!phone) {
         errorMessage.textContent =
@@ -71,7 +85,7 @@ nextButton2.addEventListener("click", async () => {
         return;
     }
 
-    if (!/^\d{10}$/.test(phone)) {
+    if (!isValidPhone(phone)) {
         errorMessage.textContent =
             "Ingresá un número de WhatsApp válido (10 dígitos)";
         return;
@@ -133,6 +147,24 @@ backButton3.addEventListener("click", () => {
 });
 
 
+confirmBackButton.addEventListener("click", () => {
+
+    registrationConfirmed = false;
+    errorMessage.textContent = "";
+
+    stepConfirm.style.display = "none";
+    step2.style.display = "block";
+});
+
+
+confirmCreateButton.addEventListener("click", () => {
+
+    registrationConfirmed = true;
+    stepConfirm.style.display = "none";
+    form.requestSubmit();
+});
+
+
 // Paso 3 → Crear cuenta
 form.addEventListener("submit", async (event) => {
 
@@ -145,7 +177,7 @@ form.addEventListener("submit", async (event) => {
         document.getElementById("register-welcome-message").value.trim();
 
     const phone =
-        document.getElementById("register-phone").value.trim();
+        document.getElementById("register-phone").value;
 
     const password =
         document.getElementById("register-password").value;
@@ -177,6 +209,22 @@ form.addEventListener("submit", async (event) => {
             "La contraseña debe tener al menos 8 caracteres";
         return;
     }
+
+    if (!isValidPhone(phone)) {
+        errorMessage.textContent =
+            "Ingresá un número de WhatsApp válido (10 dígitos)";
+        return;
+    }
+
+    if (!registrationConfirmed) {
+        errorMessage.textContent = "";
+        phoneConfirmation.textContent = phone;
+        step3.style.display = "none";
+        stepConfirm.style.display = "block";
+        return;
+    }
+
+    registrationConfirmed = false;
 
 
     try {
