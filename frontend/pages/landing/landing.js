@@ -1,6 +1,5 @@
-// Punto único para actualizar el contacto comercial de la landing.
-const WHATSAPP_CONTACT_URL = "https://wa.me/5491164072860";
+import { ORDENFLASH_SUPPORT_WHATSAPP_URL } from "../../js/config/support.js?v=1.0";
 
 document.querySelectorAll("[data-whatsapp-contact]").forEach((link) => {
-    link.href = WHATSAPP_CONTACT_URL;
+    link.href = ORDENFLASH_SUPPORT_WHATSAPP_URL;
 });

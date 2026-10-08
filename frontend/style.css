@@ -1133,6 +1133,37 @@ body {
     font-size: 0.82rem;
 }
 
+.login-support {
+    margin-top: 0px;
+    padding-top: 18px;
+    border-top: 1px solid var(--gray-mid);
+    text-align: center;
+}
+
+.login-support p {
+    margin: 0 0 8px;
+    color: var(--gray-text);
+    font-size: 0.85rem;
+}
+
+.login-support a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    color: var(--red);
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-support a:hover {
+    background: rgba(215, 43, 43, 0.06);
+}
+
 /* =========================================
    REGISTRO
    ========================================= */

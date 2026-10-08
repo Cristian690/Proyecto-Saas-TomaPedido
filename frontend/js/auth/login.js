@@ -1,7 +1,15 @@
 import { API_URL } from "../api/api.js";
+import { getSupportWhatsAppUrl } from "../config/support.js?v=1.0";
 
 const form = document.getElementById("login-form");
 const errorMessage = document.getElementById("login-error");
+const forgotPasswordSupportLink = document.getElementById(
+    "forgot-password-support"
+);
+
+forgotPasswordSupportLink.href = getSupportWhatsAppUrl(
+    "Hola, olvidé mi contraseña de OrdenFlash y necesito recuperar el acceso a mi comercio."
+);
 
 form.addEventListener("submit", async (event) => {
 

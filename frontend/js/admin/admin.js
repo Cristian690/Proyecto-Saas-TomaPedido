@@ -1,13 +1,12 @@
 import { API_URL } from "../api/api.js";
 import { getOptimizedCloudinaryUrl } from "../images/cloudinary.js?v=1.0";
+import { getSupportWhatsAppUrl } from "../config/support.js?v=1.0";
 
 const CLOUDINARY_URL =
     "https://api.cloudinary.com/v1_1/y2zsd3jg/image/upload";
 
 const CLOUDINARY_UPLOAD_PRESET =
     "tomapedido_uploads";
-
-const ORDENFLASH_WHATSAPP_URL = "https://wa.me/5491164072860";
 
 const token = localStorage.getItem("token");
 
@@ -105,7 +104,7 @@ function getContinuationWhatsappUrl() {
     const businessName = localStorage.getItem("businessName") || "mi comercio";
     const message = `Hola, quiero continuar usando OrdenFlash para mi comercio ${businessName}.`;
 
-    return `${ORDENFLASH_WHATSAPP_URL}?text=${encodeURIComponent(message)}`;
+    return getSupportWhatsAppUrl(message);
 }
 
 function renderTrialPeriod(trialPeriod) {
