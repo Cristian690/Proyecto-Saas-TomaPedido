@@ -2785,6 +2785,208 @@ input[type="file"][hidden] {
     }
 }
 
+/* Organización visual de Mi negocio */
+.admin-content .business-settings-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.admin-content .business-settings-form .business-settings-card,
+.admin-content .business-settings-form .business-settings-actions {
+    padding: 18px;
+    border: 1px solid var(--gray-mid);
+    border-radius: 12px;
+    background: var(--white);
+    box-shadow: var(--shadow);
+}
+
+.admin-content .business-settings-form .business-settings-card {
+    border-top: 1px solid var(--gray-mid);
+}
+
+.business-settings-form .business-form-section-title {
+    margin-bottom: 14px;
+}
+
+.business-settings-form .business-form-section-title h3 {
+    font-size: 0.9rem;
+}
+
+.business-settings-form .business-form-section-title p {
+    margin: 4px 0 0;
+    color: var(--gray-text);
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+
+.business-settings-form .business-store-access {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--gray-mid);
+}
+
+.business-store-access h4 {
+    margin: 0;
+    color: var(--black);
+    font-size: 0.86rem;
+}
+
+.business-store-access > div > p {
+    margin: 4px 0 10px;
+    color: var(--gray-text);
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+
+.business-settings-form .business-store-link-row {
+    margin-top: 10px;
+}
+
+.business-store-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+    color: var(--gray-text);
+    font-size: 0.82rem;
+}
+
+.business-store-actions button {
+    flex-shrink: 0;
+    min-height: 38px;
+    padding: 8px 11px;
+    border: 1px solid var(--gray-mid);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--black);
+    font-family: var(--font);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.business-store-actions button:hover {
+    border-color: var(--red);
+    color: var(--red-dark);
+}
+
+.business-settings-form .business-status {
+    min-height: 0;
+    padding: 12px;
+    border: 1px solid var(--gray-mid);
+    border-radius: 8px;
+    background: var(--gray-light);
+    box-shadow: none;
+}
+
+.business-settings-form .business-status button {
+    min-height: 38px;
+    padding: 8px 11px;
+}
+
+.business-settings-form .business-stock-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--gray-mid);
+    border-radius: 8px;
+    background: var(--gray-light);
+}
+
+.business-settings-form .business-stock-toggle p {
+    max-width: 280px;
+    margin: 0;
+    text-align: right;
+}
+
+.business-settings-form .business-settings-actions {
+    display: grid;
+    gap: 10px;
+}
+
+.business-settings-form #save-business {
+    width: 100%;
+    margin-top: 0;
+}
+
+.business-settings-form #business-save-message {
+    margin: 0;
+    color: var(--gray-text);
+    font-size: 0.85rem;
+}
+
+@media (min-width: 760px) {
+    .admin-content .business-settings-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .business-settings-form .business-settings-card--information,
+    .business-settings-form .business-settings-card--appearance,
+    .business-settings-form .business-settings-actions {
+        grid-column: 1 / -1;
+    }
+
+    .business-settings-form .business-settings-card--information .business-form-fields {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .business-settings-form .business-settings-card--information .business-form-fields label:last-child {
+        grid-column: auto !important;
+    }
+
+    .business-settings-form .business-appearance-fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .business-settings-form .business-appearance-fields label:last-child {
+        grid-column: 1 / -1 !important;
+    }
+
+    .business-settings-form .business-settings-actions {
+        grid-template-columns: 1fr auto;
+        align-items: end;
+    }
+
+    .business-settings-form .business-settings-actions .business-form-section-title {
+        grid-column: 1 / -1;
+    }
+
+    .business-settings-form #save-business {
+        width: auto;
+        min-width: 190px;
+    }
+}
+
+@media (max-width: 759px) {
+    .admin-content .business-settings-form .business-settings-card,
+    .admin-content .business-settings-form .business-settings-actions {
+        padding: 14px;
+    }
+
+    .business-store-actions,
+    .business-settings-form .business-stock-toggle {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .business-settings-form .business-stock-toggle p {
+        max-width: none;
+        text-align: left;
+    }
+
+    .business-store-actions button {
+        width: 100%;
+    }
+}
+
 /* ====================================
    ADMIN - MIS PRODUCTOS
    ==================================== */

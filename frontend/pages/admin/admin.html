@@ -6,7 +6,7 @@
 
     <title>OrdenFlash - Admin</title>
 
-    <link rel="stylesheet" href="../../style.css?v=14">
+    <link rel="stylesheet" href="../../style.css?v=15">
 </head>
 
 <body>
@@ -66,53 +66,14 @@
 
             <div id="admin-management-content">
 
-            <div class="business-status">
-                <span id="business-status-text">Estado: —</span>
-
-                <button type="button" id="business-status-button">
-                    Cambiar estado
-                </button>
-            </div>
-
-            <div class="public-page-access">
-                <span>👁️ Ver cómo ven tu negocio tus clientes</span>
-
-                <button type="button" id="btn-view-public">
-                    Ver mi página pública
-                </button>
-            </div>
-
             <h2>Mi negocio</h2>
 
-            <div class="admin-form">
+            <div class="admin-form business-settings-form">
 
-                <section class="business-form-section business-store-section">
+                <section class="business-form-section business-settings-card business-settings-card--information">
                     <div class="business-form-section-title">
-                        <h3>Mi tienda online</h3>
-                    </div>
-
-                    <p class="business-store-description">
-                        Compartí este enlace para que tus clientes puedan ver tu tienda y hacer pedidos.
-                    </p>
-
-                    <div class="business-store-link-row">
-                        <input
-                            type="url"
-                            id="business-public-url"
-                            readonly
-                            aria-label="URL pública de mi tienda"
-                        >
-                        <button type="button" id="btn-share-store">
-                            Compartir mi tienda
-                        </button>
-                    </div>
-
-                    <p id="business-share-message" class="business-share-message" role="status" hidden></p>
-                </section>
-
-                <section class="business-form-section">
-                    <div class="business-form-section-title">
-                        <h3>Datos del negocio</h3>
+                        <h3>Información del negocio</h3>
+                        <p>Completá los datos que verán tus clientes.</p>
                     </div>
 
                     <div class="business-form-fields">
@@ -131,14 +92,58 @@
                             <input type="text" id="business-address">
                         </label>
                     </div>
+
+                    <div class="business-store-access">
+                        <div>
+                            <h4>Mi tienda online</h4>
+                            <p>Compartí este enlace para que tus clientes puedan ver tu tienda y hacer pedidos.</p>
+                        </div>
+
+                        <div class="business-store-link-row">
+                            <input
+                                type="url"
+                                id="business-public-url"
+                                readonly
+                                aria-label="URL pública de mi tienda"
+                            >
+                            <button type="button" id="btn-share-store">
+                                Compartir mi tienda
+                            </button>
+                        </div>
+
+                        <div class="business-store-actions">
+                            <span>👁️ Revisá cómo ven tu negocio tus clientes.</span>
+                            <button type="button" id="btn-view-public">
+                                Ver mi página pública
+                            </button>
+                        </div>
+
+                        <p id="business-share-message" class="business-share-message" role="status" hidden></p>
+                    </div>
                 </section>
 
-                <section class="business-form-section">
+                <section class="business-form-section business-settings-card business-settings-card--schedule">
                     <div class="business-form-section-title">
-                        <h3>Identidad visual</h3>
+                        <h3>Horarios</h3>
+                        <p>Indicá si tu comercio está disponible para recibir pedidos.</p>
                     </div>
 
-                    <div class="business-form-fields">
+                    <div class="business-status">
+                        <span id="business-status-text">Estado: —</span>
+
+                        <button type="button" id="business-status-button">
+                            Cambiar estado
+                        </button>
+                    </div>
+                </section>
+
+                <section class="business-form-section business-settings-card business-settings-card--appearance">
+                    <div class="business-form-section-title">
+                        <h3>Apariencia</h3>
+                        <p>Personalizá la identidad visual de tu tienda.</p>
+                    </div>
+
+                    <div class="business-form-fields business-appearance-fields">
                         <label>
                             Logo
                             <img
@@ -160,15 +165,7 @@
                             >
                             <input type="file" id="business-cover" accept="image/*">
                         </label>
-                    </div>
-                </section>
 
-                <section class="business-form-section">
-                    <div class="business-form-section-title">
-                        <h3>Apariencia</h3>
-                    </div>
-
-                    <div class="business-form-fields business-color-fields">
                         <label class="business-color-field">
                             Color de los botones
                             <input type="color" id="business-primary-color" value="#e63946">
@@ -182,15 +179,7 @@
                                 value="#ffffff"
                             >
                         </label>
-                    </div>
-                </section>
 
-                <section class="business-form-section">
-                    <div class="business-form-section-title">
-                        <h3>Mensaje</h3>
-                    </div>
-
-                    <div class="business-form-fields">
                         <label>
                             Mensaje de bienvenida
                             <textarea id="business-welcome-message"></textarea>
@@ -198,9 +187,9 @@
                     </div>
                 </section>
 
-                <section class="business-form-section">
+                <section class="business-form-section business-settings-card business-settings-card--inventory">
                     <div class="business-form-section-title">
-                        <h3>Stock</h3>
+                        <h3>Ventas e inventario</h3>
                     </div>
 
                     <div class="business-stock-toggle">
@@ -213,16 +202,23 @@
                 </section>
 
 
-                <button id="save-business">
-                    Guardar cambios
-                </button>
+                <section class="business-settings-actions">
+                    <div class="business-form-section-title">
+                        <h3>Acciones</h3>
+                        <p>Guardá los cambios realizados en tu negocio.</p>
+                    </div>
 
-                <p
-                    id="business-save-message"
-                    style="display: none;"
-                >
-                    ✅ Cambios guardados correctamente.
-                </p>
+                    <button id="save-business">
+                        Guardar cambios
+                    </button>
+
+                    <p
+                        id="business-save-message"
+                        style="display: none;"
+                    >
+                        ✅ Cambios guardados correctamente.
+                    </p>
+                </section>
 
             </div>
 
