@@ -17,4 +17,5 @@ public class BusinessConfigResponse {
     private String welcomeMessage;
     private String address;
     private boolean open;
+    private boolean stockEnabled;
 }

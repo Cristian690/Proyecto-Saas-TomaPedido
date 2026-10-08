@@ -91,6 +91,7 @@ public class AuthService {
         config.setWelcomeMessage("");
         config.setAddress("");
         config.setOpen(true);
+        config.setStockEnabled(true);
         config.setTenant(tenant);
         
         tenantConfigRepository.save(config);

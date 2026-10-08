@@ -64,7 +64,8 @@ public class TenantConfigService {
                 config.getBackgroundColor(),
                 config.getWelcomeMessage(),
                 config.getAddress(),
-                config.isOpen());
+                config.isOpen(),
+                config.isStockEnabled());
     }
 
     private BusinessConfigResponse toBusinessConfigResponse(TenantConfig config) {
@@ -78,7 +79,8 @@ public class TenantConfigService {
                 config.getBackgroundColor(),
                 config.getWelcomeMessage(),
                 config.getAddress(),
-                config.isOpen());
+                config.isOpen(),
+                config.isStockEnabled());
     }
 
     public BusinessConfigResponse saveTenantConfig(BusinessConfigRequest request) {
@@ -98,6 +100,10 @@ public class TenantConfigService {
                     existingTenantConfig.setWelcomeMessage(request.getWelcomeMessage());
                     existingTenantConfig.setAddress(request.getAddress());
 
+                    if (request.getStockEnabled() != null) {
+                        existingTenantConfig.setStockEnabled(request.getStockEnabled());
+                    }
+
                     return tenantConfigRepository.save(existingTenantConfig);
                 })
                 .orElseGet(() -> {
@@ -113,6 +119,9 @@ public class TenantConfigService {
                     tenantConfig.setWelcomeMessage(request.getWelcomeMessage());
                     tenantConfig.setAddress(request.getAddress());
                     tenantConfig.setOpen(request.isOpen());
+                    tenantConfig.setStockEnabled(request.getStockEnabled() != null
+                            ? request.getStockEnabled()
+                            : true);
                     tenantConfig.setTenant(tenant);
 
                     return tenantConfigRepository.save(tenantConfig);
@@ -165,6 +174,10 @@ public class TenantConfigService {
 
         if (request.getWelcomeMessage() != null) {
             config.setWelcomeMessage(request.getWelcomeMessage());
+        }
+
+        if (request.getStockEnabled() != null) {
+            config.setStockEnabled(request.getStockEnabled());
         }
 
         return toBusinessConfigResponse(tenantConfigRepository.save(config));

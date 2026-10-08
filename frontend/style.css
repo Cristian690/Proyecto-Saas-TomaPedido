@@ -506,6 +506,21 @@ body {
 .btn-agregar:focus {
   outline: none;
 }
+
+.product-out-of-stock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--gray-mid);
+  border-radius: 8px;
+  color: var(--gray-text);
+  background: var(--gray-light);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
 /* Envolvedor de controles modificados ([ - ] Qty [ + ] y Tachito) */
 .card-control-wrapper {
   display: flex;
@@ -543,6 +558,10 @@ body {
   transition: background 0.2s;
 }
 .card-control-qty button:hover { background: var(--gray-mid); }
+.card-control-qty button:disabled {
+  color: var(--gray-text);
+  cursor: not-allowed;
+}
 
 .card-qty-num {
   font-family: var(--font);
@@ -2509,6 +2528,29 @@ input[type="file"][hidden] {
     margin: 8px 0 0;
     color: var(--gray-text);
     font-size: 0.8rem;
+}
+
+.business-stock-toggle label {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--black);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.business-stock-toggle input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--red);
+}
+
+.business-stock-toggle p {
+    margin: 6px 0 0;
+    color: var(--gray-text);
+    font-size: 0.82rem;
+    line-height: 1.4;
 }
 
 .business-form-fields {

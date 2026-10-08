@@ -1,11 +1,34 @@
-import { createProductImage } from "../products/products.js?v=1.2";
+import { createProductImage } from "../products/products.js?v=1.4";
 
 let cart = {};
+let stockEnabled = false;
+let getAvailableStock = null;
+
+export function configureCartStock(enabled, getStock) {
+    stockEnabled = enabled;
+    getAvailableStock = getStock;
+}
+
+function hasReachedStockLimit(id) {
+    if (!stockEnabled || !getAvailableStock) {
+        return false;
+    }
+
+    const stock = Number(getAvailableStock(id));
+
+    if (!Number.isFinite(stock)) {
+        return false;
+    }
+
+    return (cart[id]?.qty || 0) >= stock;
+}
 
 export function addToCart(id, products) {
     const product = products.find(p => p.id == id);
 
     if (!product) return;
+
+    if (hasReachedStockLimit(id)) return;
 
     if (cart[id]) {
         cart[id].qty++;
@@ -23,6 +46,8 @@ export function addToCart(id, products) {
 
 export function changeQty(id, delta) {
     if (!cart[id]) return;
+
+    if (delta > 0 && hasReachedStockLimit(id)) return;
 
     cart[id].qty += delta;
 
@@ -103,6 +128,7 @@ export function renderCart() {
             const increaseButton = document.createElement("button");
             increaseButton.type = "button";
             increaseButton.textContent = "+";
+            increaseButton.disabled = hasReachedStockLimit(id);
             increaseButton.addEventListener("click", () => changeQty(id, 1));
 
             const deleteButton = document.createElement("button");

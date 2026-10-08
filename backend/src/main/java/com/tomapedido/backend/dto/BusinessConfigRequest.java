@@ -27,4 +27,5 @@ public class BusinessConfigRequest {
     private String address;
 
     private boolean open;
+    private Boolean stockEnabled;
 }

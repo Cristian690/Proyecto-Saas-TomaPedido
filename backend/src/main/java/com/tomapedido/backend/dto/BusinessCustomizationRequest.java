@@ -20,4 +20,5 @@ public class BusinessCustomizationRequest {
     @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "El color principal debe tener formato hexadecimal #RRGGBB")
     private String primaryColor;
     private String welcomeMessage;
+    private Boolean stockEnabled;
 }

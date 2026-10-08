@@ -1,4 +1,5 @@
 export const API_URL = "https://ordenflash-api.onrender.com";
+//export const API_URL = "http://192.168.100.32:8080";
 
 export async function getBusiness(slug) {
     const response = await fetch(`${API_URL}/business/${slug}`);

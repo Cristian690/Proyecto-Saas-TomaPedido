@@ -69,6 +69,7 @@ public class PublicStoreService {
                         product.getName(),
                         product.getDescription(),
                         product.getPrice(),
+                        product.getStock(),
                         product.getImageUrl(),
                         product.getCategory().getId()
                 ))

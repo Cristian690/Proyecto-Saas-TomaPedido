@@ -6,6 +6,7 @@ let currentCategories = [];
 let currentOnAddToCart = null;
 let currentOnChangeQuantity = null;
 let currentGetQuantity = null;
+let currentStockEnabled = false;
 let cartChangeListenerInitialized = false;
 
 export function setProducts(data) {
@@ -77,12 +78,14 @@ export function renderProducts(
     categories,
     onAddToCart,
     onChangeQuantity = null,
-    getQuantity = null
+    getQuantity = null,
+    stockEnabled = false
 ) {
     currentCategories = categories;
     currentOnAddToCart = onAddToCart;
     currentOnChangeQuantity = onChangeQuantity;
     currentGetQuantity = getQuantity;
+    currentStockEnabled = stockEnabled;
 
     if (!cartChangeListenerInitialized) {
         window.addEventListener("cartchange", () => {
@@ -91,7 +94,8 @@ export function renderProducts(
                     currentCategories,
                     currentOnAddToCart,
                     currentOnChangeQuantity,
-                    currentGetQuantity
+                    currentGetQuantity,
+                    currentStockEnabled
                 );
             }
         });
@@ -148,6 +152,16 @@ export function renderProducts(
             const renderQuantityControls = () => {
                 const productId = String(product.id);
                 const quantity = currentGetQuantity?.(productId) || 0;
+                const stock = Number(product.stock);
+                const isOutOfStock = currentStockEnabled && stock <= 0;
+
+                if (isOutOfStock) {
+                    const outOfStock = document.createElement("span");
+                    outOfStock.className = "product-out-of-stock";
+                    outOfStock.textContent = "Agotado";
+                    actions.replaceChildren(outOfStock);
+                    return;
+                }
 
                 if (quantity === 0) {
                     const addButton = document.createElement("button");
@@ -181,6 +195,7 @@ export function renderProducts(
                 increaseButton.type = "button";
                 increaseButton.textContent = "+";
                 increaseButton.setAttribute("aria-label", `Agregar una unidad de ${product.nombre}`);
+                increaseButton.disabled = currentStockEnabled && quantity >= stock;
                 increaseButton.addEventListener("click", () => {
                     currentOnChangeQuantity?.(productId, 1);
                 });

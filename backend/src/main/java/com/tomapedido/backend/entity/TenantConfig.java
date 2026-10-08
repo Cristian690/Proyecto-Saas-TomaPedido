@@ -41,6 +41,9 @@ public class TenantConfig {
     @Column(nullable = false)
     private boolean open;
 
+    @Column(nullable = false)
+    private boolean stockEnabled = true;
+
     @OneToOne
     @JoinColumn(name = "tenant_id", nullable = false, unique = true)
     private Tenant tenant;

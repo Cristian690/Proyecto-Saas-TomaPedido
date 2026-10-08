@@ -18,15 +18,16 @@ import {
     setProducts,
     renderProducts,
     products
-} from "./js/products/products.js?v=1.3";
+} from "./js/products/products.js?v=1.4";
 
 import {
     addToCart,
     changeQty,
     removeItem,
     renderCart,
-    getCart
-} from "./js/cart/cart.js?v=1.4";
+    getCart,
+    configureCartStock
+} from "./js/cart/cart.js?v=1.5";
 
 
 lucide.createIcons();
@@ -314,9 +315,19 @@ async function loadData() {
             nombre: product.name,
             descripcion: product.description,
             precio: Number(product.price),
+            stock: Number(product.stock),
             imagen: product.imageUrl,
             categoria: String(product.categoryId)
         }))
+    );
+
+    const stockEnabled = business.stockEnabled !== false;
+
+    configureCartStock(
+        stockEnabled,
+        productId => products.find(
+            product => String(product.id) === String(productId)
+        )?.stock
     );
 
 
@@ -348,7 +359,8 @@ async function loadData() {
             selectedCategory,
             addToCart,
             changeQty,
-            id => getCart()[id]?.qty || 0
+            id => getCart()[id]?.qty || 0,
+            stockEnabled
         );
     });
 
@@ -361,7 +373,8 @@ async function loadData() {
         getCategories(),
         id => addToCart(id, products),
         changeQty,
-        id => getCart()[id]?.qty || 0
+        id => getCart()[id]?.qty || 0,
+        stockEnabled
     );
 
 

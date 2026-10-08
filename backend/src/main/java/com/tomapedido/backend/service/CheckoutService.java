@@ -100,25 +100,27 @@ public class CheckoutService {
                     "El monto en efectivo es menor al total del pedido");
         }
 
-        for (ResolvedItem item : resolvedItems) {
-            int updatedProducts = productRepository.decrementStockIfAvailable(
-                    item.productId(),
-                    tenant.getId(),
-                    item.quantity());
+        if (config.isStockEnabled()) {
+            for (ResolvedItem item : resolvedItems) {
+                int updatedProducts = productRepository.decrementStockIfAvailable(
+                        item.productId(),
+                        tenant.getId(),
+                        item.quantity());
 
-            if (updatedProducts != 1) {
-                Product currentProduct = productRepository
-                        .findByIdAndTenantId(item.productId(), tenant.getId())
-                        .orElse(null);
+                if (updatedProducts != 1) {
+                    Product currentProduct = productRepository
+                            .findByIdAndTenantId(item.productId(), tenant.getId())
+                            .orElse(null);
 
-                if (currentProduct == null || !currentProduct.isActive()) {
-                    throw unavailableProduct(item.productId(), item.quantity());
+                    if (currentProduct == null || !currentProduct.isActive()) {
+                        throw unavailableProduct(item.productId(), item.quantity());
+                    }
+
+                    throw insufficientStock(item.productId(),
+                            currentProduct.getName(),
+                            item.quantity(),
+                            currentProduct.getStock());
                 }
-
-                throw insufficientStock(item.productId(),
-                        currentProduct.getName(),
-                        item.quantity(),
-                        currentProduct.getStock());
             }
         }
 

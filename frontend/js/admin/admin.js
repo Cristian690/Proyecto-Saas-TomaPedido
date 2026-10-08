@@ -39,7 +39,8 @@ const business = {
     backgroundColor: "#ffffff",
     welcomeMessage: "",
     address: "",
-    open: false
+    open: false,
+    stockEnabled: true
 };
 
 let shareMessageTimeout;
@@ -339,6 +340,11 @@ document
                     "business-address"
                 ).value;
 
+            business.stockEnabled =
+                document.getElementById(
+                    "business-stock-enabled"
+                ).checked;
+
             const businessData = {
                 name: business.name,
                 whatsapp: business.whatsapp,
@@ -348,7 +354,8 @@ document
                 backgroundColor: business.backgroundColor,
                 welcomeMessage: business.welcomeMessage,
                 address: business.address,
-                open: business.open
+                open: business.open,
+                stockEnabled: business.stockEnabled
             };
 
             const token =
@@ -390,6 +397,9 @@ document
 
             business.welcomeMessage =
                 data.welcomeMessage ?? "";
+
+            business.stockEnabled =
+                data.stockEnabled !== false;
 
             document.getElementById(
                 "business-welcome-message"
@@ -586,6 +596,9 @@ fetch(
         business.open =
             data.open;
 
+        business.stockEnabled =
+            data.stockEnabled !== false;
+
 
         const statusText =
             document.getElementById(
@@ -638,6 +651,11 @@ fetch(
             "business-address"
         ).value =
             business.address;
+
+        document.getElementById(
+            "business-stock-enabled"
+        ).checked =
+            business.stockEnabled;
 
 
         console.log(

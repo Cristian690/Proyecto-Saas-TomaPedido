@@ -13,6 +13,7 @@ public class PublicProductResponse {
     private String name;
     private String description;
     private BigDecimal price;
+    private int stock;
     private String imageUrl;
     private Long categoryId;
 }

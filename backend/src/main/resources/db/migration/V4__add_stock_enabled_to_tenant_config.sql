@@ -1,0 +1,2 @@
+ALTER TABLE tenant_config
+ADD COLUMN stock_enabled BOOLEAN NOT NULL DEFAULT TRUE;
