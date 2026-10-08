@@ -17,7 +17,7 @@ public class RegisterRequest {
 
     @NotBlank(message = "El teléfono es obligatorio")
     @Size(max = 20, message = "El teléfono no puede superar los 20 caracteres")
-    @Pattern(regexp = "^\\d{10}$", message = "El teléfono debe tener exactamente 10 dígitos")
+    @Pattern(regexp = "^\\+?[0-9() -]+$", message = "Ingresá un número de WhatsApp válido")
     private String phone;
 
     @NotBlank(message = "La contraseña es obligatoria")

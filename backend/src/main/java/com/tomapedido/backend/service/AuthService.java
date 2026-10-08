@@ -2,9 +2,12 @@ package com.tomapedido.backend.service;
 
 import java.time.LocalDateTime;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import com.tomapedido.backend.security.JwtService;
+import com.tomapedido.backend.security.ArgentineWhatsAppNormalizer;
 
 import com.tomapedido.backend.dto.RegisterRequest;
 import com.tomapedido.backend.dto.RegisterResponse;
@@ -45,20 +48,19 @@ public class AuthService {
     }
 
     public boolean phoneExists(String phone) {
-        return tenantRepository.findByPhone(phone).isPresent();
+        String normalizedPhone = normalizePhone(phone);
+        return findTenantByNormalizedPhone(normalizedPhone).isPresent();
     }
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
 
-        if (request.getPhone() == null
-                || !request.getPhone().matches("\\d{10}")) {
-            throw new IllegalArgumentException(
-                    "El teléfono debe tener exactamente 10 dígitos");
-        }
+        String normalizedPhone = normalizePhone(request.getPhone());
 
-        if (tenantRepository.findByPhone(request.getPhone()).isPresent()) {
-            throw new IllegalArgumentException("El número ya está en uso");
+        if (findTenantByNormalizedPhone(normalizedPhone).isPresent()) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "El número ya está en uso");
         }
 
         String slug = generateUniqueSlug(request.getBusinessName());
@@ -69,7 +71,7 @@ public class AuthService {
                 .businessName(request.getBusinessName())
                 .slug(slug)
                 .email(request.getEmail())
-                .phone(request.getPhone())
+                .phone(normalizedPhone)
                 .trialStartedAt(trialStartedAt)
                 .trialEndsAt(trialStartedAt.plusDays(14))
                 .active(true)
@@ -89,7 +91,7 @@ public class AuthService {
         TenantConfig config = new TenantConfig();
 
         config.setName(tenant.getBusinessName());
-        config.setWhatsapp(tenant.getPhone());
+        config.setWhatsapp(normalizedPhone);
         config.setLogoUrl("");
         config.setCoverUrl("");
         config.setPrimaryColor("#e63946");
@@ -134,7 +136,15 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
 
-        User user = userRepository.findByTenantPhone(request.getPhone())
+        String normalizedPhone;
+
+        try {
+            normalizedPhone = ArgentineWhatsAppNormalizer.normalize(request.getPhone());
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException("Teléfono o contraseña incorrectos");
+        }
+
+        User user = findUserByNormalizedPhone(normalizedPhone)
                 .orElseThrow(() ->
                         new IllegalArgumentException("Teléfono o contraseña incorrectos"));
 
@@ -155,5 +165,31 @@ public class AuthService {
                 user.getRole(),
                 token
         );
+    }
+
+    private String normalizePhone(String phone) {
+        try {
+            return ArgentineWhatsAppNormalizer.normalize(phone);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    exception.getMessage());
+        }
+    }
+
+    private java.util.Optional<Tenant> findTenantByNormalizedPhone(
+            String normalizedPhone) {
+
+        return tenantRepository.findByPhone(normalizedPhone)
+                .or(() -> tenantRepository.findByPhone(
+                        ArgentineWhatsAppNormalizer.toLegacyLocalNumber(normalizedPhone)));
+    }
+
+    private java.util.Optional<User> findUserByNormalizedPhone(
+            String normalizedPhone) {
+
+        return userRepository.findByTenantPhone(normalizedPhone)
+                .or(() -> userRepository.findByTenantPhone(
+                        ArgentineWhatsAppNormalizer.toLegacyLocalNumber(normalizedPhone)));
     }
 }

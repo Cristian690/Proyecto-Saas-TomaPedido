@@ -49,8 +49,26 @@ function createPasswordFields() {
     `;
 }
 
-function isValidPhone(phone) {
-    return /^\d{10}$/.test(phone);
+function normalizeArgentineWhatsApp(phone) {
+    const value = phone.trim();
+
+    if (!/^\+?[0-9() -]+$/.test(value)) {
+        return null;
+    }
+
+    const digits = value
+        .replace(/[()\s-]/g, "")
+        .replace(/^\+/, "");
+
+    if (/^549\d{10}$/.test(digits)) {
+        return digits;
+    }
+
+    if (/^\d{10}$/.test(digits)) {
+        return `549${digits}`;
+    }
+
+    return null;
 }
 
 
@@ -79,22 +97,24 @@ nextButton2.addEventListener("click", async () => {
     const phone =
         document.getElementById("register-phone").value;
 
+    const normalizedPhone = normalizeArgentineWhatsApp(phone);
+
     if (!phone) {
         errorMessage.textContent =
             "Ingresá el número de WhatsApp";
         return;
     }
 
-    if (!isValidPhone(phone)) {
+    if (!normalizedPhone) {
         errorMessage.textContent =
-            "Ingresá un número de WhatsApp válido (10 dígitos)";
+            "Ingresá un número de WhatsApp argentino válido";
         return;
     }
 
     try {
 
         const response = await fetch(
-            `${API_URL}/auth/check-phone/${phone}`
+            `${API_URL}/auth/check-phone/${encodeURIComponent(normalizedPhone)}`
         );
 
         if (!response.ok) {
@@ -179,6 +199,8 @@ form.addEventListener("submit", async (event) => {
     const phone =
         document.getElementById("register-phone").value;
 
+    const normalizedPhone = normalizeArgentineWhatsApp(phone);
+
     const password =
         document.getElementById("register-password").value;
 
@@ -210,15 +232,15 @@ form.addEventListener("submit", async (event) => {
         return;
     }
 
-    if (!isValidPhone(phone)) {
+    if (!normalizedPhone) {
         errorMessage.textContent =
-            "Ingresá un número de WhatsApp válido (10 dígitos)";
+            "Ingresá un número de WhatsApp argentino válido";
         return;
     }
 
     if (!registrationConfirmed) {
         errorMessage.textContent = "";
-        phoneConfirmation.textContent = phone;
+        phoneConfirmation.textContent = phone.trim();
         step3.style.display = "none";
         stepConfirm.style.display = "block";
         return;
@@ -239,7 +261,7 @@ form.addEventListener("submit", async (event) => {
                 },
                 body: JSON.stringify({
                     businessName,
-                    phone,
+                    phone: normalizedPhone,
                     email: null,
                     password
                 })
@@ -248,7 +270,7 @@ form.addEventListener("submit", async (event) => {
 
         if (!registerResponse.ok) {
 
-            if (registerResponse.status === 403) {
+            if (registerResponse.status === 409) {
                 throw new Error(
                     "El número ya está en uso"
                 );
@@ -277,7 +299,7 @@ form.addEventListener("submit", async (event) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    phone,
+                    phone: normalizedPhone,
                     password
                 })
             }

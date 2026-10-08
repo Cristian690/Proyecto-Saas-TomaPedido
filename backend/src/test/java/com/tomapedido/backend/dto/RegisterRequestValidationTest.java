@@ -17,20 +17,17 @@ class RegisterRequestValidationTest {
             .getValidator();
 
     @Test
-    void acceptsExactlyTenDigits() {
-        assertTrue(phoneViolations("1177776666").isEmpty());
+    void acceptsReasonableArgentinePhonePresentation() {
+        assertTrue(phoneViolations("+54 9 11 7777-6666").isEmpty());
     }
 
     @Test
     void rejectsInvalidPhoneFormats() {
         List<String> invalidPhones = List.of(
                 "abc",
-                "123",
-                "117777666",
-                "11777766661",
-                "+541177776666",
-                "11 7777 6666",
-                "11-7777-6666");
+                "11@7777",
+                "54911abc",
+                "11/7777/6666");
 
         for (String phone : invalidPhones) {
             assertFalse(phoneViolations(phone).isEmpty(), phone);
