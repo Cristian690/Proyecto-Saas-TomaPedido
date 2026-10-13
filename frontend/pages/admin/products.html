@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="../../style.css?v=12">
+    <link rel="stylesheet" href="../../style.css?v=14">
 </head>
 
 <body>
@@ -149,12 +149,15 @@
                         maxlength="200"
                     ></textarea>
 
-                    <button
-                        type="button"
-                        id="btn-product-name-next"
-                    >
-                        Continuar
-                    </button>
+                    <div class="product-step-actions product-step-actions--single">
+                        <button
+                            type="button"
+                            id="btn-product-name-next"
+                            class="product-step-primary"
+                        >
+                            Continuar
+                        </button>
+                    </div>
 
                 </div>
 
@@ -191,19 +194,22 @@
                         value="0"
                     >
 
-                    <button
-                        type="button"
-                        id="btn-product-price-back"
-                    >
-                        Volver
-                    </button>
+                    <div class="product-step-actions">
+                        <button
+                            type="button"
+                            id="btn-product-price-back"
+                        >
+                            Volver
+                        </button>
 
-                    <button
-                        type="button"
-                        id="btn-product-price-next"
-                    >
-                        Continuar
-                    </button>
+                        <button
+                            type="button"
+                            id="btn-product-price-next"
+                            class="product-step-primary"
+                        >
+                            Continuar
+                        </button>
+                    </div>
 
                 </div>
 
@@ -230,7 +236,7 @@
                             class="category-option"
                             data-category="Pizzas"
                         >
-                            🍕
+                            <span class="category-option-icon" aria-hidden="true">🍕</span>
                             <span>Pizzas</span>
                         </button>
 
@@ -239,7 +245,7 @@
                             class="category-option"
                             data-category="Empanadas"
                         >
-                            🥟
+                            <span class="category-option-icon" aria-hidden="true">🥟</span>
                             <span>Empanadas</span>
                         </button>
 
@@ -248,7 +254,7 @@
                             class="category-option"
                             data-category="Hamburguesas"
                         >
-                            🍔
+                            <span class="category-option-icon" aria-hidden="true">🍔</span>
                             <span>Hamburguesas</span>
                         </button>
 
@@ -257,7 +263,7 @@
                             class="category-option"
                             data-category="Pastas"
                         >
-                            🍝
+                            <span class="category-option-icon" aria-hidden="true">🍝</span>
                             <span>Pastas</span>
                         </button>
 
@@ -266,7 +272,7 @@
                             class="category-option"
                             data-category="Sandwiches"
                         >
-                            🥪
+                            <span class="category-option-icon" aria-hidden="true">🥪</span>
                             <span>Sándwiches</span>
                         </button>
 
@@ -275,7 +281,7 @@
                             class="category-option"
                             data-category="Bebidas"
                         >
-                            🥤
+                            <span class="category-option-icon" aria-hidden="true">🥤</span>
                             <span>Bebidas</span>
                         </button>
 
@@ -284,7 +290,7 @@
                             class="category-option"
                             data-category="Postres"
                         >
-                            🍰
+                            <span class="category-option-icon" aria-hidden="true">🍰</span>
                             <span>Postres</span>
                         </button>
 
@@ -293,7 +299,7 @@
                             class="category-option"
                             data-category="Helados"
                         >
-                            🍦
+                            <span class="category-option-icon" aria-hidden="true">🍦</span>
                             <span>Helados</span>
                         </button>
 
@@ -302,7 +308,7 @@
                             class="category-option"
                             data-category="Cafeteria"
                         >
-                            ☕
+                            <span class="category-option-icon" aria-hidden="true">☕</span>
                             <span>Cafetería</span>
                         </button>
 
@@ -311,7 +317,7 @@
                             class="category-option"
                             data-category="Combos"
                         >
-                            🎁
+                            <span class="category-option-icon" aria-hidden="true">🎁</span>
                             <span>Combos</span>
                         </button>
 
@@ -320,7 +326,7 @@
                             class="category-option"
                             data-category="Promociones"
                         >
-                            🔥
+                            <span class="category-option-icon" aria-hidden="true">🔥</span>
                             <span>Promociones</span>
                         </button>
 
@@ -329,7 +335,7 @@
                             class="category-option"
                             data-category="Otra"
                         >
-                            ➕
+                            <span class="category-option-icon" aria-hidden="true">➕</span>
                             <span>Otra</span>
                         </button>
 
@@ -353,19 +359,22 @@
 
                     </div>
 
-                    <button
-                        type="button"
-                        id="btn-product-category-back"
-                    >
-                        Volver
-                    </button>
+                    <div class="product-step-actions">
+                        <button
+                            type="button"
+                            id="btn-product-category-back"
+                        >
+                            Volver
+                        </button>
 
-                    <button
-                        type="button"
-                        id="btn-product-category-next"
-                    >
-                        Continuar
-                    </button>
+                        <button
+                            type="button"
+                            id="btn-product-category-next"
+                            class="product-step-primary"
+                        >
+                            Continuar
+                        </button>
+                    </div>
 
                 </div>
 
@@ -388,7 +397,13 @@
                             for="product-photo-camera"
                             class="product-photo-button"
                         >
-                            📷 Sacar una foto
+                            <img
+                                class="product-photo-button-icon"
+                                src="../../assets/icono-camara.png"
+                                alt=""
+                                aria-hidden="true"
+                            >
+                            Sacar una foto
                         </label>
 
                         <input
@@ -403,7 +418,13 @@
                             for="product-photo-gallery"
                             class="product-photo-button"
                         >
-                            🖼️ Elegir de mi galería
+                            <img
+                                class="product-photo-button-icon"
+                                src="../../assets/icono-galeria.png"
+                                alt=""
+                                aria-hidden="true"
+                            >
+                            Elegir de mi galería
                         </label>
 
                         <input
@@ -418,7 +439,13 @@
                             id="btn-default-image"
                             class="product-photo-button"
                         >
-                            🖼️ Elegir una imagen de OrdenFlash
+                            <img
+                                class="product-photo-button-icon"
+                                src="../../assets/icono-biblioteca.png"
+                                alt=""
+                                aria-hidden="true"
+                            >
+                            Biblioteca de imágenes
                         </button>
 
                     </div>
@@ -448,19 +475,22 @@
                         >
                     </div>
 
-                    <button
-                        type="button"
-                        id="btn-product-photo-back"
-                    >
-                        Volver
-                    </button>
+                    <div class="product-step-actions">
+                        <button
+                            type="button"
+                            id="btn-product-photo-back"
+                        >
+                            Volver
+                        </button>
 
-                    <button
-                        type="button"
-                        id="btn-product-photo-next"
-                    >
-                        Continuar
-                    </button>
+                        <button
+                            type="button"
+                            id="btn-product-photo-next"
+                            class="product-step-primary"
+                        >
+                            Continuar
+                        </button>
+                    </div>
 
                     <button
                         type="button"
@@ -518,19 +548,22 @@
 
                     </div>
 
-                    <button
-                        type="button"
-                        id="btn-product-confirm-back"
-                    >
-                        Volver
-                    </button>
+                    <div class="product-step-actions">
+                        <button
+                            type="button"
+                            id="btn-product-confirm-back"
+                        >
+                            Volver
+                        </button>
 
-                    <button
-                        type="button"
-                        id="btn-product-save"
-                    >
-                        Agregar producto
-                    </button>
+                        <button
+                            type="button"
+                            id="btn-product-save"
+                            class="product-step-primary"
+                        >
+                            Agregar producto
+                        </button>
+                    </div>
 
                     <p id="product-error"></p>
 

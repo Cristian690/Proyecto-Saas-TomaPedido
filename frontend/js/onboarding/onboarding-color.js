@@ -27,8 +27,6 @@ const previewLogo =
 const previewCover =
     document.getElementById("preview-cover");
 
-const previewBusinessName =
-    document.getElementById("preview-business-name");
 
 const previewWelcomeMessage =
     document.getElementById("preview-welcome-message");
@@ -97,11 +95,7 @@ async function loadBusiness() {
             "Business cargado:",
             business
         );
-
-
-        // Nombre del negocio
-        previewBusinessName.textContent =
-            business.name || "Tu negocio";
+        
 
 
         // Mensaje de bienvenida
@@ -126,16 +120,16 @@ async function loadBusiness() {
 
 
         // Logo
+        // Logo
         if (business.logoUrl) {
-
-            previewLogo.src =
-                getOptimizedCloudinaryUrl(
-                    business.logoUrl,
-                    "f_auto,q_auto,w_300,c_fit"
-                );
-
-            previewLogo.style.display =
-                "block";
+            previewLogo.src = getOptimizedCloudinaryUrl(
+                business.logoUrl,
+                "f_auto,q_auto,w_300,c_fit"
+            );
+            previewLogo.style.display = "block";
+        } else {
+            previewLogo.removeAttribute("src");
+            previewLogo.style.display = "none";
         }
 
         // Portada

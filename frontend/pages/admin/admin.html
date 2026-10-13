@@ -6,7 +6,7 @@
 
     <title>OrdenFlash - Admin</title>
 
-    <link rel="stylesheet" href="../../style.css?v=15">
+    <link rel="stylesheet" href="../../style.css?v=17">
 </head>
 
 <body>
@@ -144,41 +144,45 @@
                     </div>
 
                     <div class="business-form-fields business-appearance-fields">
-                        <label>
-                            Logo
+                        <div class="business-media-field">
+                            <span class="business-media-label">Logo</span>
                             <img
                                 id="business-logo-preview"
                                 class="admin-image-preview"
                                 src=""
                                 alt="Logo actual"
                             >
-                            <input type="file" id="business-logo" accept="image/*">
-                        </label>
+                            <input class="business-file-input" type="file" id="business-logo" accept="image/*">
+                            <label class="business-file-button" for="business-logo">Seleccionar archivo</label>
+                        </div>
 
-                        <label>
-                            Imagen de portada
+                        <div class="business-media-field">
+                            <span class="business-media-label">Imagen de portada</span>
                             <img
                                 id="business-cover-preview"
                                 class="admin-image-preview admin-cover-preview"
                                 src=""
                                 alt="Portada actual"
                             >
-                            <input type="file" id="business-cover" accept="image/*">
-                        </label>
+                            <input class="business-file-input" type="file" id="business-cover" accept="image/*">
+                            <label class="business-file-button" for="business-cover">Seleccionar archivo</label>
+                        </div>
 
-                        <label class="business-color-field">
-                            Color de los botones
-                            <input type="color" id="business-primary-color" value="#e63946">
-                        </label>
+                        <div class="business-color-fields">
+                            <label class="business-color-field">
+                                Color de los botones
+                                <input type="color" id="business-primary-color" value="#e63946">
+                            </label>
 
-                        <label class="business-color-field">
-                            Color de fondo
-                            <input
-                                type="color"
-                                id="business-background-color"
-                                value="#ffffff"
-                            >
-                        </label>
+                            <label class="business-color-field">
+                                Color de fondo
+                                <input
+                                    type="color"
+                                    id="business-background-color"
+                                    value="#ffffff"
+                                >
+                            </label>
+                        </div>
 
                         <label>
                             Mensaje de bienvenida

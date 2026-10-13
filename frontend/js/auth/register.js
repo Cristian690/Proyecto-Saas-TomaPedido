@@ -107,7 +107,7 @@ nextButton2.addEventListener("click", async () => {
 
     if (!normalizedPhone) {
         errorMessage.textContent =
-            "Ingresá un número de WhatsApp argentino válido";
+            "Ingresá un número de WhatsApp válido";
         return;
     }
 
@@ -251,6 +251,9 @@ form.addEventListener("submit", async (event) => {
 
     try {
 
+        errorMessage.textContent = "Creando tu página, esperá unos segundos…";
+        errorMessage.classList.add("register-loading");
+
         // 1. Crear la cuenta
         const registerResponse = await fetch(
             `${API_URL}/auth/register`,
@@ -377,7 +380,7 @@ form.addEventListener("submit", async (event) => {
             error
         );
 
-        errorMessage.textContent =
-            error.message;
+        errorMessage.classList.remove("register-loading");
+        errorMessage.textContent = error.message;
     }
 });

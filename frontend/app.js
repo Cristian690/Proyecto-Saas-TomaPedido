@@ -38,6 +38,7 @@ const openedFromAdmin = params.get("admin") === "true";
 
 let businessOpen = true;
 let currentBusiness = null;
+const DEFAULT_BUSINESS_LOGO = "assets/logo-ejemplo.png";
 
 
 if (!slug) {
@@ -174,6 +175,19 @@ async function loadData() {
     const heroBusinessLogoElement =
         document.getElementById("hero-business-logo");
 
+    const showDefaultBusinessLogo = () => {
+        heroBusinessLogoElement.onerror = () => {
+            heroBusinessLogoElement.removeAttribute("src");
+            heroBusinessLogoElement.style.display = "none";
+        };
+
+        heroBusinessLogoElement.src =
+            DEFAULT_BUSINESS_LOGO;
+
+        heroBusinessLogoElement.style.display =
+            "block";
+    };
+
 
     // PORTADA
     if (business.coverUrl) {
@@ -200,6 +214,9 @@ async function loadData() {
     // LOGO
     if (business.logoUrl) {
 
+        heroBusinessLogoElement.onerror =
+            showDefaultBusinessLogo;
+
         heroBusinessLogoElement.src =
             getOptimizedCloudinaryUrl(
                 business.logoUrl,
@@ -211,8 +228,7 @@ async function loadData() {
 
     } else {
 
-        heroBusinessLogoElement.style.display =
-            "none";
+        showDefaultBusinessLogo();
     }
 
 

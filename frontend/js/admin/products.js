@@ -446,6 +446,17 @@ function showDefaultImages() {
                 <span>${image.nombre}</span>
             `;
 
+            const imageElement =
+                button.querySelector("img");
+
+            imageElement.addEventListener("error", () => {
+                button.remove();
+
+                if (gallery.childElementCount === 0) {
+                    container.style.display = "none";
+                }
+            }, { once: true });
+
             button.addEventListener("click", () => {
 
                 newProduct.imageFile = null;
