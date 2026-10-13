@@ -42,4 +42,5 @@ JWT_SECRET="$(openssl rand -base64 48)"
 
 trap 'unset DB_PASSWORD JWT_SECRET' EXIT
 
+cd "$(dirname "$0")"
 ./mvnw spring-boot:run
