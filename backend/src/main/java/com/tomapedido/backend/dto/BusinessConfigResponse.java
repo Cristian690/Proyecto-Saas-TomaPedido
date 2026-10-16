@@ -16,6 +16,10 @@ public class BusinessConfigResponse {
     private String backgroundColor;
     private String welcomeMessage;
     private String address;
+    private String mercadoPagoAlias;
+    private String mercadoPagoAccountHolder;
+    private String deliveryMode;
+    private String whatsappMode;
     private boolean open;
     private boolean stockEnabled;
 }

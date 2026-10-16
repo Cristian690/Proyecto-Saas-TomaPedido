@@ -64,6 +64,10 @@ public class TenantConfigService {
                 config.getBackgroundColor(),
                 config.getWelcomeMessage(),
                 config.getAddress(),
+                config.getMercadoPagoAlias(),
+                config.getMercadoPagoAccountHolder(),
+                config.getDeliveryMode(),
+                config.getWhatsappMode(),
                 config.isOpen(),
                 config.isStockEnabled());
     }
@@ -79,6 +83,10 @@ public class TenantConfigService {
                 config.getBackgroundColor(),
                 config.getWelcomeMessage(),
                 config.getAddress(),
+                config.getMercadoPagoAlias(),
+                config.getMercadoPagoAccountHolder(),
+                config.getDeliveryMode(),
+                config.getWhatsappMode(),
                 config.isOpen(),
                 config.isStockEnabled());
     }
@@ -99,6 +107,16 @@ public class TenantConfigService {
                     existingTenantConfig.setBackgroundColor(request.getBackgroundColor());
                     existingTenantConfig.setWelcomeMessage(request.getWelcomeMessage());
                     existingTenantConfig.setAddress(request.getAddress());
+                    existingTenantConfig.setMercadoPagoAlias(request.getMercadoPagoAlias());
+                    existingTenantConfig.setMercadoPagoAccountHolder(request.getMercadoPagoAccountHolder());
+
+                    if (request.getDeliveryMode() != null) {
+                        existingTenantConfig.setDeliveryMode(request.getDeliveryMode());
+                    }
+
+                    if (request.getWhatsappMode() != null) {
+                        existingTenantConfig.setWhatsappMode(request.getWhatsappMode());
+                    }
 
                     if (request.getStockEnabled() != null) {
                         existingTenantConfig.setStockEnabled(request.getStockEnabled());
@@ -118,6 +136,14 @@ public class TenantConfigService {
                     tenantConfig.setBackgroundColor(request.getBackgroundColor());
                     tenantConfig.setWelcomeMessage(request.getWelcomeMessage());
                     tenantConfig.setAddress(request.getAddress());
+                    tenantConfig.setMercadoPagoAlias(request.getMercadoPagoAlias());
+                    tenantConfig.setMercadoPagoAccountHolder(request.getMercadoPagoAccountHolder());
+                    tenantConfig.setDeliveryMode(request.getDeliveryMode() != null
+                            ? request.getDeliveryMode()
+                            : "BOTH");
+                    tenantConfig.setWhatsappMode(request.getWhatsappMode() != null
+                            ? request.getWhatsappMode()
+                            : "ORDERS");
                     tenantConfig.setOpen(request.isOpen());
                     tenantConfig.setStockEnabled(request.getStockEnabled() != null
                             ? request.getStockEnabled()
@@ -174,6 +200,14 @@ public class TenantConfigService {
 
         if (request.getWelcomeMessage() != null) {
             config.setWelcomeMessage(request.getWelcomeMessage());
+        }
+
+        if (request.getMercadoPagoAlias() != null) {
+            config.setMercadoPagoAlias(request.getMercadoPagoAlias());
+        }
+
+        if (request.getMercadoPagoAccountHolder() != null) {
+            config.setMercadoPagoAccountHolder(request.getMercadoPagoAccountHolder());
         }
 
         if (request.getStockEnabled() != null) {

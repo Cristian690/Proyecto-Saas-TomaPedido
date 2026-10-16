@@ -7,7 +7,7 @@
   <title>OrdenFlash</title>
   
   
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=7" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Lucide icons via CDN -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -148,7 +148,7 @@
     <div class="cart-header">
       <div class="cart-title">
         <i data-lucide="shopping-cart"></i>
-        <span>Tu carrito</span>
+        <span id="cart-title-text">Tu carrito</span>
         <span class="cart-badge" id="cart-badge">0</span>
       </div>
       <button class="cart-toggle" id="cart-toggle">Ver carrito <i data-lucide="chevron-up" id="chevron-icon"></i></button>
@@ -166,7 +166,7 @@
         <i data-lucide="message-circle"></i>
         Enviar pedido por WhatsApp
       </a>
-      <p class="cart-note">🔒 Tu pedido será confirmado por WhatsApp</p>
+      <p class="cart-note" id="cart-mode-note">🔒 Tu pedido será confirmado por WhatsApp</p>
     </div>
   </section> 
 
@@ -186,8 +186,8 @@
 
         <label for="delivery-method">Método de entrega</label>
         <select id="delivery-method" onchange="toggleDeliveryFields()">
-          <option value="delivery">Envío a domicilio 🛵</option>
-          <option value="pickup">Retirar por el local 🛍️</option>
+          <option value="delivery" id="delivery-option">Envío a domicilio 🛵</option>
+          <option value="pickup" id="pickup-option">Retirar por el local 🛍️</option>
         </select>
 
         <div id="delivery-fields">
@@ -200,9 +200,25 @@
 
         <label for="payment-method">Forma de pago</label>
         <select id="payment-method" onchange="togglePaymentFields()">
-          <option value="Transferencia">Transferencia bancaria / Alias</option>
+          <option value="Transferencia" id="transfer-payment-option">Transferencia bancaria / Alias</option>
           <option value="Efectivo">Efectivo (Paga al recibir)</option>
         </select>
+
+        <section class="transfer-details" id="transfer-details" aria-labelledby="transfer-details-title" hidden>
+          <h2 id="transfer-details-title">Datos para transferir</h2>
+
+          <div id="transfer-alias-details" hidden>
+            <span>Alias de Mercado Pago</span>
+            <div class="transfer-alias-row">
+              <strong id="transfer-alias"></strong>
+              <button type="button" id="btn-copy-transfer-alias">Copiar alias</button>
+            </div>
+          </div>
+
+          <p id="transfer-account-holder" hidden></p>
+          <p class="transfer-details-note">Antes de transferir, verificá que el nombre del destinatario que muestra Mercado Pago coincida con estos datos.</p>
+          <p id="transfer-copy-message" class="transfer-copy-message" role="status" hidden></p>
+        </section>
 
         <div id="cash-fields" style="display: none;">
           <label for="cash-amount" style="margin-top: 8px;">¿Con cuánto vas a pagar? *</label>
@@ -238,7 +254,7 @@
 
   </div>
 
-  <script type="module" src="app.js?v=1.10"></script>
+  <script type="module" src="app.js?v=1.14"></script>
 
 </body>
 </html>

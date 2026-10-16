@@ -288,6 +288,80 @@ body {
     z-index: 2;
 }
 
+/* ====== DATOS PARA TRANSFERIR EN CHECKOUT ====== */
+.transfer-details {
+    margin: 2px 0;
+    padding: 14px;
+    border: 1px solid var(--gray-mid);
+    border-radius: var(--radius);
+    background: var(--gray-light);
+}
+
+.transfer-details[hidden] {
+    display: none;
+}
+
+.transfer-details h2 {
+    margin: 0 0 12px;
+    color: var(--black);
+    font-size: 1rem;
+}
+
+.transfer-details span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--gray-text);
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.transfer-alias-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.transfer-alias-row strong {
+    overflow-wrap: anywhere;
+    color: var(--black);
+    font-size: 0.96rem;
+}
+
+.transfer-alias-row button {
+    flex-shrink: 0;
+    min-height: 36px;
+    padding: 7px 10px;
+    border: 1px solid var(--business-primary);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--business-primary);
+    font-family: var(--font);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.transfer-details #transfer-account-holder {
+    margin: 12px 0 0;
+    color: var(--black);
+    font-size: 0.86rem;
+}
+
+.transfer-details-note {
+    margin: 12px 0 0;
+    color: var(--gray-text);
+    font-size: 0.76rem;
+    line-height: 1.45;
+}
+
+.transfer-copy-message {
+    margin: 8px 0 0;
+    color: var(--gray-text);
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
 /* ====== TABS ====== */
 .tabs {
   display: flex;
@@ -604,6 +678,11 @@ body {
   box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
   z-index: 90;
   border-radius: 16px 16px 0 0;
+}
+
+.cart-panel[hidden],
+#menu-cart[hidden] {
+  display: none;
 }
 
 .cart-header {
@@ -2987,6 +3066,12 @@ input[type="file"][hidden] {
     font-size: 0.82rem;
 }
 
+.business-store-actions-buttons {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+}
+
 .business-store-actions button {
     flex-shrink: 0;
     min-height: 38px;
@@ -3004,6 +3089,109 @@ input[type="file"][hidden] {
 .business-store-actions button:hover {
     border-color: var(--red);
     color: var(--red-dark);
+}
+
+.business-qr-modal {
+    position: fixed;
+    z-index: 30;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(22, 22, 22, 0.48);
+}
+
+.business-qr-modal[hidden] {
+    display: none;
+}
+
+.business-qr-modal__content {
+    position: relative;
+    width: min(100%, 360px);
+    padding: 28px 24px 24px;
+    border-radius: 14px;
+    background: var(--white);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+    text-align: center;
+}
+
+.business-qr-modal__content h2 {
+    margin: 0;
+    color: var(--black);
+    font-size: 1.2rem;
+}
+
+.business-qr-modal__content > p {
+    margin: 8px 0 16px;
+    color: var(--gray-text);
+    font-size: 0.84rem;
+    line-height: 1.45;
+}
+
+.business-qr-modal__close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--gray-text);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.business-qr-modal__close:hover {
+    background: var(--gray-light);
+    color: var(--black);
+}
+
+.business-qr-code {
+    display: grid;
+    place-items: center;
+    min-height: 256px;
+    margin: 0 auto 12px;
+}
+
+.business-qr-code canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.business-qr-url {
+    overflow-wrap: anywhere;
+}
+
+.business-qr-modal__content .business-qr-message {
+    margin: 0 0 12px;
+    color: var(--red-dark);
+    font-weight: 600;
+}
+
+.business-qr-download {
+    width: 100%;
+    min-height: 42px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--red);
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.business-qr-download:hover:not(:disabled) {
+    background: var(--red-dark);
+}
+
+.business-qr-download:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .business-settings-form .business-status {
@@ -3230,6 +3418,11 @@ input[type="file"][hidden] {
 
     .business-store-actions button {
         width: 100%;
+    }
+
+    .business-store-actions-buttons {
+        width: 100%;
+        flex-direction: column;
     }
 
     .admin-content .business-settings-form .business-media-field {

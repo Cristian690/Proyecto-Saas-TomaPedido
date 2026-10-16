@@ -38,11 +38,16 @@ const business = {
     backgroundColor: "#ffffff",
     welcomeMessage: "",
     address: "",
+    mercadoPagoAlias: "",
+    mercadoPagoAccountHolder: "",
+    deliveryMode: "BOTH",
+    whatsappMode: "ORDERS",
     open: false,
     stockEnabled: true
 };
 
 let shareMessageTimeout;
+let qrMessageTimeout;
 
 function getPublicStoreUrl() {
 
@@ -57,6 +62,96 @@ function getPublicStoreUrl() {
     publicStoreUrl.searchParams.set("business", slug);
 
     return publicStoreUrl.toString();
+}
+
+function showQrMessage(message) {
+
+    const qrMessage = document.getElementById("business-qr-message");
+
+    clearTimeout(qrMessageTimeout);
+
+    qrMessage.textContent = message;
+    qrMessage.hidden = false;
+
+    qrMessageTimeout = setTimeout(() => {
+        qrMessage.hidden = true;
+    }, 3000);
+}
+
+function showBusinessQrCode() {
+
+    const publicStoreUrl = getPublicStoreUrl();
+
+    if (!publicStoreUrl) {
+        showShareMessage("No se encontró el enlace público del negocio.");
+        return;
+    }
+
+    const qrModal = document.getElementById("business-qr-modal");
+    const qrCodeContainer = document.getElementById("business-qr-code");
+    const qrUrl = document.getElementById("business-qr-url");
+    const downloadButton = document.getElementById("btn-download-qr");
+
+    qrCodeContainer.replaceChildren();
+    qrUrl.textContent = publicStoreUrl;
+    document.getElementById("business-qr-message").hidden = true;
+    downloadButton.disabled = true;
+
+    if (!window.QRCode) {
+        qrModal.hidden = false;
+        showQrMessage("No se pudo generar el código QR. Intentá nuevamente.");
+        return;
+    }
+
+    try {
+        new window.QRCode(qrCodeContainer, {
+            text: publicStoreUrl,
+            width: 256,
+            height: 256,
+            colorDark: "#161616",
+            colorLight: "#ffffff",
+            correctLevel: window.QRCode.CorrectLevel.M
+        });
+
+        downloadButton.disabled = false;
+        qrModal.hidden = false;
+    } catch (error) {
+        console.error("Error generating business QR code:", error);
+        qrModal.hidden = false;
+        showQrMessage("No se pudo generar el código QR. Intentá nuevamente.");
+    }
+}
+
+function closeBusinessQrCode() {
+    document.getElementById("business-qr-modal").hidden = true;
+}
+
+function downloadBusinessQrCode() {
+
+    const canvas = document.querySelector("#business-qr-code canvas");
+    const slug = localStorage.getItem("businessSlug") || "tienda";
+
+    if (!canvas) {
+        showQrMessage("No se pudo preparar la descarga. Intentá nuevamente.");
+        return;
+    }
+
+    const pngCanvas = document.createElement("canvas");
+    const pngContext = pngCanvas.getContext("2d");
+
+    pngCanvas.width = canvas.width;
+    pngCanvas.height = canvas.height;
+    pngContext.fillStyle = "#ffffff";
+    pngContext.fillRect(0, 0, pngCanvas.width, pngCanvas.height);
+    pngContext.drawImage(canvas, 0, 0);
+
+    const downloadLink = document.createElement("a");
+
+    downloadLink.href = pngCanvas.toDataURL("image/png");
+    downloadLink.download = `ordenflash-${slug}-codigo-qr.png`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
 }
 
 function showShareMessage(message) {
@@ -339,10 +434,30 @@ document
                     "business-address"
                 ).value;
 
+            business.mercadoPagoAlias =
+                document.getElementById(
+                    "business-mercado-pago-alias"
+                ).value;
+
+            business.mercadoPagoAccountHolder =
+                document.getElementById(
+                    "business-mercado-pago-account-holder"
+                ).value;
+
             business.stockEnabled =
                 document.getElementById(
                     "business-stock-enabled"
                 ).checked;
+
+            business.deliveryMode =
+                document.getElementById(
+                    "business-delivery-mode"
+                ).value;
+
+            business.whatsappMode =
+                document.getElementById(
+                    "business-whatsapp-mode"
+                ).value;
 
             const businessData = {
                 name: business.name,
@@ -353,6 +468,10 @@ document
                 backgroundColor: business.backgroundColor,
                 welcomeMessage: business.welcomeMessage,
                 address: business.address,
+                mercadoPagoAlias: business.mercadoPagoAlias,
+                mercadoPagoAccountHolder: business.mercadoPagoAccountHolder,
+                deliveryMode: business.deliveryMode,
+                whatsappMode: business.whatsappMode,
                 open: business.open,
                 stockEnabled: business.stockEnabled
             };
@@ -399,6 +518,12 @@ document
 
             business.stockEnabled =
                 data.stockEnabled !== false;
+
+            business.mercadoPagoAlias =
+                data.mercadoPagoAlias ?? "";
+
+            business.mercadoPagoAccountHolder =
+                data.mercadoPagoAccountHolder ?? "";
 
             document.getElementById(
                 "business-welcome-message"
@@ -592,11 +717,23 @@ fetch(
         business.address =
             data.address;
 
+        business.mercadoPagoAlias =
+            data.mercadoPagoAlias ?? "";
+
+        business.mercadoPagoAccountHolder =
+            data.mercadoPagoAccountHolder ?? "";
+
         business.open =
             data.open;
 
         business.stockEnabled =
             data.stockEnabled !== false;
+
+        business.deliveryMode =
+            data.deliveryMode || "BOTH";
+
+        business.whatsappMode =
+            data.whatsappMode || "ORDERS";
 
 
         const statusText =
@@ -652,9 +789,29 @@ fetch(
             business.address;
 
         document.getElementById(
+            "business-mercado-pago-alias"
+        ).value =
+            business.mercadoPagoAlias;
+
+        document.getElementById(
+            "business-mercado-pago-account-holder"
+        ).value =
+            business.mercadoPagoAccountHolder;
+
+        document.getElementById(
             "business-stock-enabled"
         ).checked =
             business.stockEnabled;
+
+        document.getElementById(
+            "business-delivery-mode"
+        ).value =
+            business.deliveryMode;
+
+        document.getElementById(
+            "business-whatsapp-mode"
+        ).value =
+            business.whatsappMode;
 
 
         console.log(
@@ -795,6 +952,32 @@ document
             showShareMessage("No se pudo copiar el enlace. Intentá nuevamente.");
         }
     });
+
+document
+    .getElementById("btn-show-qr")
+    .addEventListener("click", showBusinessQrCode);
+
+document
+    .getElementById("btn-close-qr")
+    .addEventListener("click", closeBusinessQrCode);
+
+document
+    .getElementById("btn-download-qr")
+    .addEventListener("click", downloadBusinessQrCode);
+
+document
+    .getElementById("business-qr-modal")
+    .addEventListener("click", (event) => {
+        if (event.target.id === "business-qr-modal") {
+            closeBusinessQrCode();
+        }
+    });
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        closeBusinessQrCode();
+    }
+});
 
 
 document

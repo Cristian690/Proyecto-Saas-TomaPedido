@@ -64,6 +64,18 @@ public class CheckoutService {
                     "El comercio no se encuentra disponible");
         }
 
+        if ("INQUIRIES".equals(config.getWhatsappMode())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "El comercio recibe consultas por WhatsApp");
+        }
+
+        if (!isDeliveryMethodAllowed(config, request.getDeliveryMethod())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "El método de entrega no está habilitado para este comercio");
+        }
+
         List<CheckoutItemRequest> requestedItems = request.getItems().stream()
                 .sorted(Comparator.comparing(CheckoutItemRequest::getProductId))
                 .toList();
@@ -154,6 +166,22 @@ public class CheckoutService {
                 savedOrder.getId(),
                 savedOrder.getStatus(),
                 savedOrder.getTotal());
+    }
+
+    private boolean isDeliveryMethodAllowed(
+            TenantConfig config,
+            String deliveryMethod) {
+
+        String deliveryMode = config.getDeliveryMode() == null
+                ? "BOTH"
+                : config.getDeliveryMode();
+
+        return switch (deliveryMode) {
+            case "DELIVERY_ONLY" -> "delivery".equals(deliveryMethod);
+            case "PICKUP_ONLY" -> "pickup".equals(deliveryMethod);
+            default -> "delivery".equals(deliveryMethod)
+                    || "pickup".equals(deliveryMethod);
+        };
     }
 
     private void ensureNoDuplicateProducts(List<CheckoutItemRequest> items) {

@@ -18,7 +18,7 @@ import {
     setProducts,
     renderProducts,
     products
-} from "./js/products/products.js?v=1.4";
+} from "./js/products/products.js?v=1.6";
 
 import {
     addToCart,
@@ -38,6 +38,7 @@ const openedFromAdmin = params.get("admin") === "true";
 
 let businessOpen = true;
 let currentBusiness = null;
+let transferCopyMessageTimeout;
 const DEFAULT_BUSINESS_LOGO = "assets/logo-ejemplo.png";
 
 
@@ -69,6 +70,204 @@ function setupAdminPreview() {
         window.opener.focus();
         window.close();
     });
+}
+
+function showTransferCopyMessage(message) {
+
+    const copyMessage = document.getElementById("transfer-copy-message");
+
+    clearTimeout(transferCopyMessageTimeout);
+
+    copyMessage.textContent = message;
+    copyMessage.hidden = false;
+
+    transferCopyMessageTimeout = setTimeout(() => {
+        copyMessage.hidden = true;
+    }, 3000);
+}
+
+function renderTransferDetails(business) {
+
+    const transferDetails = document.getElementById("transfer-details");
+    const aliasDetails = document.getElementById("transfer-alias-details");
+    const paymentMethod = document.getElementById("payment-method");
+    const transferOption = document.getElementById("transfer-payment-option");
+    const alias = business.mercadoPagoAlias?.trim();
+    const accountHolder = business.mercadoPagoAccountHolder?.trim();
+    const transferAvailable = Boolean(alias || accountHolder);
+
+    transferOption.hidden = !transferAvailable;
+    transferOption.disabled = !transferAvailable;
+
+    if (!transferAvailable && paymentMethod.value === "Transferencia") {
+        paymentMethod.value = "Efectivo";
+    }
+
+    aliasDetails.hidden = !alias;
+    document.getElementById("transfer-alias").textContent = alias || "";
+
+    const accountHolderElement =
+        document.getElementById("transfer-account-holder");
+
+    accountHolderElement.hidden = !accountHolder;
+    accountHolderElement.textContent = accountHolder
+        ? `Titular: ${accountHolder}`
+        : "";
+
+    document.getElementById("transfer-copy-message").hidden = true;
+    togglePaymentFields();
+}
+
+function configureDeliveryMethods(business) {
+
+    const deliveryMethod = document.getElementById("delivery-method");
+    const deliveryOption = document.getElementById("delivery-option");
+    const pickupOption = document.getElementById("pickup-option");
+    const deliveryMode = business.deliveryMode || "BOTH";
+    const deliveryEnabled = deliveryMode !== "PICKUP_ONLY";
+    const pickupEnabled = deliveryMode !== "DELIVERY_ONLY";
+
+    deliveryOption.hidden = !deliveryEnabled;
+    deliveryOption.disabled = !deliveryEnabled;
+    pickupOption.hidden = !pickupEnabled;
+    pickupOption.disabled = !pickupEnabled;
+
+    if (deliveryMethod.value === "delivery" && !deliveryEnabled) {
+        deliveryMethod.value = "pickup";
+    }
+
+    if (deliveryMethod.value === "pickup" && !pickupEnabled) {
+        deliveryMethod.value = "delivery";
+    }
+
+    toggleDeliveryFields();
+}
+
+function getBusinessWhatsAppPhone() {
+
+    let phone = currentBusiness?.whatsapp?.replace(/\D/g, "") || "";
+
+    if (phone.startsWith("549")) {
+        return phone;
+    }
+
+    if (phone.startsWith("54")) {
+        return "549" + phone.substring(2);
+    }
+
+    if (phone.startsWith("0")) {
+        phone = phone.substring(1);
+    }
+
+    if (phone.startsWith("11") && phone.length === 10) {
+        return "549" + phone;
+    }
+
+    return phone;
+}
+
+function configureWhatsAppMode(business) {
+
+    const inquiriesMode = business.whatsappMode === "INQUIRIES";
+    const button = document.getElementById("btn-whatsapp");
+    const buttonIcon = document.createElement("i");
+
+    document.getElementById("cart-panel").hidden = false;
+    document.getElementById("menu-cart").hidden = false;
+    document.getElementById("cart-title-text").textContent = inquiriesMode
+        ? "Tu consulta"
+        : "Tu carrito";
+
+    buttonIcon.setAttribute("data-lucide", "message-circle");
+    button.replaceChildren(
+        buttonIcon,
+        inquiriesMode
+            ? "Consultar por WhatsApp"
+            : "Enviar pedido por WhatsApp"
+    );
+
+    document.getElementById("cart-mode-note").textContent = inquiriesMode
+        ? "Seleccioná los productos que querés consultar."
+        : "🔒 Tu pedido será confirmado por WhatsApp";
+
+    lucide.createIcons();
+}
+
+function showInquiryNotice(message) {
+    document.getElementById("cart-mode-note").textContent = message;
+}
+
+function sendProductInquiry() {
+
+    const items = Object.entries(getCart());
+
+    if (items.length === 0) {
+        showInquiryNotice("Agregá al menos un producto para enviar tu consulta.");
+        return;
+    }
+
+    const phone = getBusinessWhatsAppPhone();
+
+    if (!phone) {
+        showInquiryNotice("Este negocio todavía no configuró su número de WhatsApp.");
+        return;
+    }
+
+    const productsMessage = items.map(([, item]) =>
+        `- ${item.name} x ${item.qty}`
+    ).join("\n");
+
+    const message =
+        `Hola, quería consultar por estos productos:\n\n${productsMessage}`;
+
+    window.open(
+        `https://api.whatsapp.com/send/?phone=${phone}&text=${encodeURIComponent(message)}`,
+        "_blank"
+    );
+}
+
+window.addEventListener("cartchange", () => {
+    if (currentBusiness?.whatsappMode === "INQUIRIES") {
+        showInquiryNotice("Seleccioná los productos que querés consultar.");
+    }
+});
+
+async function copyTransferAlias() {
+
+    const alias = currentBusiness?.mercadoPagoAlias?.trim();
+
+    if (!alias) {
+        return;
+    }
+
+    try {
+        if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(alias);
+        } else {
+            const temporaryInput = document.createElement("textarea");
+
+            temporaryInput.value = alias;
+            temporaryInput.setAttribute("readonly", "");
+            temporaryInput.style.position = "fixed";
+            temporaryInput.style.opacity = "0";
+
+            document.body.appendChild(temporaryInput);
+            temporaryInput.select();
+
+            const copied = document.execCommand("copy");
+
+            temporaryInput.remove();
+
+            if (!copied) {
+                throw new Error("No se pudo copiar el alias");
+            }
+        }
+
+        showTransferCopyMessage("✅ Alias copiado al portapapeles.");
+    } catch (error) {
+        console.error("Error copying Mercado Pago alias:", error);
+        showTransferCopyMessage("No se pudo copiar el alias. Intentá nuevamente.");
+    }
 }
 
 
@@ -123,6 +322,10 @@ async function loadData() {
 
 
     currentBusiness = business;
+
+    renderTransferDetails(business);
+    configureDeliveryMethods(business);
+    configureWhatsAppMode(business);
 
     document.documentElement.style.setProperty(
         "--business-primary",
@@ -338,6 +541,7 @@ async function loadData() {
     );
 
     const stockEnabled = business.stockEnabled !== false;
+    const onProductAction = id => addToCart(id, products);
 
     configureCartStock(
         stockEnabled,
@@ -373,7 +577,7 @@ async function loadData() {
 
         renderProducts(
             selectedCategory,
-            addToCart,
+            onProductAction,
             changeQty,
             id => getCart()[id]?.qty || 0,
             stockEnabled
@@ -387,7 +591,7 @@ async function loadData() {
 
     renderProducts(
         getCategories(),
-        id => addToCart(id, products),
+        onProductAction,
         changeQty,
         id => getCart()[id]?.qty || 0,
         stockEnabled
@@ -449,6 +653,11 @@ whatsappButton.addEventListener(
     async (e) => {
 
         e.preventDefault();
+
+        if (currentBusiness?.whatsappMode === "INQUIRIES") {
+            sendProductInquiry();
+            return;
+        }
 
         try {
 
@@ -699,10 +908,8 @@ document
 
 function togglePaymentFields() {
 
-    const method =
-        document.getElementById(
-            "payment-method"
-        ).value;
+    const paymentMethod = document.getElementById("payment-method");
+    const method = paymentMethod.value;
 
 
     const cashFields =
@@ -715,6 +922,14 @@ function togglePaymentFields() {
         document.getElementById(
             "cash-amount"
         );
+
+    const transferDetails = document.getElementById("transfer-details");
+    const transferAvailable = !document.getElementById(
+        "transfer-payment-option"
+    ).disabled;
+
+    transferDetails.hidden =
+        method !== "Transferencia" || !transferAvailable;
 
 
     if (method === "Efectivo") {
@@ -1428,8 +1643,12 @@ menuContact.addEventListener(
     }
 );
 
+document
+    .getElementById("btn-copy-transfer-alias")
+    .addEventListener("click", copyTransferAlias);
 
-setupAdminPreview(); 
+
+setupAdminPreview();
 
 loadData().catch(error => { 
     showPublicStoreUnavailable(); 

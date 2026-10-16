@@ -6,7 +6,7 @@
 
     <title>OrdenFlash - Admin</title>
 
-    <link rel="stylesheet" href="../../style.css?v=17">
+    <link rel="stylesheet" href="../../style.css?v=18">
 </head>
 
 <body>
@@ -113,9 +113,14 @@
 
                         <div class="business-store-actions">
                             <span>👁️ Revisá cómo ven tu negocio tus clientes.</span>
-                            <button type="button" id="btn-view-public">
-                                Ver mi página pública
-                            </button>
+                            <div class="business-store-actions-buttons">
+                                <button type="button" id="btn-view-public">
+                                    Ver mi página pública
+                                </button>
+                                <button type="button" id="btn-show-qr">
+                                    Mi código QR
+                                </button>
+                            </div>
                         </div>
 
                         <p id="business-share-message" class="business-share-message" role="status" hidden></p>
@@ -134,6 +139,17 @@
                         <button type="button" id="business-status-button">
                             Cambiar estado
                         </button>
+                    </div>
+
+                    <div class="business-form-fields">
+                        <label>
+                            Modalidad de entrega
+                            <select id="business-delivery-mode">
+                                <option value="BOTH">Envío a domicilio y retiro en el local</option>
+                                <option value="DELIVERY_ONLY">Solo envío a domicilio</option>
+                                <option value="PICKUP_ONLY">Solo retiro en el local</option>
+                            </select>
+                        </label>
                     </div>
                 </section>
 
@@ -203,6 +219,35 @@
                         </label>
                         <p>Controla automáticamente las cantidades disponibles de tus productos.</p>
                     </div>
+
+                    <div class="business-form-fields">
+                        <label>
+                            Modo de WhatsApp
+                            <select id="business-whatsapp-mode">
+                                <option value="ORDERS">Tomar pedidos</option>
+                                <option value="INQUIRIES">Recibir consultas</option>
+                            </select>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="business-form-section business-settings-card business-settings-card--payments">
+                    <div class="business-form-section-title">
+                        <h3>Datos para transferencias</h3>
+                        <p>Opcional: mostralos a tus clientes para pagos por Mercado Pago.</p>
+                    </div>
+
+                    <div class="business-form-fields">
+                        <label>
+                            Alias de Mercado Pago
+                            <input type="text" id="business-mercado-pago-alias">
+                        </label>
+
+                        <label>
+                            Nombre del titular
+                            <input type="text" id="business-mercado-pago-account-holder">
+                        </label>
+                    </div>
                 </section>
 
 
@@ -228,10 +273,39 @@
 
             </div>
 
+            <section
+                class="business-qr-modal"
+                id="business-qr-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="business-qr-title"
+                hidden
+            >
+                <div class="business-qr-modal__content">
+                    <button
+                        type="button"
+                        class="business-qr-modal__close"
+                        id="btn-close-qr"
+                        aria-label="Cerrar código QR"
+                    >
+                        ×
+                    </button>
+                    <h2 id="business-qr-title">Mi código QR</h2>
+                    <p>Escanealo con la cámara del celular para abrir tu tienda.</p>
+                    <div id="business-qr-code" class="business-qr-code" aria-label="Código QR de mi tienda"></div>
+                    <p id="business-qr-url" class="business-qr-url"></p>
+                    <p id="business-qr-message" class="business-qr-message" role="status" hidden></p>
+                    <button type="button" id="btn-download-qr" class="business-qr-download">
+                        Descargar PNG
+                    </button>
+                </div>
+            </section>
+
         </section>
 
     </main>
 
-    <script type="module" src="../../js/admin/admin.js?v=1.7"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script type="module" src="../../js/admin/admin.js?v=1.8"></script>
 </body>
 </html>

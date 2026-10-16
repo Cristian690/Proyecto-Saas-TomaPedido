@@ -1,0 +1,3 @@
+ALTER TABLE tenant_config
+    ADD COLUMN delivery_mode VARCHAR(20) NOT NULL DEFAULT 'BOTH',
+    ADD COLUMN whatsapp_mode VARCHAR(20) NOT NULL DEFAULT 'ORDERS';

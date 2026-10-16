@@ -25,6 +25,14 @@ public class BusinessConfigRequest {
 
     private String welcomeMessage;
     private String address;
+    private String mercadoPagoAlias;
+    private String mercadoPagoAccountHolder;
+
+    @Pattern(regexp = "BOTH|DELIVERY_ONLY|PICKUP_ONLY", message = "La modalidad de entrega no es válida")
+    private String deliveryMode;
+
+    @Pattern(regexp = "ORDERS|INQUIRIES", message = "El modo de WhatsApp no es válido")
+    private String whatsappMode;
 
     private boolean open;
     private Boolean stockEnabled;

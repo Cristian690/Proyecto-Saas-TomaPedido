@@ -38,11 +38,21 @@ public class TenantConfig {
 
     private String address;
 
+    private String mercadoPagoAlias;
+
+    private String mercadoPagoAccountHolder;
+
     @Column(nullable = false)
     private boolean open;
 
     @Column(nullable = false)
     private boolean stockEnabled = true;
+
+    @Column(nullable = false, length = 20)
+    private String deliveryMode = "BOTH";
+
+    @Column(nullable = false, length = 20)
+    private String whatsappMode = "ORDERS";
 
     @OneToOne
     @JoinColumn(name = "tenant_id", nullable = false, unique = true)
