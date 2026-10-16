@@ -37,8 +37,8 @@ fi
 export DB_URL="$LOCAL_DB_URL"
 export DB_USERNAME="$LOCAL_DB_USERNAME"
 export DB_PASSWORD
-export JWT_SECRET
 JWT_SECRET="$(openssl rand -base64 48)"
+export JWT_SECRET
 
 trap 'unset DB_PASSWORD JWT_SECRET' EXIT
 

@@ -1,6 +1,7 @@
 import { API_URL } from "../api/api.js";
 
 import { defaultImages } from "../default-images/default-images.js";
+import { getOptimizedCloudinaryUrl } from "../images/cloudinary.js";
 
 const token = localStorage.getItem("token");
 
@@ -281,7 +282,10 @@ function openEditProduct(product, categoryName) {
     productPhotoGalleryInput.value = "";
 
     if (product.imageUrl) {
-        productPhotoImage.src = product.imageUrl;
+        productPhotoImage.src = getOptimizedCloudinaryUrl(
+            product.imageUrl,
+            "f_auto,q_auto,w_600,h_380,c_fill"
+        );
         productPhotoPreview.style.display = "block";
     } else {
         productPhotoImage.src = "";
@@ -440,7 +444,10 @@ function showDefaultImages() {
 
             button.innerHTML = `
                 <img
-                    src="${image.imagen}"
+                    src="${getOptimizedCloudinaryUrl(
+                        image.imagen,
+                        "f_auto,q_auto,w_160,h_160,c_fill"
+                    )}"
                     alt="${image.nombre}"
                 >
                 <span>${image.nombre}</span>
@@ -464,7 +471,10 @@ function showDefaultImages() {
                     image.imagen;
 
                 productPhotoImage.src =
-                    image.imagen;
+                    getOptimizedCloudinaryUrl(
+                        image.imagen,
+                        "f_auto,q_auto,w_600,h_380,c_fill"
+                    );
 
                 productPhotoPreview.style.display =
                     "block";
@@ -530,7 +540,10 @@ function showConfirmation() {
     } else if (newProduct.defaultImageUrl) {
 
         confirmationImage.src =
-            newProduct.defaultImageUrl;
+            getOptimizedCloudinaryUrl(
+                newProduct.defaultImageUrl,
+                "f_auto,q_auto,w_600,h_380,c_fill"
+            );
 
         confirmationImageContainer.style.display =
             "block";
@@ -1161,7 +1174,10 @@ function renderProducts(
                 "product-img";
 
             image.src =
-                product.imageUrl;
+                getOptimizedCloudinaryUrl(
+                    product.imageUrl,
+                    "f_auto,q_auto,w_160,h_160,c_fill"
+                );
 
             image.alt =
                 product.name;
