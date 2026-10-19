@@ -806,6 +806,10 @@ document
     .getElementById("btn-product-detail-add")
     .addEventListener("click", addProductFromDetail);
 
+document
+    .getElementById("btn-product-detail-cancel")
+    .addEventListener("click", closeProductDetail);
+
 
 // ====================================
 // MODAL CHECKOUT
