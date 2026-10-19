@@ -7,7 +7,7 @@
   <title>OrdenFlash</title>
   
   
-  <link rel="stylesheet" href="style.css?v=7" />
+  <link rel="stylesheet" href="style.css?v=9" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Lucide icons via CDN -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -141,6 +141,48 @@
     
   </main>
 
+  <div
+    id="product-detail-modal"
+    class="product-detail-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="product-detail-name"
+    hidden
+  >
+    <section class="product-detail-content">
+      <button
+        type="button"
+        id="btn-close-product-detail"
+        class="product-detail-close"
+        aria-label="Cerrar detalle del producto"
+      >
+        ×
+      </button>
+
+      <div class="product-detail-layout">
+        <div id="product-detail-image-container" class="product-detail-image-container"></div>
+
+        <div class="product-detail-info">
+          <p id="product-detail-category" class="product-detail-category" hidden></p>
+          <h2 id="product-detail-name"></h2>
+          <p id="product-detail-description" class="product-detail-description" hidden></p>
+          <strong id="product-detail-price" class="product-detail-price"></strong>
+
+          <div class="product-detail-quantity" aria-label="Cantidad">
+            <button type="button" id="btn-product-detail-decrease" aria-label="Quitar una unidad">−</button>
+            <span id="product-detail-quantity-value" aria-live="polite">0</span>
+            <button type="button" id="btn-product-detail-increase" aria-label="Agregar una unidad">+</button>
+          </div>
+
+          <button type="button" id="btn-product-detail-add" class="product-detail-add">
+            Agregar al carrito
+          </button>
+          <p id="product-detail-feedback" class="product-detail-feedback" role="status" hidden></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <!-- CARRITO FLOTANTE -->
   <div id="cart-overlay"></div>
   
@@ -182,7 +224,7 @@
       
       <form id="form-checkout">
         <label for="customer-name">Nombre *</label>
-        <input type="text" id="customer-name" placeholder="Ej: Cris Aguirre" required />
+        <input type="text" id="customer-name" placeholder="Ej: Juan Pérez" required />
 
         <label for="delivery-method">Método de entrega</label>
         <select id="delivery-method" onchange="toggleDeliveryFields()">
@@ -192,10 +234,10 @@
 
         <div id="delivery-fields">
           <label for="customer-address">Dirección *</label>
-          <input type="text" id="customer-address" placeholder="Ej: Av. San Martín 1234" required />
+          <input type="text" id="customer-address" placeholder="Ej: Calle Ejemplo 123" required />
 
           <label for="customer-notes">Entrecalles o aclaraciones</label>
-          <input type="text" id="customer-notes" placeholder="Ej: Entre Mitre y Roca. Portón negro." />
+          <input type="text" id="customer-notes" placeholder="Ej: Entre Calle Uno y Calle Dos." />
         </div>
 
         <label for="payment-method">Forma de pago</label>
@@ -205,10 +247,10 @@
         </select>
 
         <section class="transfer-details" id="transfer-details" aria-labelledby="transfer-details-title" hidden>
-          <h2 id="transfer-details-title">Datos para transferir</h2>
+          <h2 id="transfer-details-title">Transferencia</h2>
 
           <div id="transfer-alias-details" hidden>
-            <span>Alias de Mercado Pago</span>
+            <span>Alias</span>
             <div class="transfer-alias-row">
               <strong id="transfer-alias"></strong>
               <button type="button" id="btn-copy-transfer-alias">Copiar alias</button>
@@ -216,7 +258,6 @@
           </div>
 
           <p id="transfer-account-holder" hidden></p>
-          <p class="transfer-details-note">Antes de transferir, verificá que el nombre del destinatario que muestra Mercado Pago coincida con estos datos.</p>
           <p id="transfer-copy-message" class="transfer-copy-message" role="status" hidden></p>
         </section>
 
@@ -254,7 +295,7 @@
 
   </div>
 
-  <script type="module" src="app.js?v=1.14"></script>
+  <script type="module" src="app.js?v=1.15"></script>
 
 </body>
 </html>

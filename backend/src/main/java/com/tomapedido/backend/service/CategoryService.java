@@ -27,6 +27,14 @@ public class CategoryService {
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
         tenantStatusService.requireAdministrationAllowed(tenant);
 
+        Category existingCategory = categoryRepository
+                .findByNameAndTenant(request.getName(), tenant)
+                .orElse(null);
+
+        if (existingCategory != null) {
+            return toResponse(existingCategory);
+        }
+
         Category nuevaCategoria = new Category();
 
         nuevaCategoria.setName(request.getName());

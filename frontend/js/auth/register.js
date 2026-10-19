@@ -1,14 +1,18 @@
 import { API_URL } from "../api/api.js";
+import { businessTypes } from "../admin/business-types.js?v=1.1";
 
 const form = document.getElementById("register-form");
 const errorMessage = document.getElementById("register-error");
 
 const step1 = document.getElementById("register-step-1");
+const businessTypeStep = document.getElementById("register-step-business-type");
 const step2 = document.getElementById("register-step-2");
 const step3 = document.getElementById("register-step-3");
 const stepConfirm = document.getElementById("register-step-confirm");
 
 const nextButton1 = document.getElementById("register-next-1");
+const nextBusinessTypeButton = document.getElementById("register-next-business-type");
+const backBusinessTypeButton = document.getElementById("register-back-business-type");
 const nextButton2 = document.getElementById("register-next-2");
 const backButton2 = document.getElementById("register-back-2");
 const backButton3 = document.getElementById("register-back-3");
@@ -17,8 +21,39 @@ const confirmBackButton = document.getElementById("register-confirm-back");
 
 const passwordFields = document.getElementById("password-fields");
 const phoneConfirmation = document.getElementById("register-phone-confirmation");
+const businessTypeOptions = document.getElementById("register-business-type-options");
 
 let registrationConfirmed = false;
+let selectedBusinessType = null;
+
+function renderBusinessTypeOptions() {
+    businessTypeOptions.replaceChildren();
+
+    businessTypes.forEach(type => {
+        const button = document.createElement("button");
+        const icon = document.createElement("span");
+        const name = document.createElement("span");
+
+        button.type = "button";
+        button.className = "register-business-type-option";
+        button.dataset.businessType = type.id;
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = type.icon;
+        name.textContent = type.name;
+        button.append(icon, name);
+
+        if (type.id === selectedBusinessType) {
+            button.classList.add("selected");
+        }
+
+        button.addEventListener("click", () => {
+            selectedBusinessType = type.id;
+            renderBusinessTypeOptions();
+        });
+
+        businessTypeOptions.appendChild(button);
+    });
+}
 
 
 // Crear campos de contraseña cuando entramos al Paso 3
@@ -87,7 +122,27 @@ nextButton1.addEventListener("click", () => {
     errorMessage.textContent = "";
 
     step1.style.display = "none";
+    businessTypeStep.style.display = "block";
+    renderBusinessTypeOptions();
+});
+
+
+nextBusinessTypeButton.addEventListener("click", () => {
+    if (!selectedBusinessType) {
+        errorMessage.textContent = "Elegí el tipo de comercio";
+        return;
+    }
+
+    errorMessage.textContent = "";
+    businessTypeStep.style.display = "none";
     step2.style.display = "block";
+});
+
+
+backBusinessTypeButton.addEventListener("click", () => {
+    errorMessage.textContent = "";
+    businessTypeStep.style.display = "none";
+    step1.style.display = "block";
 });
 
 
@@ -153,7 +208,8 @@ backButton2.addEventListener("click", () => {
     errorMessage.textContent = "";
 
     step2.style.display = "none";
-    step1.style.display = "block";
+    businessTypeStep.style.display = "block";
+    renderBusinessTypeOptions();
 });
 
 
@@ -266,7 +322,8 @@ form.addEventListener("submit", async (event) => {
                     businessName,
                     phone: normalizedPhone,
                     email: null,
-                    password
+                    password,
+                    businessType: selectedBusinessType
                 })
             }
         );

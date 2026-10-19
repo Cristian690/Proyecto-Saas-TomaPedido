@@ -1,6 +1,7 @@
 import { API_URL } from "../api/api.js";
 import { getOptimizedCloudinaryUrl } from "../images/cloudinary.js?v=1.0";
 import { getSupportWhatsAppUrl } from "../config/support.js?v=1.0";
+import { getBusinessType } from "./business-types.js?v=1.1";
 
 const CLOUDINARY_URL =
     "https://api.cloudinary.com/v1_1/y2zsd3jg/image/upload";
@@ -42,6 +43,7 @@ const business = {
     mercadoPagoAccountHolder: "",
     deliveryMode: "BOTH",
     whatsappMode: "ORDERS",
+    businessType: null,
     open: false,
     stockEnabled: true
 };
@@ -62,6 +64,18 @@ function getPublicStoreUrl() {
     publicStoreUrl.searchParams.set("business", slug);
 
     return publicStoreUrl.toString();
+}
+
+function renderBusinessType(businessTypeId) {
+
+    const businessTypeDisplay =
+        document.getElementById("business-type-display");
+
+    const businessType = getBusinessType(businessTypeId);
+
+    businessTypeDisplay.textContent = businessType
+        ? `${businessType.icon} ${businessType.name}`
+        : "Rubro no definido";
 }
 
 function showQrMessage(message) {
@@ -154,6 +168,102 @@ function downloadBusinessQrCode() {
     downloadLink.remove();
 }
 
+function initializeBusinessSectionNavigation() {
+
+    const navigation = document.querySelector(".business-section-nav");
+
+    if (!navigation) {
+        return;
+    }
+
+    const buttons = [...navigation.querySelectorAll("[data-business-section]")];
+    const sections = buttons
+        .map(button => document.getElementById(button.dataset.businessSection))
+        .filter(Boolean);
+
+    const setActiveSection = (sectionId) => {
+        buttons.forEach(button => {
+            const isActive = button.dataset.businessSection === sectionId;
+
+            button.classList.toggle("business-section-nav__button--active", isActive);
+            button.setAttribute("aria-current", isActive ? "true" : "false");
+        });
+    };
+
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            const section = document.getElementById(button.dataset.businessSection);
+
+            if (!section) {
+                return;
+            }
+
+            setActiveSection(section.id);
+            section.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    });
+
+    if (!("IntersectionObserver" in window)) {
+        return;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+        const visibleSection = entries
+            .filter(entry => entry.isIntersecting)
+            .sort((first, second) =>
+                first.boundingClientRect.top - second.boundingClientRect.top
+            )[0];
+
+        if (visibleSection) {
+            setActiveSection(visibleSection.target.id);
+        }
+    }, {
+        rootMargin: "-80px 0px -55% 0px",
+        threshold: 0
+    });
+
+    sections.forEach(section => observer.observe(section));
+}
+
+function syncBusinessOptionGroups() {
+
+    document.querySelectorAll("[data-business-select]").forEach(group => {
+        const select = document.getElementById(group.dataset.businessSelect);
+
+        if (!select) {
+            return;
+        }
+
+        group.querySelectorAll("[data-value]").forEach(button => {
+            const isActive = button.dataset.value === select.value;
+
+            button.classList.toggle("business-option-button--active", isActive);
+            button.setAttribute("aria-checked", isActive ? "true" : "false");
+        });
+    });
+}
+
+function initializeBusinessOptionGroups() {
+
+    document.querySelectorAll("[data-business-select]").forEach(group => {
+        const select = document.getElementById(group.dataset.businessSelect);
+
+        if (!select) {
+            return;
+        }
+
+        group.querySelectorAll("[data-value]").forEach(button => {
+            button.addEventListener("click", () => {
+                select.value = button.dataset.value;
+                select.dispatchEvent(new Event("change"));
+                syncBusinessOptionGroups();
+            });
+        });
+    });
+
+    syncBusinessOptionGroups();
+}
+
 function showShareMessage(message) {
 
     const shareMessage = document.getElementById("business-share-message");
@@ -166,6 +276,46 @@ function showShareMessage(message) {
     shareMessageTimeout = setTimeout(() => {
         shareMessage.hidden = true;
     }, 3000);
+}
+
+function showBusinessPanelMessage(elementId, message) {
+
+    const messageElement = document.getElementById(elementId);
+
+    if (!messageElement) {
+        return;
+    }
+
+    messageElement.textContent = message;
+    messageElement.hidden = false;
+}
+
+function hideBusinessPanelMessage(elementId) {
+
+    const messageElement = document.getElementById(elementId);
+
+    if (messageElement) {
+        messageElement.hidden = true;
+    }
+}
+
+async function getResponseErrorMessage(response, fallbackMessage) {
+
+    try {
+        const data = await response.json();
+
+        if (typeof data?.message === "string" && data.message.trim()) {
+            return data.message;
+        }
+
+        if (typeof data?.error === "string" && data.error.trim()) {
+            return data.error;
+        }
+    } catch (error) {
+        console.error("No se pudo leer el detalle del error:", error);
+    }
+
+    return fallbackMessage;
 }
 
 async function copyPublicStoreUrl(url) {
@@ -506,7 +656,10 @@ document
 
             if (!response.ok) {
                 throw new Error(
-                    "No se pudieron guardar los cambios."
+                    await getResponseErrorMessage(
+                        response,
+                        "No se pudieron guardar los cambios."
+                    )
                 );
             }
 
@@ -639,6 +792,15 @@ fetch(
             return null;
         }
 
+        if (!response.ok) {
+            return getResponseErrorMessage(
+                response,
+                "No se pudieron cargar los datos del negocio."
+            ).then(message => {
+                throw new Error(message);
+            });
+        }
+
         return response.json();
     })
     .then(data => {
@@ -650,6 +812,8 @@ fetch(
 
             return;
         }
+
+        hideBusinessPanelMessage("business-load-message");
 
         business.name =
             data.name;
@@ -735,6 +899,8 @@ fetch(
         business.whatsappMode =
             data.whatsappMode || "ORDERS";
 
+        business.businessType = data.businessType || null;
+        renderBusinessType(business.businessType);
 
         const statusText =
             document.getElementById(
@@ -813,6 +979,7 @@ fetch(
         ).value =
             business.whatsappMode;
 
+        syncBusinessOptionGroups();
 
         console.log(
             "Business loaded from backend:",
@@ -824,6 +991,11 @@ fetch(
         console.error(
             "Error loading business:",
             error
+        );
+
+        showBusinessPanelMessage(
+            "business-load-message",
+            error.message || "No se pudieron cargar los datos del negocio."
         );
     });
 
@@ -839,6 +1011,8 @@ document
 
         const newStatus =
             !business.open;
+
+        hideBusinessPanelMessage("business-status-message");
 
         try {
 
@@ -871,7 +1045,10 @@ document
 
             if (!response.ok) {
                 throw new Error(
-                    "No se pudo cambiar el estado"
+                    await getResponseErrorMessage(
+                        response,
+                        "No se pudo cambiar el estado."
+                    )
                 );
             }
 
@@ -908,12 +1085,17 @@ document
 
         } catch (error) {
 
-            console.error(
-                "Error changing business status:",
-                error
-            );
+        console.error(
+            "Error changing business status:",
+            error
+        );
 
-        }
+        showBusinessPanelMessage(
+            "business-status-message",
+            error.message || "No se pudo cambiar el estado."
+        );
+
+    }
     });
 
 
@@ -1001,7 +1183,7 @@ document
 
         if (!slug) {
 
-            alert(
+            showShareMessage(
                 "No se encontró el enlace público del negocio."
             );
 
@@ -1014,4 +1196,6 @@ document
         );
     });
 
+initializeBusinessOptionGroups();
+initializeBusinessSectionNavigation();
 initializeAdmin();

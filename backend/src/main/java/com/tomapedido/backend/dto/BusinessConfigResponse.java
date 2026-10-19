@@ -20,6 +20,7 @@ public class BusinessConfigResponse {
     private String mercadoPagoAccountHolder;
     private String deliveryMode;
     private String whatsappMode;
+    private String businessType;
     private boolean open;
     private boolean stockEnabled;
 }

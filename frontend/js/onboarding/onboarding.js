@@ -306,7 +306,7 @@ nextButton.addEventListener("click", async () => {
         // ================================
 
         window.location.href =
-            "onboarding-color.html";
+            "onboarding-categories.html";
 
     } catch (error) {
 
@@ -328,7 +328,7 @@ nextButton.addEventListener("click", async () => {
 skipButton.addEventListener("click", () => {
 
     window.location.href =
-        "onboarding-color.html";
+        "onboarding-categories.html";
 });
 
 

@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../../style.css?v=16">
 </head>
 
 <body>
@@ -53,11 +53,39 @@
                     ></textarea>
 
                     <p>
-                        Paso 1 de 3
+                        Paso 1 de 4
                     </p>
 
                     <button type="button" id="register-next-1">
                         Continuar
+                    </button>
+
+                </div>
+
+
+                <div id="register-step-business-type" style="display: none;">
+
+                    <h2>🏪 ¿Qué tipo de comercio tenés?</h2>
+
+                    <p>
+                        Te vamos a sugerir categorías acordes a lo que vendés.
+                    </p>
+
+                    <div
+                        id="register-business-type-options"
+                        class="register-business-type-options"
+                    ></div>
+
+                    <p>
+                        Paso 2 de 4
+                    </p>
+
+                    <button type="button" id="register-next-business-type">
+                        Continuar
+                    </button>
+
+                    <button type="button" id="register-back-business-type">
+                        Atrás
                     </button>
 
                 </div>
@@ -76,12 +104,12 @@
                         id="register-phone"
                         inputmode="tel"
                         autocomplete="tel"
-                        placeholder="Ej: +54 9 11 7777-6666"
+                        placeholder="Ej: 1100000000"
                         required
                     >
 
                     <p>
-                        Paso 2 de 3
+                        Paso 3 de 4
                     </p>
 
                     <button type="button" id="register-next-2">
@@ -106,7 +134,7 @@
                     <div id="password-fields"></div>
 
                     <p>
-                        Paso 3 de 3
+                        Paso 4 de 4
                     </p>
 
                     <button type="submit">
@@ -147,7 +175,7 @@
 
     </main>
 
-    <script type="module" src="../../js/auth/register.js?v=1.1"></script>
+    <script type="module" src="../../js/auth/register.js?v=1.3"></script>
 
 </body>
 

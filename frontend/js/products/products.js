@@ -7,6 +7,7 @@ let currentOnAddToCart = null;
 let currentOnChangeQuantity = null;
 let currentGetQuantity = null;
 let currentStockEnabled = false;
+let currentOnOpenProductDetail = null;
 let cartChangeListenerInitialized = false;
 
 export function setProducts(data) {
@@ -79,13 +80,15 @@ export function renderProducts(
     onAddToCart,
     onChangeQuantity = null,
     getQuantity = null,
-    stockEnabled = false
+    stockEnabled = false,
+    onOpenProductDetail = null
 ) {
     currentCategories = categories;
     currentOnAddToCart = onAddToCart;
     currentOnChangeQuantity = onChangeQuantity;
     currentGetQuantity = getQuantity;
     currentStockEnabled = stockEnabled;
+    currentOnOpenProductDetail = onOpenProductDetail;
 
     if (!cartChangeListenerInitialized) {
         window.addEventListener("cartchange", () => {
@@ -95,7 +98,8 @@ export function renderProducts(
                     currentOnAddToCart,
                     currentOnChangeQuantity,
                     currentGetQuantity,
-                    currentStockEnabled
+                    currentStockEnabled,
+                    currentOnOpenProductDetail
                 );
             }
         });
@@ -132,12 +136,44 @@ export function renderProducts(
                 "product-img",
                 "f_auto,q_auto,w_160,h_160,c_fill"
             );
+            const openProductDetail = trigger => {
+                currentOnOpenProductDetail?.(product, trigger);
+            };
+
+            image.classList.add("product-detail-trigger");
+            image.setAttribute("role", "button");
+            image.setAttribute(
+                "aria-label",
+                `Ver detalle de ${product.nombre}`
+            );
+            image.tabIndex = 0;
+            image.addEventListener("click", event => {
+                openProductDetail(event.currentTarget);
+            });
+            image.addEventListener("keydown", event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openProductDetail(event.currentTarget);
+                }
+            });
 
             const info = document.createElement("div");
             info.className = "product-info";
 
             const name = document.createElement("h3");
             name.textContent = product.nombre;
+            name.classList.add("product-detail-trigger");
+            name.setAttribute("role", "button");
+            name.tabIndex = 0;
+            name.addEventListener("click", event => {
+                openProductDetail(event.currentTarget);
+            });
+            name.addEventListener("keydown", event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openProductDetail(event.currentTarget);
+                }
+            });
 
             const description = document.createElement("p");
             description.textContent = product.descripcion || "";

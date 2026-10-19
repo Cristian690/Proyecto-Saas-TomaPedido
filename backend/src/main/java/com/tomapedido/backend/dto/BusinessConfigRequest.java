@@ -34,6 +34,11 @@ public class BusinessConfigRequest {
     @Pattern(regexp = "ORDERS|INQUIRIES", message = "El modo de WhatsApp no es válido")
     private String whatsappMode;
 
+    @Pattern(
+            regexp = "GASTRONOMY|TOY_STORE|CLOTHING_AND_FOOTWEAR|GIFTS_AND_DECOR|PET_SHOP|FLORIST_AND_NURSERY|BAKERY_AND_PASTRY|CAFE_AND_TEA|HEALTH_FOOD|GROCERY|BEAUTY_AND_COSMETICS|TECHNOLOGY|HARDWARE|STATIONERY|HOME_AND_KITCHEN|BABY_AND_MATERNITY|OTHER",
+            message = "El rubro del comercio no es válido")
+    private String businessType;
+
     private boolean open;
     private Boolean stockEnabled;
 }

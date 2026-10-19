@@ -102,6 +102,7 @@ public class AuthService {
         config.setStockEnabled(true);
         config.setDeliveryMode("BOTH");
         config.setWhatsappMode("ORDERS");
+        config.setBusinessType(request.getBusinessType());
         config.setTenant(tenant);
         
         tenantConfigRepository.save(config);

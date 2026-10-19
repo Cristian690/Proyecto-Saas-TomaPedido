@@ -54,6 +54,9 @@ public class TenantConfig {
     @Column(nullable = false, length = 20)
     private String whatsappMode = "ORDERS";
 
+    @Column(length = 40)
+    private String businessType;
+
     @OneToOne
     @JoinColumn(name = "tenant_id", nullable = false, unique = true)
     private Tenant tenant;

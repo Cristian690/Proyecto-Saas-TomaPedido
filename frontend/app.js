@@ -6,6 +6,7 @@ import {
 } from "./js/api/api.js?v=1.0";
 
 import { getOptimizedCloudinaryUrl } from "./js/images/cloudinary.js?v=1.0";
+import { getCategoryIcon } from "./js/admin/business-types.js?v=1.1";
 
 import {
     setCategories,
@@ -17,8 +18,9 @@ import {
 import {
     setProducts,
     renderProducts,
-    products
-} from "./js/products/products.js?v=1.6";
+    products,
+    createProductImage
+} from "./js/products/products.js?v=1.7";
 
 import {
     addToCart,
@@ -39,6 +41,9 @@ const openedFromAdmin = params.get("admin") === "true";
 let businessOpen = true;
 let currentBusiness = null;
 let transferCopyMessageTimeout;
+let currentProductDetail = null;
+let productDetailTrigger = null;
+let productDetailPreviousBodyOverflow = "";
 const DEFAULT_BUSINESS_LOGO = "assets/logo-ejemplo.png";
 
 
@@ -197,6 +202,137 @@ function showInquiryNotice(message) {
     document.getElementById("cart-mode-note").textContent = message;
 }
 
+function getProductDetailCategoryName(product) {
+    return getCategories().find(
+        category => String(category.id) === String(product.categoria)
+    )?.nombre || "";
+}
+
+function showProductDetailFeedback(message) {
+    const feedback = document.getElementById("product-detail-feedback");
+
+    feedback.textContent = message;
+    feedback.hidden = false;
+}
+
+function renderProductDetail() {
+    if (!currentProductDetail) {
+        return;
+    }
+
+    const product = currentProductDetail;
+    const productId = String(product.id);
+    const quantity = getCart()[productId]?.qty || 0;
+    const stockEnabled = currentBusiness?.stockEnabled !== false;
+    const stock = Number(product.stock);
+    const outOfStock = stockEnabled && stock <= 0;
+    const categoryName = getProductDetailCategoryName(product);
+    const imageContainer = document.getElementById(
+        "product-detail-image-container"
+    );
+    const image = createProductImage(
+        product.imagen,
+        product.nombre || "",
+        "product-detail-image",
+        "f_auto,q_auto,w_1200,h_900,c_fit"
+    );
+
+    imageContainer.replaceChildren(image);
+
+    document.getElementById("product-detail-name").textContent =
+        product.nombre;
+    document.getElementById("product-detail-price").textContent =
+        `$${product.precio.toLocaleString("es-AR")}`;
+
+    const description = document.getElementById(
+        "product-detail-description"
+    );
+
+    description.textContent = product.descripcion || "";
+    description.hidden = !product.descripcion?.trim();
+
+    const category = document.getElementById("product-detail-category");
+
+    category.textContent = categoryName ? `📂 ${categoryName}` : "";
+    category.hidden = !categoryName;
+
+    document.getElementById("product-detail-quantity-value").textContent =
+        quantity;
+
+    const decreaseButton = document.getElementById(
+        "btn-product-detail-decrease"
+    );
+    const increaseButton = document.getElementById(
+        "btn-product-detail-increase"
+    );
+    const addButton = document.getElementById("btn-product-detail-add");
+
+    decreaseButton.disabled = quantity === 0;
+    increaseButton.disabled = outOfStock || (stockEnabled && quantity >= stock);
+    addButton.disabled = outOfStock || (stockEnabled && quantity >= stock);
+    addButton.textContent = outOfStock
+        ? "Agotado"
+        : stockEnabled && quantity >= stock
+            ? "Stock máximo alcanzado"
+            : "Agregar al carrito";
+}
+
+function openProductDetail(product, trigger) {
+    const modal = document.getElementById("product-detail-modal");
+
+    currentProductDetail = product;
+    productDetailTrigger = trigger || document.activeElement;
+    document.getElementById("product-detail-feedback").hidden = true;
+    renderProductDetail();
+
+    modal.hidden = false;
+    productDetailPreviousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.getElementById("btn-close-product-detail").focus();
+}
+
+function closeProductDetail() {
+    const modal = document.getElementById("product-detail-modal");
+
+    modal.hidden = true;
+    document.body.style.overflow = productDetailPreviousBodyOverflow;
+    productDetailPreviousBodyOverflow = "";
+    currentProductDetail = null;
+    productDetailTrigger?.focus?.();
+    productDetailTrigger = null;
+}
+
+function addProductFromDetail() {
+    if (!currentProductDetail) {
+        return;
+    }
+
+    const productId = String(currentProductDetail.id);
+
+    if (!getCart()[productId]) {
+        addToCart(productId, products);
+    }
+
+    renderProductDetail();
+    showProductDetailFeedback("✅ Producto agregado al carrito.");
+}
+
+function changeProductDetailQuantity(delta) {
+    if (!currentProductDetail) {
+        return;
+    }
+
+    const productId = String(currentProductDetail.id);
+
+    if (delta > 0 && !getCart()[productId]) {
+        addToCart(productId, products);
+    } else {
+        changeQty(productId, delta);
+    }
+
+    renderProductDetail();
+}
+
 function sendProductInquiry() {
 
     const items = Object.entries(getCart());
@@ -213,12 +349,23 @@ function sendProductInquiry() {
         return;
     }
 
-    const productsMessage = items.map(([, item]) =>
-        `- ${item.name} x ${item.qty}`
-    ).join("\n");
+    const productsMessage = items.map(([productId, item]) => {
+        const product = products.find(
+            currentProduct => String(currentProduct.id) === String(productId)
+        );
+        const categoryName = product
+            ? getProductDetailCategoryName(product)
+            : "";
+
+        return `${getCategoryIcon(categoryName)} ${item.name} × ${item.qty}`;
+    }).join("\n");
 
     const message =
-        `Hola, quería consultar por estos productos:\n\n${productsMessage}`;
+        `🏪 *CONSULTA DE PRODUCTOS — ${currentBusiness.name}*\n\n` +
+        "👋 ¡Hola! Quería consultar por estos productos:\n\n" +
+        `📦 *Productos de interés:*\n\n${productsMessage}\n\n` +
+        "💬 ¿Me podrían informar si están disponibles?\n\n" +
+        "¡Muchas gracias! 😊";
 
     window.open(
         `https://api.whatsapp.com/send/?phone=${phone}&text=${encodeURIComponent(message)}`,
@@ -542,6 +689,8 @@ async function loadData() {
 
     const stockEnabled = business.stockEnabled !== false;
     const onProductAction = id => addToCart(id, products);
+    const onOpenProductDetail = (product, trigger) =>
+        openProductDetail(product, trigger);
 
     configureCartStock(
         stockEnabled,
@@ -580,7 +729,8 @@ async function loadData() {
             onProductAction,
             changeQty,
             id => getCart()[id]?.qty || 0,
-            stockEnabled
+            stockEnabled,
+            onOpenProductDetail
         );
     });
 
@@ -594,7 +744,8 @@ async function loadData() {
         onProductAction,
         changeQty,
         id => getCart()[id]?.qty || 0,
-        stockEnabled
+        stockEnabled,
+        onOpenProductDetail
     );
 
 
@@ -615,6 +766,45 @@ function showPublicStoreUnavailable() {
 window.addToCart = addToCart;
 window.changeQty = changeQty;
 window.removeItem = removeItem;
+
+window.addEventListener("cartchange", () => {
+    if (currentProductDetail) {
+        renderProductDetail();
+    }
+});
+
+document
+    .getElementById("btn-close-product-detail")
+    .addEventListener("click", closeProductDetail);
+
+document
+    .getElementById("product-detail-modal")
+    .addEventListener("click", event => {
+        if (event.target === event.currentTarget) {
+            closeProductDetail();
+        }
+    });
+
+document.addEventListener("keydown", event => {
+    if (
+        event.key === "Escape" &&
+        !document.getElementById("product-detail-modal").hidden
+    ) {
+        closeProductDetail();
+    }
+});
+
+document
+    .getElementById("btn-product-detail-decrease")
+    .addEventListener("click", () => changeProductDetailQuantity(-1));
+
+document
+    .getElementById("btn-product-detail-increase")
+    .addEventListener("click", () => changeProductDetailQuantity(1));
+
+document
+    .getElementById("btn-product-detail-add")
+    .addEventListener("click", addProductFromDetail);
 
 
 // ====================================

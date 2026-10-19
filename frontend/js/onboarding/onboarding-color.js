@@ -232,7 +232,7 @@ backButton.addEventListener(
     () => {
 
         window.location.href =
-            "onboarding.html";
+            "onboarding-categories.html";
 
     }
 );

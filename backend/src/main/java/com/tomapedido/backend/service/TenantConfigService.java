@@ -68,6 +68,7 @@ public class TenantConfigService {
                 config.getMercadoPagoAccountHolder(),
                 config.getDeliveryMode(),
                 config.getWhatsappMode(),
+                config.getBusinessType(),
                 config.isOpen(),
                 config.isStockEnabled());
     }
@@ -87,6 +88,7 @@ public class TenantConfigService {
                 config.getMercadoPagoAccountHolder(),
                 config.getDeliveryMode(),
                 config.getWhatsappMode(),
+                config.getBusinessType(),
                 config.isOpen(),
                 config.isStockEnabled());
     }
@@ -118,6 +120,10 @@ public class TenantConfigService {
                         existingTenantConfig.setWhatsappMode(request.getWhatsappMode());
                     }
 
+                    if (request.getBusinessType() != null) {
+                        existingTenantConfig.setBusinessType(request.getBusinessType());
+                    }
+
                     if (request.getStockEnabled() != null) {
                         existingTenantConfig.setStockEnabled(request.getStockEnabled());
                     }
@@ -144,6 +150,7 @@ public class TenantConfigService {
                     tenantConfig.setWhatsappMode(request.getWhatsappMode() != null
                             ? request.getWhatsappMode()
                             : "ORDERS");
+                    tenantConfig.setBusinessType(request.getBusinessType());
                     tenantConfig.setOpen(request.isOpen());
                     tenantConfig.setStockEnabled(request.getStockEnabled() != null
                             ? request.getStockEnabled()
@@ -212,6 +219,10 @@ public class TenantConfigService {
 
         if (request.getStockEnabled() != null) {
             config.setStockEnabled(request.getStockEnabled());
+        }
+
+        if (request.getBusinessType() != null) {
+            config.setBusinessType(request.getBusinessType());
         }
 
         return toBusinessConfigResponse(tenantConfigRepository.save(config));

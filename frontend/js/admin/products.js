@@ -2,6 +2,7 @@ import { API_URL } from "../api/api.js";
 
 import { defaultImages } from "../default-images/default-images.js";
 import { getOptimizedCloudinaryUrl } from "../images/cloudinary.js";
+import { getCategoryIcon } from "./business-types.js?v=1.1";
 
 const token = localStorage.getItem("token");
 
@@ -115,7 +116,6 @@ const priceBackButton =
 const priceNextButton =
     document.getElementById("btn-product-price-next");
 
-
 const photoBackButton =
     document.getElementById("btn-product-photo-back");
 
@@ -136,8 +136,7 @@ const categoryNextButton =
     document.getElementById("btn-product-category-next");
 
 
-const categoryOptions =
-    document.querySelectorAll(".category-option");
+let categoryOptions = [];
 
 const customCategory =
     document.getElementById("custom-category");
@@ -220,6 +219,77 @@ const newProduct = {
 };
 
 let editingProduct = null;
+let existingCategoryNames = [];
+
+function selectCategory(button) {
+
+    categoryOptions.forEach(option => {
+        option.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+
+    const category = button.dataset.category;
+    const previousCategory = newProduct.categoryName;
+
+    if (category === "__CUSTOM__") {
+        customCategory.style.display = "block";
+        customCategoryName.focus();
+        newProduct.categoryName = "";
+    } else {
+        customCategory.style.display = "none";
+        newProduct.categoryName = category;
+    }
+
+    if (previousCategory !== newProduct.categoryName) {
+        newProduct.defaultImageUrl = "";
+        updateDefaultImageOption();
+    }
+}
+
+function renderCategoryOptions() {
+
+    const categoryOptionsContainer =
+        document.getElementById("category-options");
+
+    categoryOptionsContainer.replaceChildren();
+
+    existingCategoryNames.forEach(name => {
+        const button = document.createElement("button");
+        const iconElement = document.createElement("span");
+        const nameElement = document.createElement("span");
+
+        button.type = "button";
+        button.className = "category-option";
+        button.dataset.category = name;
+        iconElement.className = "category-option-icon";
+        iconElement.setAttribute("aria-hidden", "true");
+        iconElement.textContent = getCategoryIcon(name);
+        nameElement.textContent = name;
+        button.append(iconElement, nameElement);
+        button.addEventListener("click", () => selectCategory(button));
+        categoryOptionsContainer.appendChild(button);
+    });
+
+    const customButton = document.createElement("button");
+    const customIcon = document.createElement("span");
+    const customLabel = document.createElement("span");
+
+    customButton.type = "button";
+    customButton.className = "category-option";
+    customButton.dataset.category = "__CUSTOM__";
+    customIcon.className = "category-option-icon";
+    customIcon.setAttribute("aria-hidden", "true");
+    customIcon.textContent = "➕";
+    customLabel.textContent = "Otra categoría";
+    customButton.append(customIcon, customLabel);
+    customButton.addEventListener("click", () => selectCategory(customButton));
+    categoryOptionsContainer.appendChild(customButton);
+
+    categoryOptions = Array.from(
+        categoryOptionsContainer.querySelectorAll(".category-option")
+    );
+}
 
 function setCancelButtonVisible(isVisible) {
 
@@ -354,6 +424,8 @@ function showStep3() {
     productConfirmation.style.display = "none";
     productSuccess.style.display = "none";
 
+    renderCategoryOptions();
+
     categoryOptions.forEach(button => {
         button.classList.remove("selected");
     });
@@ -363,10 +435,9 @@ function showStep3() {
 
     if (newProduct.categoryName) {
 
-        const selectedButton =
-            document.querySelector(
-                `.category-option[data-category="${newProduct.categoryName}"]`
-            );
+        const selectedButton = categoryOptions.find(
+            button => button.dataset.category === newProduct.categoryName
+        );
 
         if (selectedButton) {
 
@@ -524,7 +595,7 @@ function showConfirmation() {
 
 
     confirmationCategory.textContent =
-        `📂 ${newProduct.categoryName}`;
+        `${getCategoryIcon(newProduct.categoryName)} ${newProduct.categoryName}`;
 
 
     if (newProduct.imageFile) {
@@ -904,16 +975,19 @@ async function loadProducts() {
             await productsResponse.json();
 
 
-        let categories = [];
-
-
         if (handleUnauthorized(categoriesResponse)) {
             return;
         }
 
-        if (categoriesResponse.ok) {
-            categories = await categoriesResponse.json();
+        if (!categoriesResponse.ok) {
+            throw new Error(
+                "No se pudieron obtener las categorías del comercio."
+            );
         }
+
+        const categories = await categoriesResponse.json();
+
+        existingCategoryNames = categories.map(category => category.name);
 
 
         const categoryMap =
@@ -1000,6 +1074,19 @@ function renderCategoryFilters(
     products
 ) {
 
+    const categoryIdsWithProducts =
+        new Set(
+            products
+                .map(product => product.categoryId)
+                .filter(categoryId => categoryId !== null && categoryId !== undefined)
+                .map(categoryId => String(categoryId))
+        );
+
+    const categoriesWithProducts =
+        categories.filter(category =>
+            categoryIdsWithProducts.has(String(category.id))
+        );
+
     const categoryIds =
         new Set(
             categories.map(
@@ -1020,7 +1107,7 @@ function renderCategoryFilters(
             id: "all",
             name: "Todas"
         },
-        ...categories.map(category => ({
+        ...categoriesWithProducts.map(category => ({
             id: String(category.id),
             name: category.name
         }))
@@ -1578,75 +1665,6 @@ photoSkipButton.addEventListener(
         );
 
         showConfirmation();
-    }
-);
-
-
-categoryOptions.forEach(
-    button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                categoryOptions.forEach(
-                    option => {
-
-                        option.classList.remove(
-                            "selected"
-                        );
-                    }
-                );
-
-
-                button.classList.add(
-                    "selected"
-                );
-
-
-                const category =
-                    button.dataset.category;
-
-
-                const previousCategory =
-                    newProduct.categoryName;
-
-                if (
-                    category === "Otra"
-                ) {
-
-                    customCategory.style.display =
-                        "block";
-
-                    customCategoryName.focus();
-
-                    newProduct.categoryName =
-                        "";
-
-                } else {
-
-                    customCategory.style.display =
-                        "none";
-
-                    newProduct.categoryName =
-                        category;
-                }
-
-                if (
-                    previousCategory !==
-                        newProduct.categoryName
-                ) {
-                    newProduct.defaultImageUrl = "";
-                    updateDefaultImageOption();
-                }
-
-
-                console.log(
-                    "Categoría seleccionada:",
-                    newProduct.categoryName
-                );
-            }
-        );
     }
 );
 
