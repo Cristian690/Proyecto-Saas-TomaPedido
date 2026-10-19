@@ -665,16 +665,24 @@ body {
   }
 
   .product-detail-image-container {
-    min-height: 250px;
-    padding: 42px 18px 18px;
+    box-sizing: border-box;
+    height: 240px;
+    min-height: 0;
+    padding: 40px 12px 12px;
   }
 
   .product-detail-image {
-    max-height: 330px;
+    max-height: 220px;
   }
 
   .product-detail-info {
-    padding: 22px 18px 20px;
+    padding: 16px;
+  }
+
+  .product-detail-close {
+    position: fixed;
+    top: 16px;
+    right: 16px;
   }
 }
 
