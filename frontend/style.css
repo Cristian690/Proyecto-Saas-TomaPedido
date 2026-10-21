@@ -2547,6 +2547,86 @@ input[type="file"][hidden] {
     color: var(--black);
 }
 
+.account-panel {
+    max-width: 560px;
+    padding: 22px;
+    background: var(--white);
+    border: 1px solid var(--gray-mid);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.account-panel__heading {
+    margin-bottom: 18px;
+}
+
+.account-panel__heading h2 {
+    margin: 0 0 6px;
+}
+
+.account-panel__heading p {
+    color: var(--gray-text);
+    font-size: 0.88rem;
+}
+
+.account-panel form {
+    display: grid;
+    gap: 14px;
+}
+
+.account-panel label {
+    display: grid;
+    gap: 8px;
+    color: var(--black);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.account-panel input {
+    min-height: 44px;
+    padding: 11px 12px;
+    border: 1px solid var(--gray-mid);
+    border-radius: 8px;
+    color: var(--black);
+    font-family: var(--font);
+    font-size: 0.9rem;
+}
+
+.account-panel input:focus {
+    outline: none;
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(215, 43, 43, 0.12);
+}
+
+.account-panel button {
+    min-height: 48px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background: var(--red);
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.account-panel button:hover { background: var(--red-dark); }
+.account-panel button:disabled { cursor: wait; opacity: 0.7; }
+
+.account-panel__message {
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fff0f0;
+    color: #9b1c1c;
+    font-size: 0.85rem;
+}
+
+.account-panel__message--success {
+    background: #eaf8ef;
+    color: #176b35;
+}
+
 /* ====================================
    ADMIN - RESPONSIVE
    ==================================== */

@@ -15,6 +15,10 @@ if (!token) {
     window.location.href = "../login/login.html";
 }
 
+if (localStorage.getItem("mustChangePassword") === "true") {
+    window.location.href = "force-change-password.html";
+}
+
 function handleUnauthorized(response) {
     if (response.status === 401) {
         localStorage.removeItem("token");

@@ -7,8 +7,11 @@ import com.tomapedido.backend.dto.RegisterResponse;
 import com.tomapedido.backend.service.AuthService;
 import com.tomapedido.backend.dto.LoginRequest;
 import com.tomapedido.backend.dto.LoginResponse;
+import com.tomapedido.backend.dto.ChangePasswordRequest;
+import com.tomapedido.backend.entity.User;
 
 import jakarta.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequestMapping("/auth")
@@ -28,6 +31,14 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @PostMapping("/change-password")
+    public LoginResponse changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal User authenticatedUser) {
+
+        return authService.changePassword(authenticatedUser, request);
     }
 
     @GetMapping("/check-phone/{phone}")

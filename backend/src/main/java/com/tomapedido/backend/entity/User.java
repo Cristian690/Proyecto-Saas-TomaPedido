@@ -26,6 +26,10 @@ public class User {
     @Builder.Default
     private String role = "ADMIN";
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean mustChangePassword = false;
+
     @ManyToOne
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;

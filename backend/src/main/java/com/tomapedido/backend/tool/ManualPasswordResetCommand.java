@@ -43,7 +43,7 @@ public class ManualPasswordResetCommand implements CommandLineRunner {
                     "La herramienta debe ejecutarse desde una terminal interactiva");
         }
 
-        console.printf("%nRestablecimiento manual de contraseña de OrdenFlash%n%n");
+        console.printf("%nPreparación de contraseña temporal de OrdenFlash%n%n");
 
         String phoneInput = console.readLine("WhatsApp del comercio: ");
         String normalizedPhone;
@@ -95,9 +95,10 @@ public class ManualPasswordResetCommand implements CommandLineRunner {
             }
 
             user.setPassword(passwordEncoder.encode(new String(password)));
+            user.setMustChangePassword(true);
             userRepository.save(user);
 
-            console.printf("Contraseña restablecida correctamente.%n");
+            console.printf("Contraseña temporal configurada. El comercio deberá cambiarla al ingresar.%n");
         } finally {
             if (password != null) {
                 Arrays.fill(password, '\0');

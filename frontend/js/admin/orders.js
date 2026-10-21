@@ -6,6 +6,10 @@ if (!token) {
     window.location.href = "../login/login.html";
 }
 
+if (localStorage.getItem("mustChangePassword") === "true") {
+    window.location.href = "force-change-password.html";
+}
+
 const ordersContainer = document.getElementById("orders-container");
 const statusMessage = document.getElementById("orders-status-message");
 

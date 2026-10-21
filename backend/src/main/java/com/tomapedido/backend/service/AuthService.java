@@ -13,6 +13,7 @@ import com.tomapedido.backend.dto.RegisterRequest;
 import com.tomapedido.backend.dto.RegisterResponse;
 import com.tomapedido.backend.dto.LoginRequest;
 import com.tomapedido.backend.dto.LoginResponse;
+import com.tomapedido.backend.dto.ChangePasswordRequest;
 import com.tomapedido.backend.entity.Tenant;
 import com.tomapedido.backend.entity.User;
 import com.tomapedido.backend.repository.TenantRepository;
@@ -83,6 +84,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role("ADMIN")
+                .mustChangePassword(false)
                 .tenant(tenant)
                 .build();
 
@@ -156,9 +158,37 @@ public class AuthService {
             throw new IllegalArgumentException("Teléfono o contraseña incorrectos");
         }
 
-        Tenant tenant = user.getTenant();
+        return createLoginResponse(user);
+    }
 
-        String token = jwtService.generateToken(user);
+    @Transactional
+    public LoginResponse changePassword(
+            User authenticatedUser,
+            ChangePasswordRequest request) {
+
+        if (!passwordEncoder.matches(
+                request.getCurrentPassword(), authenticatedUser.getPassword())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La contraseña actual es incorrecta");
+        }
+
+        if (passwordEncoder.matches(
+                request.getNewPassword(), authenticatedUser.getPassword())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La nueva contraseña debe ser diferente de la actual");
+        }
+
+        authenticatedUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        authenticatedUser.setMustChangePassword(false);
+        userRepository.save(authenticatedUser);
+
+        return createLoginResponse(authenticatedUser);
+    }
+
+    private LoginResponse createLoginResponse(User user) {
+        Tenant tenant = user.getTenant();
 
         return new LoginResponse(
                 user.getId(),
@@ -166,7 +196,8 @@ public class AuthService {
                 tenant.getSlug(),
                 tenant.getPhone(),
                 user.getRole(),
-                token
+                jwtService.generateToken(user),
+                user.isMustChangePassword()
         );
     }
 

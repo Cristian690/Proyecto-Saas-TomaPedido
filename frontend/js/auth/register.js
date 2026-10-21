@@ -1,4 +1,5 @@
 import { API_URL } from "../api/api.js";
+import { storeSession } from "./session.js";
 import { businessTypes } from "../admin/business-types.js?v=1.1";
 
 const form = document.getElementById("register-form");
@@ -381,25 +382,7 @@ form.addEventListener("submit", async (event) => {
 
 
         // 3. Guardar sesión
-        localStorage.setItem(
-            "token",
-            loginData.token
-        );
-
-        localStorage.setItem(
-            "businessSlug",
-            loginData.slug
-        );
-
-        localStorage.setItem(
-            "businessName",
-            loginData.businessName
-        );
-
-        localStorage.setItem(
-            "role",
-            loginData.role
-        );
+        storeSession(loginData);
 
 
         // 4. Guardar mensaje de bienvenida

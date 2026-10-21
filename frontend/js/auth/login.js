@@ -1,5 +1,6 @@
 import { API_URL } from "../api/api.js";
 import { getSupportWhatsAppUrl } from "../config/support.js?v=1.0";
+import { storeSession } from "./session.js";
 
 const form = document.getElementById("login-form");
 const errorMessage = document.getElementById("login-error");
@@ -37,12 +38,11 @@ form.addEventListener("submit", async (event) => {
 
         const data = await response.json();
 
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("businessSlug", data.slug);
-        localStorage.setItem("businessName", data.businessName);
-        localStorage.setItem("role", data.role);
+        storeSession(data);
 
-        window.location.href = "../admin/admin.html";
+        window.location.href = data.mustChangePassword
+            ? "../admin/force-change-password.html"
+            : "../admin/admin.html";
 
     } catch (error) {
 

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrdenFlash - Mi cuenta</title>
+    <link rel="stylesheet" href="../../style.css?v=28">
+</head>
+<body>
+    <header class="admin-header">
+        <h1>OrdenFlash</h1>
+        <span>Mi cuenta</span>
+    </header>
+
+    <main class="admin-container">
+        <aside class="admin-sidebar">
+            <button type="button" class="admin-nav-button" onclick="window.location.href='admin.html'">Mi negocio</button>
+            <button type="button" class="admin-nav-button" onclick="window.location.href='products.html'">Productos</button>
+            <button type="button" class="admin-nav-button" onclick="window.location.href='orders.html'">Pedidos</button>
+            <button type="button" class="admin-nav-button admin-nav-button--active" aria-current="page">Mi cuenta</button>
+            <button type="button" id="btn-logout">Cerrar sesión</button>
+        </aside>
+
+        <section class="admin-content">
+            <section class="account-panel" aria-labelledby="account-title">
+                <div class="account-panel__heading">
+                    <h2 id="account-title">Cambiar contraseña</h2>
+                    <p>Usá una contraseña nueva de al menos 8 caracteres.</p>
+                </div>
+
+                <form id="change-password-form" novalidate>
+                    <label>
+                        Contraseña actual
+                        <input type="password" id="current-password" autocomplete="current-password" maxlength="72" required>
+                    </label>
+                    <label>
+                        Nueva contraseña
+                        <input type="password" id="new-password" autocomplete="new-password" minlength="8" maxlength="72" required>
+                    </label>
+                    <label>
+                        Confirmar nueva contraseña
+                        <input type="password" id="confirm-new-password" autocomplete="new-password" minlength="8" maxlength="72" required>
+                    </label>
+
+                    <p id="change-password-message" class="account-panel__message" role="alert" hidden></p>
+                    <button type="submit" id="change-password-submit">Actualizar contraseña</button>
+                </form>
+            </section>
+        </section>
+    </main>
+
+    <script type="module" src="../../js/admin/account.js?v=1.0"></script>
+</body>
+</html>

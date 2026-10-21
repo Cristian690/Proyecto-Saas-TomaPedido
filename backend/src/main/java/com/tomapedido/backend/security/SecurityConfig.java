@@ -38,6 +38,8 @@ public class SecurityConfig {
                         "/public/**"
                     )
                     .permitAll()
+                    .requestMatchers("/auth/change-password")
+                    .authenticated()
                     .requestMatchers(HttpMethod.POST, "/business")
                     .hasRole("ADMIN")
                     .requestMatchers(

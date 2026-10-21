@@ -65,7 +65,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(
                                 user,
                                 null,
-                                user.getRole() != null
+                                user.isMustChangePassword()
+                                        ? java.util.List.of(
+                                                new org.springframework.security.core.authority.SimpleGrantedAuthority(
+                                                        "PASSWORD_CHANGE_REQUIRED"))
+                                        : user.getRole() != null
                                         ? java.util.List.of(
                                                 new org.springframework.security.core.authority.SimpleGrantedAuthority(
                                                         "ROLE_" + user.getRole()))

@@ -1,6 +1,7 @@
 package com.tomapedido.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.Proxy;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.tomapedido.backend.dto.RegisterRequest;
 import com.tomapedido.backend.entity.Tenant;
+import com.tomapedido.backend.entity.User;
 import com.tomapedido.backend.repository.TenantConfigRepository;
 import com.tomapedido.backend.repository.TenantRepository;
 import com.tomapedido.backend.repository.UserRepository;
@@ -49,6 +51,35 @@ class AuthServicePhoneTest {
         authService.register(request("+54 9 11 7777-6666"));
 
         assertEquals("5491177776666", savedTenant.get().getPhone());
+    }
+
+    @Test
+    void registrationsDoNotRequireAnImmediatePasswordChange() {
+        AtomicReference<Tenant> savedTenant = new AtomicReference<>();
+        AtomicReference<User> savedUser = new AtomicReference<>();
+        TenantRepository tenantRepository = tenantRepository(
+                Optional.empty(), Optional.empty(), savedTenant);
+        UserRepository userRepository = (UserRepository) Proxy.newProxyInstance(
+                UserRepository.class.getClassLoader(),
+                new Class<?>[] { UserRepository.class },
+                (proxy, method, args) -> {
+                    if (method.getName().equals("save")) {
+                        savedUser.set((User) args[0]);
+                        return args[0];
+                    }
+
+                    return null;
+                });
+        AuthService authService = new AuthService(
+                tenantRepository,
+                userRepository,
+                repositoryProxy(TenantConfigRepository.class),
+                passwordEncoder(),
+                null);
+
+        authService.register(request("+54 9 11 7777-6666"));
+
+        assertFalse(savedUser.get().isMustChangePassword());
     }
 
     private AuthService authService(TenantRepository tenantRepository) {
