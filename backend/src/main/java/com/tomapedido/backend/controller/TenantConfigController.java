@@ -27,6 +27,11 @@ public class TenantConfigController {
         return tenantConfigService.saveTenantConfig(request);
     }
 
+    @GetMapping
+    public BusinessConfigResponse getAuthenticatedTenantConfig() {
+        return tenantConfigService.getAuthenticatedTenantConfig();
+    }
+
     @GetMapping("/{slug}")
     public PublicTenantConfigResponse getTenantConfig(@PathVariable String slug) {
         return tenantConfigService.getTenantConfigBySlug(slug);

@@ -41,6 +41,18 @@ public final class ArgentineWhatsAppNormalizer {
         return normalizedPhone.substring(ARGENTINE_MOBILE_PREFIX.length());
     }
 
+    public static String formatForDisplay(String phone) {
+        if (phone == null || phone.isBlank()) {
+            return phone;
+        }
+
+        try {
+            return toLegacyLocalNumber(normalize(phone));
+        } catch (IllegalArgumentException exception) {
+            return phone;
+        }
+    }
+
     private static IllegalArgumentException invalidPhone() {
         return new IllegalArgumentException(
                 "Ingresá un número de WhatsApp argentino válido");

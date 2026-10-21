@@ -42,6 +42,8 @@ public class SecurityConfig {
                     .authenticated()
                     .requestMatchers(HttpMethod.POST, "/business")
                     .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/business")
+                    .hasRole("ADMIN")
                     .requestMatchers(
                         HttpMethod.PATCH,
                         "/business/status",

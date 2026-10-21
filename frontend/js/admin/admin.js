@@ -773,9 +773,6 @@ document
 
 function loadBusinessConfig() {
 
-const businessSlug =
-    localStorage.getItem("businessSlug");
-
 const publicStoreUrl = getPublicStoreUrl();
 
 if (publicStoreUrl) {
@@ -783,7 +780,7 @@ if (publicStoreUrl) {
 }
 
 fetch(
-    `${API_URL}/business/${businessSlug}`,
+    `${API_URL}/business`,
     {
         headers: {
             "Authorization": `Bearer ${token}`

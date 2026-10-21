@@ -9,6 +9,7 @@ import com.tomapedido.backend.entity.TenantConfig;
 import com.tomapedido.backend.repository.TenantConfigRepository;
 import com.tomapedido.backend.repository.TenantRepository;
 import com.tomapedido.backend.security.SecurityUtils;
+import com.tomapedido.backend.security.ArgentineWhatsAppNormalizer;
 import com.tomapedido.backend.dto.BusinessStatusRequest;
 import com.tomapedido.backend.dto.BusinessCustomizationRequest;
 import com.tomapedido.backend.dto.BusinessConfigRequest;
@@ -77,7 +78,7 @@ public class TenantConfigService {
         return new BusinessConfigResponse(
                 config.getId(),
                 config.getName(),
-                config.getWhatsapp(),
+                ArgentineWhatsAppNormalizer.formatForDisplay(config.getWhatsapp()),
                 config.getLogoUrl(),
                 config.getCoverUrl(),
                 config.getPrimaryColor(),
@@ -93,16 +94,28 @@ public class TenantConfigService {
                 config.isStockEnabled());
     }
 
+    public BusinessConfigResponse getAuthenticatedTenantConfig() {
+        Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
+        tenantStatusService.requireAdministrationAllowed(tenant);
+
+        TenantConfig config = tenantConfigRepository.findByTenant(tenant)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "El comercio todavía no tiene configuración"));
+
+        return toBusinessConfigResponse(config);
+    }
+
     public BusinessConfigResponse saveTenantConfig(BusinessConfigRequest request) {
 
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
         tenantStatusService.requireAdministrationAllowed(tenant);
+        String normalizedWhatsapp = normalizeWhatsappForStorage(request.getWhatsapp());
 
         TenantConfig savedConfig = tenantConfigRepository.findByTenant(tenant)
                 .map(existingTenantConfig -> {
 
                     existingTenantConfig.setName(request.getName());
-                    existingTenantConfig.setWhatsapp(request.getWhatsapp());
+                    existingTenantConfig.setWhatsapp(normalizedWhatsapp);
                     existingTenantConfig.setLogoUrl(request.getLogoUrl());
                     existingTenantConfig.setCoverUrl(request.getCoverUrl());
                     existingTenantConfig.setPrimaryColor(request.getPrimaryColor());
@@ -135,7 +148,7 @@ public class TenantConfigService {
                     TenantConfig tenantConfig = new TenantConfig();
 
                     tenantConfig.setName(request.getName());
-                    tenantConfig.setWhatsapp(request.getWhatsapp());
+                    tenantConfig.setWhatsapp(normalizedWhatsapp);
                     tenantConfig.setLogoUrl(request.getLogoUrl());
                     tenantConfig.setCoverUrl(request.getCoverUrl());
                     tenantConfig.setPrimaryColor(request.getPrimaryColor());
@@ -161,6 +174,14 @@ public class TenantConfigService {
                 });
 
         return toBusinessConfigResponse(savedConfig);
+    }
+
+    private String normalizeWhatsappForStorage(String whatsapp) {
+        if (whatsapp == null || whatsapp.isBlank()) {
+            return whatsapp;
+        }
+
+        return ArgentineWhatsAppNormalizer.normalize(whatsapp);
     }
 
     public BusinessConfigResponse updateBusinessStatus(BusinessStatusRequest request) {

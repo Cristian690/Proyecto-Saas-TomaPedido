@@ -32,4 +32,20 @@ class ArgentineWhatsAppNormalizerTest {
                     () -> ArgentineWhatsAppNormalizer.normalize(phone), phone);
         }
     }
+
+    @Test
+    void formatsCanonicalNumbersForDisplayWithoutChangingTheirStoredFormat() {
+        assertEquals("1177776666",
+                ArgentineWhatsAppNormalizer.formatForDisplay("5491177776666"));
+        assertEquals("1177776666",
+                ArgentineWhatsAppNormalizer.formatForDisplay("+54 9 11 7777-6666"));
+        assertEquals("1177776666",
+                ArgentineWhatsAppNormalizer.formatForDisplay("1177776666"));
+    }
+
+    @Test
+    void preservesUnsupportedValuesWhenFormattingForDisplay() {
+        assertEquals("número externo",
+                ArgentineWhatsAppNormalizer.formatForDisplay("número externo"));
+    }
 }
