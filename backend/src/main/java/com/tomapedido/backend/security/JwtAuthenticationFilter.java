@@ -2,6 +2,8 @@ package com.tomapedido.backend.security;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
+    private static final String CLOUDINARY_SIGNATURE_PATH =
+            "/uploads/cloudinary/signatures";
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -39,13 +47,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+        boolean isCloudinarySignatureRequest =
+                "POST".equals(request.getMethod())
+                && CLOUDINARY_SIGNATURE_PATH.equals(request.getRequestURI());
+        boolean hasBearerScheme = authHeader != null
+                && authHeader.startsWith("Bearer ");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (isCloudinarySignatureRequest) {
+            log.info(
+                    "JWT signature probe: method={}, path={}, authorizationPresent={}, bearerScheme={}",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    authHeader != null,
+                    hasBearerScheme);
+        }
+
+        if (!hasBearerScheme) {
             filterChain.doFilter(request, response);
+
+            if (isCloudinarySignatureRequest) {
+                log.info(
+                        "JWT signature probe result: jwtValidation={}, responseStatus={}",
+                        "missing_or_invalid_bearer_scheme",
+                        response.getStatus());
+            }
+
             return;
         }
 
         String token = authHeader.substring(7);
+        String validationResult = "valid_but_user_or_active_tenant_unavailable";
 
         try {
             Claims claims = Jwts.parser()
@@ -77,12 +108,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext()
                         .setAuthentication(authentication);
+                validationResult = "valid_authenticated";
             }
 
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
+            validationResult = "invalid";
         }
 
         filterChain.doFilter(request, response);
+
+        if (isCloudinarySignatureRequest) {
+            log.info(
+                    "JWT signature probe result: jwtValidation={}, responseStatus={}",
+                    validationResult,
+                    response.getStatus());
+        }
     }
 }
