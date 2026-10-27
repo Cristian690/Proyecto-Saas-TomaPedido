@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.tomapedido.backend.dto.CreateImportedProductRequest;
 import com.tomapedido.backend.dto.CreateProductRequest;
 import com.tomapedido.backend.dto.ProductResponse;
 import com.tomapedido.backend.entity.Category;
 import com.tomapedido.backend.entity.Product;
 import com.tomapedido.backend.entity.Tenant;
-import com.tomapedido.backend.repository.CategoryRepository;
 import com.tomapedido.backend.repository.ProductRepository;
 import com.tomapedido.backend.security.SecurityUtils;
 
@@ -21,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryResolutionService categoryResolutionService;
     private final SecurityUtils securityUtils;
     private final TenantStatusService tenantStatusService;
 
@@ -46,19 +48,8 @@ public class ProductService {
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
         tenantStatusService.requireAdministrationAllowed(tenant);
 
-        Category category = categoryRepository
-                .findByNameAndTenant(request.getCategoryName(), tenant)
-                .orElseGet(() -> {
-
-                    Category newCategory = new Category();
-
-                    newCategory.setName(request.getCategoryName());
-                    newCategory.setDescription("");
-                    newCategory.setActive(true);
-                    newCategory.setTenant(tenant);
-
-                    return categoryRepository.save(newCategory);
-                });
+        Category category = categoryResolutionService
+                .resolveForProduct(tenant, request.getCategoryName());
 
         Product newProduct = new Product();
 
@@ -74,6 +65,26 @@ public class ProductService {
         Product savedProduct = productRepository.save(newProduct);
 
         return toResponse(savedProduct);
+    }
+
+    public ProductResponse createImportedProduct(CreateImportedProductRequest request) {
+        Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
+        tenantStatusService.requireAdministrationAllowed(tenant);
+
+        Category category = categoryResolutionService
+                .resolveForImportedProduct(tenant, request.getCategoryName());
+
+        Product importedProduct = new Product();
+        importedProduct.setName(request.getName());
+        importedProduct.setDescription(request.getDescription());
+        importedProduct.setPrice(null);
+        importedProduct.setStock(0);
+        importedProduct.setImageUrl(request.getImageUrl());
+        importedProduct.setActive(false);
+        importedProduct.setCategory(category);
+        importedProduct.setTenant(tenant);
+
+        return toResponse(productRepository.save(importedProduct));
     }
 
     public ProductResponse getProductById(Long id) {
@@ -125,19 +136,8 @@ public class ProductService {
                     "El producto no pertenece al comercio");
         }
 
-        Category category = categoryRepository
-        .findByNameAndTenant(request.getCategoryName(), product.getTenant())
-        .orElseGet(() -> {
-
-            Category newCategory = new Category();
-
-            newCategory.setName(request.getCategoryName());
-            newCategory.setDescription("");
-            newCategory.setActive(true);
-            newCategory.setTenant(product.getTenant());
-
-            return categoryRepository.save(newCategory);
-        });
+        Category category = categoryResolutionService
+                .resolveForProduct(product.getTenant(), request.getCategoryName());
 
         product.setName(request.getName());
         product.setDescription(request.getDescription());
@@ -184,8 +184,19 @@ public class ProductService {
                     "El producto no pertenece al comercio");
         }
 
+        if (!hasValidPrice(product)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNPROCESSABLE_ENTITY,
+                    "No se puede activar un producto sin un precio mayor que cero");
+        }
+
         product.setActive(true);
 
         productRepository.save(product);
+    }
+
+    private boolean hasValidPrice(Product product) {
+        return product.getPrice() != null
+                && product.getPrice().signum() > 0;
     }
 }

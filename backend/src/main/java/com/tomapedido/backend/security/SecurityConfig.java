@@ -56,6 +56,7 @@ public class SecurityConfig {
                         "/products/**",
                         "/categories/**",
                         "/orders/**",
+                        "/uploads/**",
                         "/tenant/trial"
                     )
                     .hasRole("ADMIN")

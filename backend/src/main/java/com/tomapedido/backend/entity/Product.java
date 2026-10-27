@@ -8,7 +8,7 @@ import lombok.*;
 
 @Entity
 @Table(name="products")
-@Check(constraints = "price > 0 AND stock >= 0")
+@Check(constraints = "stock >= 0 AND (price IS NULL OR price > 0)")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,7 +26,7 @@ public class Product {
     @Column(nullable = false, length = 100)
     private String description;
 
-    @Column(nullable = false, precision = 12, scale = 2)
+    @Column(precision = 12, scale = 2)
     private BigDecimal price;
 
     @Column(length = 200)

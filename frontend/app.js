@@ -215,6 +215,12 @@ function showProductDetailFeedback(message) {
     feedback.hidden = false;
 }
 
+function getProductDetailImageTransformation() {
+    return window.matchMedia("(max-width: 700px)").matches
+        ? "f_auto,q_auto,w_720,h_540,c_fit"
+        : "f_auto,q_auto,w_1200,h_900,c_fit";
+}
+
 function renderProductDetail() {
     if (!currentProductDetail) {
         return;
@@ -234,7 +240,7 @@ function renderProductDetail() {
         product.imagen,
         product.nombre || "",
         "product-detail-image",
-        "f_auto,q_auto,w_1200,h_900,c_fit"
+        getProductDetailImageTransformation()
     );
 
     imageContainer.replaceChildren(image);

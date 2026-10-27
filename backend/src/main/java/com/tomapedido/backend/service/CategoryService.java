@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryResolutionService categoryResolutionService;
     private final SecurityUtils securityUtils;
     private final TenantStatusService tenantStatusService;
 
@@ -27,25 +28,11 @@ public class CategoryService {
         Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
         tenantStatusService.requireAdministrationAllowed(tenant);
 
-        Category existingCategory = categoryRepository
-                .findByNameAndTenant(request.getName(), tenant)
-                .orElse(null);
-
-        if (existingCategory != null) {
-            return toResponse(existingCategory);
-        }
-
-        Category nuevaCategoria = new Category();
-
-        nuevaCategoria.setName(request.getName());
-        nuevaCategoria.setDescription(request.getDescription());
-        nuevaCategoria.setImageUrl(request.getImageUrl());
-        nuevaCategoria.setActive(true);
-        nuevaCategoria.setTenant(tenant);
-
-        Category savedCategory = categoryRepository.save(nuevaCategoria);
-
-        return toResponse(savedCategory);
+        return toResponse(categoryResolutionService.resolveForCategoryCreation(
+                tenant,
+                request.getName(),
+                request.getDescription(),
+                request.getImageUrl()));
     }
 
     public CategoryResponse getCategoryById(Long id) {
@@ -95,7 +82,12 @@ public class CategoryService {
             throw new IllegalArgumentException("La categoría no pertenece al comercio");
         }
 
-        category.setName(request.getName());
+        categoryResolutionService.ensureNameIsAvailable(
+                category.getTenant(),
+                request.getName(),
+                category.getId());
+
+        category.setName(categoryResolutionService.canonicalizeName(request.getName()));
         category.setDescription(request.getDescription());
         category.setImageUrl(request.getImageUrl());
 

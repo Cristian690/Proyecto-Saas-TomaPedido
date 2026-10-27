@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PatchMapping;
 
 import com.tomapedido.backend.dto.CreateProductRequest;
+import com.tomapedido.backend.dto.CreateImportedProductRequest;
 import com.tomapedido.backend.dto.ProductResponse;
 import com.tomapedido.backend.service.ProductService;
 
@@ -29,6 +30,12 @@ public class ProductController {
     @PostMapping
     public ProductResponse createProduct(@Valid @RequestBody CreateProductRequest request) {
         return productService.createProduct(request);
+    }
+
+    @PostMapping("/imported")
+    public ProductResponse createImportedProduct(
+            @Valid @RequestBody CreateImportedProductRequest request) {
+        return productService.createImportedProduct(request);
     }
 
     @GetMapping("/{id}")
