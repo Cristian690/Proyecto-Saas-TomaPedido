@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.tomapedido.backend.dto.CreateImportedProductRequest;
+import com.tomapedido.backend.dto.UpdateProductCategoryRequest;
 import com.tomapedido.backend.entity.Category;
 import com.tomapedido.backend.entity.Product;
 import com.tomapedido.backend.entity.Tenant;
@@ -204,6 +205,128 @@ class ProductServiceImportTest {
                 tenantStatusService);
 
         assertThrows(IllegalArgumentException.class, () -> service.activateProduct(15L));
+        verify(productRepository, never()).save(any(Product.class));
+    }
+
+    @Test
+    void updatesOnlyCategoryAndPreservesImportedProductFields() {
+        ProductRepository productRepository = mock(ProductRepository.class);
+        CategoryResolutionService categoryResolutionService = mock(CategoryResolutionService.class);
+        SecurityUtils securityUtils = mock(SecurityUtils.class);
+        TenantStatusService tenantStatusService = mock(TenantStatusService.class);
+        Tenant tenant = Tenant.builder().id(7L).build();
+        Category previousCategory = Category.builder().id(1L).tenant(tenant).build();
+        Category requestedCategory = Category.builder().id(2L).tenant(tenant).build();
+        Product product = Product.builder()
+                .id(15L)
+                .name("Producto importado")
+                .description("Pendiente de precio")
+                .price(null)
+                .stock(0)
+                .imageUrl("https://example.com/producto.jpg")
+                .active(false)
+                .tenant(tenant)
+                .category(previousCategory)
+                .build();
+        when(securityUtils.getAuthenticatedUser())
+                .thenReturn(User.builder().tenant(tenant).build());
+        when(productRepository.findByIdAndTenantId(15L, 7L))
+                .thenReturn(Optional.of(product));
+        when(categoryResolutionService.resolveExistingForProduct(tenant, " didácticos "))
+                .thenReturn(requestedCategory);
+        when(productRepository.save(product)).thenReturn(product);
+
+        ProductService service = new ProductService(
+                productRepository,
+                categoryResolutionService,
+                securityUtils,
+                tenantStatusService);
+        UpdateProductCategoryRequest request = new UpdateProductCategoryRequest();
+        request.setCategoryName(" didácticos ");
+
+        var response = service.updateProductCategory(15L, request);
+
+        assertEquals(requestedCategory, product.getCategory());
+        assertEquals("Producto importado", product.getName());
+        assertEquals("Pendiente de precio", product.getDescription());
+        assertNull(product.getPrice());
+        assertEquals(0, product.getStock());
+        assertEquals("https://example.com/producto.jpg", product.getImageUrl());
+        assertFalse(product.isActive());
+        assertEquals(2L, response.getCategoryId());
+        assertNull(response.getPrice());
+        verify(tenantStatusService).requireAdministrationAllowed(tenant);
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    void rejectsCategoryUpdatesForProductsOutsideTheAuthenticatedTenant() {
+        ProductRepository productRepository = mock(ProductRepository.class);
+        CategoryResolutionService categoryResolutionService = mock(CategoryResolutionService.class);
+        SecurityUtils securityUtils = mock(SecurityUtils.class);
+        TenantStatusService tenantStatusService = mock(TenantStatusService.class);
+        Tenant tenant = Tenant.builder().id(7L).build();
+        when(securityUtils.getAuthenticatedUser())
+                .thenReturn(User.builder().tenant(tenant).build());
+        when(productRepository.findByIdAndTenantId(15L, 7L))
+                .thenReturn(Optional.empty());
+
+        ProductService service = new ProductService(
+                productRepository,
+                categoryResolutionService,
+                securityUtils,
+                tenantStatusService);
+        UpdateProductCategoryRequest request = new UpdateProductCategoryRequest();
+        request.setCategoryName("Didácticos");
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.updateProductCategory(15L, request));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        verify(categoryResolutionService, never()).resolveExistingForProduct(any(), any());
+        verify(productRepository, never()).save(any(Product.class));
+    }
+
+    @Test
+    void keepsTheProductUnchangedWhenTheRequestedCategoryDoesNotExist() {
+        ProductRepository productRepository = mock(ProductRepository.class);
+        CategoryResolutionService categoryResolutionService = mock(CategoryResolutionService.class);
+        SecurityUtils securityUtils = mock(SecurityUtils.class);
+        TenantStatusService tenantStatusService = mock(TenantStatusService.class);
+        Tenant tenant = Tenant.builder().id(7L).build();
+        Category currentCategory = Category.builder().id(1L).tenant(tenant).build();
+        Product product = Product.builder()
+                .id(15L)
+                .name("Producto importado")
+                .description("Pendiente de precio")
+                .price(null)
+                .stock(0)
+                .imageUrl("https://example.com/producto.jpg")
+                .active(false)
+                .tenant(tenant)
+                .category(currentCategory)
+                .build();
+        when(securityUtils.getAuthenticatedUser())
+                .thenReturn(User.builder().tenant(tenant).build());
+        when(productRepository.findByIdAndTenantId(15L, 7L)).thenReturn(Optional.of(product));
+        when(categoryResolutionService.resolveExistingForProduct(tenant, "Inexistente"))
+                .thenThrow(new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY));
+
+        ProductService service = new ProductService(
+                productRepository,
+                categoryResolutionService,
+                securityUtils,
+                tenantStatusService);
+        UpdateProductCategoryRequest request = new UpdateProductCategoryRequest();
+        request.setCategoryName("Inexistente");
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.updateProductCategory(15L, request));
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, exception.getStatusCode());
+        assertEquals(currentCategory, product.getCategory());
         verify(productRepository, never()).save(any(Product.class));
     }
 

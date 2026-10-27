@@ -2,10 +2,12 @@ package com.tomapedido.backend.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.tomapedido.backend.dto.CreateImportedProductRequest;
 import com.tomapedido.backend.dto.ProductResponse;
+import com.tomapedido.backend.dto.UpdateProductCategoryRequest;
 import com.tomapedido.backend.repository.UserRepository;
 import com.tomapedido.backend.security.JwtAuthenticationFilter;
 import com.tomapedido.backend.security.JwtService;
@@ -29,6 +32,10 @@ import com.tomapedido.backend.service.ProductService;
 @WebMvcTest(ProductController.class)
 @Import({ SecurityConfig.class, JwtAuthenticationFilter.class })
 class ProductImportedControllerSecurityTest {
+
+    private static final String CATEGORY_BODY = """
+            { "categoryName": "Didácticos" }
+            """;
 
     private static final String IMPORT_BODY = """
             {
@@ -105,5 +112,55 @@ class ProductImportedControllerSecurityTest {
         CreateImportedProductRequest request = requestCaptor.getValue();
         assertEquals("Producto importado", request.getName());
         assertEquals("Bebidas", request.getCategoryName());
+    }
+
+    @Test
+    void rejectsUnauthenticatedCategoryUpdateRequests() throws Exception {
+        mockMvc.perform(patch("/products/10/category")
+                        .contentType("application/json")
+                        .content(CATEGORY_BODY))
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(productService);
+    }
+
+    @Test
+    void rejectsCategoryUpdateRequestsFromNonAdminUsers() throws Exception {
+        mockMvc.perform(patch("/products/10/category")
+                        .with(user("customer").roles("USER"))
+                        .contentType("application/json")
+                        .content(CATEGORY_BODY))
+                .andExpect(status().isForbidden());
+
+        verifyNoInteractions(productService);
+    }
+
+    @Test
+    void acceptsAdminCategoryUpdateRequests() throws Exception {
+        ProductResponse response = ProductResponse.builder()
+                .id(10L)
+                .name("Producto importado")
+                .description("Descripción")
+                .price(null)
+                .stock(0)
+                .active(false)
+                .categoryId(4L)
+                .build();
+        when(productService.updateProductCategory(eq(10L), any(UpdateProductCategoryRequest.class)))
+                .thenReturn(response);
+
+        mockMvc.perform(patch("/products/10/category")
+                        .with(user("admin").roles("ADMIN"))
+                        .contentType("application/json")
+                        .content(CATEGORY_BODY))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.stock").value(0))
+                .andExpect(jsonPath("$.active").value(false));
+
+        ArgumentCaptor<UpdateProductCategoryRequest> requestCaptor =
+                ArgumentCaptor.forClass(UpdateProductCategoryRequest.class);
+        verify(productService).updateProductCategory(eq(10L), requestCaptor.capture());
+        assertEquals("Didácticos", requestCaptor.getValue().getCategoryName());
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import com.tomapedido.backend.dto.CreateProductRequest;
 import com.tomapedido.backend.dto.CreateImportedProductRequest;
 import com.tomapedido.backend.dto.ProductResponse;
+import com.tomapedido.backend.dto.UpdateProductCategoryRequest;
 import com.tomapedido.backend.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -53,6 +54,13 @@ public class ProductController {
             @PathVariable Long id,
             @Valid @RequestBody CreateProductRequest request) {
         return productService.updateProduct(id, request);
+    }
+
+    @PatchMapping("/{id}/category")
+    public ProductResponse updateProductCategory(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateProductCategoryRequest request) {
+        return productService.updateProductCategory(id, request);
     }
 
     @DeleteMapping("/{id}")

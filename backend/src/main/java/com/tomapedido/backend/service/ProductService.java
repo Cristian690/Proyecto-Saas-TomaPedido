@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.tomapedido.backend.dto.CreateImportedProductRequest;
 import com.tomapedido.backend.dto.CreateProductRequest;
 import com.tomapedido.backend.dto.ProductResponse;
+import com.tomapedido.backend.dto.UpdateProductCategoryRequest;
 import com.tomapedido.backend.entity.Category;
 import com.tomapedido.backend.entity.Product;
 import com.tomapedido.backend.entity.Tenant;
@@ -149,6 +150,26 @@ public class ProductService {
         productRepository.save(product);
 
         return toResponse(product);
+    }
+
+    public ProductResponse updateProductCategory(
+            Long id,
+            UpdateProductCategoryRequest request) {
+
+        Tenant tenant = securityUtils.getAuthenticatedUser().getTenant();
+        tenantStatusService.requireAdministrationAllowed(tenant);
+
+        Product product = productRepository.findByIdAndTenantId(id, tenant.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "El producto no pertenece al comercio"));
+
+        Category category = categoryResolutionService
+                .resolveExistingForProduct(tenant, request.getCategoryName());
+
+        product.setCategory(category);
+
+        return toResponse(productRepository.save(product));
     }
 
     public void deleteProduct(Long id) {

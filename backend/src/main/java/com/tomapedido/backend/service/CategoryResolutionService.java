@@ -37,6 +37,15 @@ public class CategoryResolutionService {
                 .orElseGet(() -> resolveFallbackCategory(tenant));
     }
 
+    public Category resolveExistingForProduct(Tenant tenant, String requestedName) {
+        String canonicalName = canonicalizeName(requestedName);
+
+        return findEquivalent(tenant, canonicalName)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNPROCESSABLE_ENTITY,
+                        "La categoría no existe en este comercio"));
+    }
+
     public Category resolveForCategoryCreation(
             Tenant tenant,
             String requestedName,

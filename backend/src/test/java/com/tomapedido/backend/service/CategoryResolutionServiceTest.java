@@ -2,6 +2,7 @@ package com.tomapedido.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -12,6 +13,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.tomapedido.backend.entity.Category;
 import com.tomapedido.backend.entity.Tenant;
@@ -95,5 +98,40 @@ class CategoryResolutionServiceTest {
         assertEquals("Otros", result.getName());
         assertEquals(tenant, result.getTenant());
         assertNotEquals(otherTenantCategory, result);
+    }
+
+    @Test
+    void resolvesAnExistingCategoryWithNormalizedNameWithoutCreatingOne() {
+        CategoryRepository categoryRepository = mock(CategoryRepository.class);
+        Tenant tenant = Tenant.builder().id(7L).build();
+        Category existingCategory = Category.builder()
+                .id(3L)
+                .name("  DIDÁCTICOS  ")
+                .tenant(tenant)
+                .build();
+        when(categoryRepository.findByTenant(tenant)).thenReturn(List.of(existingCategory));
+
+        CategoryResolutionService service = new CategoryResolutionService(categoryRepository);
+
+        Category result = service.resolveExistingForProduct(tenant, "didácticos");
+
+        assertEquals(existingCategory, result);
+        verify(categoryRepository, never()).save(any(Category.class));
+    }
+
+    @Test
+    void rejectsAnUnknownCategoryInsteadOfCreatingIt() {
+        CategoryRepository categoryRepository = mock(CategoryRepository.class);
+        Tenant tenant = Tenant.builder().id(7L).build();
+        when(categoryRepository.findByTenant(tenant)).thenReturn(List.of());
+
+        CategoryResolutionService service = new CategoryResolutionService(categoryRepository);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> service.resolveExistingForProduct(tenant, "Categoría inexistente"));
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, exception.getStatusCode());
+        verify(categoryRepository, never()).save(any(Category.class));
     }
 }
