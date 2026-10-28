@@ -29,9 +29,8 @@ public class OrderItem {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(name = "product_id", nullable = false)
+    private Long productId;
 
     @Column(nullable = false, length = 100)
     private String productName;

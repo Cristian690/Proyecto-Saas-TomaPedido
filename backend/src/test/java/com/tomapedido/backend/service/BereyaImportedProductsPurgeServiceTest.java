@@ -25,7 +25,6 @@ import com.tomapedido.backend.dto.PurgeBereyaImportedProductsRequest;
 import com.tomapedido.backend.entity.Product;
 import com.tomapedido.backend.entity.Tenant;
 import com.tomapedido.backend.entity.User;
-import com.tomapedido.backend.repository.OrderItemRepository;
 import com.tomapedido.backend.repository.ProductRepository;
 import com.tomapedido.backend.security.SecurityUtils;
 
@@ -38,15 +37,12 @@ class BereyaImportedProductsPurgeServiceTest {
         when(fixture.productRepository().findAllByIdInAndTenantIdForUpdate(
                 eq(targetIds()), eq(fixture.tenant().getId())))
                 .thenReturn(products);
-        when(fixture.orderItemRepository().existsByProductIdIn(targetIds())).thenReturn(false);
-
         var response = fixture.service().purge(confirmedRequest());
 
         assertEquals(BereyaImportedProductsPurgeService.BEREYA_SLUG, response.tenantSlug());
         assertEquals(57, response.deletedCount());
         verify(fixture.productRepository()).deleteAll(products);
         verify(fixture.productRepository()).flush();
-        verify(fixture.orderItemRepository()).existsByProductIdIn(targetIds());
     }
 
     @Test
@@ -57,7 +53,7 @@ class BereyaImportedProductsPurgeServiceTest {
                 () -> fixture.service().purge(confirmedRequest()));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(fixture.productRepository(), fixture.orderItemRepository());
+        verifyNoInteractions(fixture.productRepository());
     }
 
     @Test
@@ -70,7 +66,7 @@ class BereyaImportedProductsPurgeServiceTest {
                 () -> fixture.service().purge(request));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-        verifyNoInteractions(fixture.productRepository(), fixture.orderItemRepository());
+        verifyNoInteractions(fixture.productRepository());
     }
 
     @Test
@@ -87,24 +83,20 @@ class BereyaImportedProductsPurgeServiceTest {
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
         verify(fixture.productRepository(), never()).deleteAll(anyList());
-        verifyNoInteractions(fixture.orderItemRepository());
     }
 
     @Test
-    void rejectsTheEntireOperationWhenAnyTargetHasOrderItems() {
+    void deletesTheExactManifestWithoutCheckingOrderItems() {
         Fixture fixture = fixture();
         List<Product> products = manifestProducts(fixture.tenant());
         when(fixture.productRepository().findAllByIdInAndTenantIdForUpdate(
                 eq(targetIds()), eq(fixture.tenant().getId())))
                 .thenReturn(products);
-        when(fixture.orderItemRepository().existsByProductIdIn(targetIds())).thenReturn(true);
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> fixture.service().purge(confirmedRequest()));
+        fixture.service().purge(confirmedRequest());
 
-        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
-        verify(fixture.productRepository(), never()).deleteAll(anyList());
-        verify(fixture.productRepository(), never()).flush();
+        verify(fixture.productRepository()).deleteAll(products);
+        verify(fixture.productRepository()).flush();
     }
 
     @Test
@@ -114,8 +106,7 @@ class BereyaImportedProductsPurgeServiceTest {
         when(fixture.productRepository().findAllByIdInAndTenantIdForUpdate(
                 eq(targetIds()), eq(fixture.tenant().getId())))
                 .thenReturn(products);
-        when(fixture.orderItemRepository().existsByProductIdIn(targetIds())).thenReturn(false);
-        DataIntegrityViolationException failure = new DataIntegrityViolationException("foreign key");
+        DataIntegrityViolationException failure = new DataIntegrityViolationException("integrity failure");
         org.mockito.Mockito.doThrow(failure).when(fixture.productRepository()).flush();
 
         assertThrows(DataIntegrityViolationException.class,
@@ -148,7 +139,6 @@ class BereyaImportedProductsPurgeServiceTest {
 
     private Fixture fixture(Tenant tenant) {
         ProductRepository productRepository = mock(ProductRepository.class);
-        OrderItemRepository orderItemRepository = mock(OrderItemRepository.class);
         SecurityUtils securityUtils = mock(SecurityUtils.class);
         TenantStatusService tenantStatusService = mock(TenantStatusService.class);
         when(securityUtils.getAuthenticatedUser()).thenReturn(User.builder().tenant(tenant).build());
@@ -156,11 +146,9 @@ class BereyaImportedProductsPurgeServiceTest {
         return new Fixture(
                 new BereyaImportedProductsPurgeService(
                         productRepository,
-                        orderItemRepository,
                         securityUtils,
                         tenantStatusService),
                 productRepository,
-                orderItemRepository,
                 tenant);
     }
 
@@ -189,7 +177,6 @@ class BereyaImportedProductsPurgeServiceTest {
     private record Fixture(
             BereyaImportedProductsPurgeService service,
             ProductRepository productRepository,
-            OrderItemRepository orderItemRepository,
             Tenant tenant) {
     }
 }

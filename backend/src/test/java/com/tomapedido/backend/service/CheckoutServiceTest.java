@@ -75,22 +75,17 @@ class CheckoutServiceTest {
 
         when(tenantRepository.findBySlug("pizzeria"))
                 .thenReturn(Optional.of(tenant));
-        when(tenantRepository.findById(1L)).thenReturn(Optional.of(tenant));
         when(tenantStatusService.isPublicStoreAvailable(tenant)).thenReturn(true);
         when(tenantConfigRepository.findByTenant(tenant)).thenReturn(Optional.of(config));
         when(productRepository.findByIdAndTenantId(10L, 1L))
                 .thenReturn(Optional.of(product));
-        when(productRepository.decrementStockIfAvailable(10L, 1L, 2)).thenReturn(1);
-        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
-            Order order = invocation.getArgument(0);
-            order.setId(25L);
-            return order;
-        });
     }
 
     @Test
     @SuppressWarnings("unchecked")
     void confirmsCheckoutAndStoresCurrentProductSnapshots() {
+        stubSuccessfulCheckout();
+
         CheckoutConfirmResponse response = checkoutService.confirmCheckout(
                 "pizzeria", request(item(10L, 2)));
 
@@ -101,6 +96,7 @@ class CheckoutServiceTest {
         verify(orderItemRepository).saveAll(itemsCaptor.capture());
 
         OrderItem savedItem = itemsCaptor.getValue().getFirst();
+        assertEquals(10L, savedItem.getProductId());
         assertEquals("Pizza Muzzarella", savedItem.getProductName());
         assertEquals(new BigDecimal("5000.00"), savedItem.getUnitPrice());
         assertEquals(2, savedItem.getQuantity());
@@ -125,6 +121,7 @@ class CheckoutServiceTest {
     @Test
     void acceptsStockExactlyEqualToRequestedQuantity() {
         product.setStock(2);
+        stubSuccessfulCheckout();
 
         CheckoutConfirmResponse response = checkoutService.confirmCheckout(
                 "pizzeria", request(item(10L, 2)));
@@ -161,6 +158,7 @@ class CheckoutServiceTest {
     void doesNotCreateAnOrderWhenTheSecondStockUpdateFails() {
         Product secondProduct = product(20L, "Empanada", "1000.00", 0, true);
 
+        when(productRepository.decrementStockIfAvailable(10L, 1L, 2)).thenReturn(1);
         when(productRepository.findByIdAndTenantId(20L, 1L))
                 .thenReturn(Optional.of(secondProduct));
         when(productRepository.decrementStockIfAvailable(20L, 1L, 1)).thenReturn(0);
@@ -173,6 +171,16 @@ class CheckoutServiceTest {
 
         verify(orderRepository, never()).save(any(Order.class));
         verify(orderItemRepository, never()).saveAll(any());
+    }
+
+    private void stubSuccessfulCheckout() {
+        when(tenantRepository.findById(1L)).thenReturn(Optional.of(tenant));
+        when(productRepository.decrementStockIfAvailable(10L, 1L, 2)).thenReturn(1);
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
+            Order order = invocation.getArgument(0);
+            order.setId(25L);
+            return order;
+        });
     }
 
     private CheckoutConfirmRequest request(CheckoutItemRequest... items) {

@@ -14,7 +14,6 @@ import com.tomapedido.backend.dto.PurgeBereyaImportedProductsRequest;
 import com.tomapedido.backend.dto.PurgeBereyaImportedProductsResponse;
 import com.tomapedido.backend.entity.Product;
 import com.tomapedido.backend.entity.Tenant;
-import com.tomapedido.backend.repository.OrderItemRepository;
 import com.tomapedido.backend.repository.ProductRepository;
 import com.tomapedido.backend.security.SecurityUtils;
 
@@ -102,7 +101,6 @@ public class BereyaImportedProductsPurgeService {
     }
 
     private final ProductRepository productRepository;
-    private final OrderItemRepository orderItemRepository;
     private final SecurityUtils securityUtils;
     private final TenantStatusService tenantStatusService;
 
@@ -121,12 +119,7 @@ public class BereyaImportedProductsPurgeService {
 
         validateManifest(products, tenant, targetIds);
 
-        if (orderItemRepository.existsByProductIdIn(targetIds)) {
-            throw conflict("No se pueden eliminar productos con ítems de pedido relacionados");
-        }
-
         productRepository.deleteAll(products);
-        // Force FK checks before replying; any failure makes this transaction roll back.
         productRepository.flush();
 
         return new PurgeBereyaImportedProductsResponse(tenant.getSlug(), products.size());

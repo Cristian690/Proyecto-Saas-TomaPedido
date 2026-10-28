@@ -157,7 +157,7 @@ public class CheckoutService {
         Order savedOrder = orderRepository.save(order);
 
         List<OrderItem> orderItems = resolvedItems.stream()
-                .map(item -> toOrderItem(savedOrder, managedTenant.getId(), item))
+                .map(item -> toOrderItem(savedOrder, item))
                 .toList();
 
         orderItemRepository.saveAll(orderItems);
@@ -198,18 +198,10 @@ public class CheckoutService {
 
     private OrderItem toOrderItem(
             Order order,
-            Long tenantId,
             ResolvedItem resolvedItem) {
-
-        Product product = productRepository
-                .findByIdAndTenantId(resolvedItem.productId(), tenantId)
-                .orElseThrow(() -> unavailableProduct(
-                        resolvedItem.productId(),
-                        resolvedItem.quantity()));
-
         OrderItem orderItem = new OrderItem();
         orderItem.setOrder(order);
-        orderItem.setProduct(product);
+        orderItem.setProductId(resolvedItem.productId());
         orderItem.setProductName(resolvedItem.productName());
         orderItem.setUnitPrice(resolvedItem.unitPrice());
         orderItem.setQuantity(resolvedItem.quantity());

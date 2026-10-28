@@ -19,7 +19,6 @@ import com.tomapedido.backend.dto.OrderResponse;
 import com.tomapedido.backend.entity.Order;
 import com.tomapedido.backend.entity.OrderItem;
 import com.tomapedido.backend.entity.OrderStatus;
-import com.tomapedido.backend.entity.Product;
 import com.tomapedido.backend.entity.Tenant;
 import com.tomapedido.backend.entity.User;
 import com.tomapedido.backend.repository.OrderItemRepository;
@@ -77,12 +76,9 @@ class OrderServiceTest {
 
     @Test
     void calculatesItemSubtotalFromStoredUnitPriceAndQuantity() {
-        Product product = new Product();
-        product.setId(5L);
-
         OrderItem item = new OrderItem();
         item.setOrder(newestOrder);
-        item.setProduct(product);
+        item.setProductId(5L);
         item.setProductName("Hamburguesa Simple");
         item.setUnitPrice(new BigDecimal("8000.00"));
         item.setQuantity(2);
@@ -96,6 +92,10 @@ class OrderServiceTest {
 
         assertEquals(new BigDecimal("16000.00"),
                 response.getItems().getFirst().getSubtotal());
+        assertEquals(5L, response.getItems().getFirst().getProductId());
+        assertEquals("Hamburguesa Simple", response.getItems().getFirst().getProductName());
+        assertEquals(new BigDecimal("8000.00"), response.getItems().getFirst().getUnitPrice());
+        assertEquals(2, response.getItems().getFirst().getQuantity());
     }
 
     private Order order(Long id, LocalDateTime createdAt) {

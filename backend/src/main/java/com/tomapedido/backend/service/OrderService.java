@@ -77,7 +77,7 @@ public class OrderService {
                 .multiply(BigDecimal.valueOf(item.getQuantity()));
 
         return new OrderItemResponse(
-                item.getProduct().getId(),
+                item.getProductId(),
                 item.getProductName(),
                 item.getUnitPrice(),
                 item.getQuantity(),
