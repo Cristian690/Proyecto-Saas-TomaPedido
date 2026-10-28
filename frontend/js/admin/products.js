@@ -2152,7 +2152,23 @@ function renderProducts(products, categoryMap) {
             priceInput.min = "0.01";
             priceInput.step = "0.01";
             priceInput.value = draft.price;
+            priceInput.id = `quick-edit-price-${product.id}`;
             priceInput.setAttribute("aria-label", "Precio del producto");
+            const priceEditor = document.createElement("div");
+            priceEditor.style.display = "inline-flex";
+            priceEditor.style.gridColumn = "2";
+            priceEditor.style.justifySelf = "end";
+            priceEditor.style.alignItems = "center";
+            priceEditor.style.gap = "5px";
+            priceEditor.style.width = "fit-content";
+            priceEditor.style.color = "var(--red)";
+            priceEditor.style.fontSize = "0.78rem";
+            const priceLabel = document.createElement("label");
+            priceLabel.htmlFor = priceInput.id;
+            priceLabel.textContent = "Precio";
+            priceLabel.style.font = "inherit";
+            priceLabel.style.fontWeight = "600";
+            priceEditor.append(priceLabel, priceInput);
             const categoryInput = document.createElement("input");
             categoryInput.className = "product-quick-edit-input product-quick-edit-category";
             categoryInput.value = draft.categoryName;
@@ -2204,7 +2220,7 @@ function renderProducts(products, categoryMap) {
             name.replaceWith(nameInput);
             description.replaceWith(descriptionInput);
             stock.replaceWith(stockEditor);
-            price.replaceWith(priceInput);
+            price.replaceWith(priceEditor);
             category.replaceWith(categoryEditor);
             info.appendChild(imageEditor);
 
@@ -2462,7 +2478,7 @@ function renderProducts(products, categoryMap) {
                 stock.textContent = `Stock: ${product.stock}`;
                 stockEditor.replaceWith(stock);
                 price.textContent = `$${Number(product.price).toLocaleString("es-AR")}`;
-                priceInput.replaceWith(price);
+                priceEditor.replaceWith(price);
                 const savedCategoryName = useDraftCategory
                     ? draft.categoryName.trim() || categoryName
                     : categoryName;
