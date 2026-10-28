@@ -19,6 +19,7 @@ import com.tomapedido.backend.dto.PurgeBereyaImportedProductsRequest;
 import com.tomapedido.backend.dto.PurgeBereyaImportedProductsResponse;
 import com.tomapedido.backend.dto.UpdateProductCategoryRequest;
 import com.tomapedido.backend.service.BereyaImportedProductsPurgeService;
+import com.tomapedido.backend.service.ProductPermanentDeletionService;
 import com.tomapedido.backend.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -31,6 +32,7 @@ public class ProductController {
 
     private final ProductService productService;
     private final BereyaImportedProductsPurgeService bereyaImportedProductsPurgeService;
+    private final ProductPermanentDeletionService productPermanentDeletionService;
 
     @PostMapping
     public ProductResponse createProduct(@Valid @RequestBody CreateProductRequest request) {
@@ -76,6 +78,11 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
+    }
+
+    @DeleteMapping("/{id}/permanent")
+    public void permanentlyDeleteProduct(@PathVariable Long id) {
+        productPermanentDeletionService.permanentlyDeleteProduct(id);
     }
 
     @PatchMapping("/{id}/activate")

@@ -2020,6 +2020,73 @@ async function toggleProductActive(product, card, toggleButton) {
     }
 }
 
+async function permanentlyDeleteProduct(product, card, deleteButton) {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        window.location.href = "../login/login.html";
+        return;
+    }
+
+    const confirmed = window.confirm(
+        `¿Eliminar definitivamente “${product.name}”? Esta acción no se puede deshacer.`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    deleteButton.disabled = true;
+    setCardStatus(card, "Eliminando…");
+
+    try {
+        const response = await fetch(
+            `${API_URL}/products/${product.id}/permanent`,
+            {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            }
+        );
+
+        if (handleUnauthorized(response)) {
+            return;
+        }
+
+        if (!response.ok) {
+            let message = "No se pudo eliminar el producto.";
+
+            try {
+                const error = await response.json();
+                message = error.detail || error.message || error.error || message;
+            } catch {
+                // La respuesta no contiene un error JSON utilizable.
+            }
+
+            throw new Error(message);
+        }
+
+        productStatusMessage.textContent = "Producto eliminado definitivamente.";
+        card.remove();
+
+        if (!productsContainer.querySelector(".product-card")) {
+            productsContainer.innerHTML = `
+                <div class="empty-products">
+                    <div class="empty-products-icon">🛒</div>
+                    <h3>Todavía no tenés productos</h3>
+                    <p>Agregá tu primer producto para empezar a armar tu menú.</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error("Error eliminando producto:", error);
+        setCardStatus(
+            card,
+            error.message || "No se pudo eliminar el producto."
+        );
+        deleteButton.disabled = false;
+    }
+}
+
 function hasActivatablePrice(price) {
     const numericPrice = Number(price);
 
@@ -2106,6 +2173,13 @@ function renderProducts(products, categoryMap) {
         toggleButton.textContent = product.active ? "Desactivar" : "Activar";
         toggleButton.addEventListener("click", () => {
             void toggleProductActive(product, card, toggleButton);
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Eliminar";
+        deleteButton.addEventListener("click", () => {
+            void permanentlyDeleteProduct(product, card, deleteButton);
         });
 
         const statusMessage = document.createElement("p");
@@ -2233,6 +2307,7 @@ function renderProducts(products, categoryMap) {
             cancelButton.textContent = "Cancelar";
             quickEditButton.replaceWith(saveButton, cancelButton);
             toggleButton.disabled = true;
+            deleteButton.disabled = true;
             setCardStatus(card, "");
 
             let isPreparingImage = false;
@@ -2489,6 +2564,7 @@ function renderProducts(products, categoryMap) {
                 saveButton.replaceWith(quickEditButton);
                 cancelButton.remove();
                 toggleButton.disabled = false;
+                deleteButton.disabled = false;
                 setCardStatus(card, message, autoHide);
             };
 
@@ -2507,7 +2583,13 @@ function renderProducts(products, categoryMap) {
         };
 
         quickEditButton.addEventListener("click", startQuickEdit);
-        card.append(mainRow, quickEditButton, toggleButton, statusMessage);
+        card.append(
+            mainRow,
+            quickEditButton,
+            toggleButton,
+            deleteButton,
+            statusMessage
+        );
         productsContainer.appendChild(card);
     });
 }

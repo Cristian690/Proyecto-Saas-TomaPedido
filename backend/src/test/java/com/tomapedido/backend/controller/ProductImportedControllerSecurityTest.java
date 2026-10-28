@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +27,7 @@ import com.tomapedido.backend.dto.PurgeBereyaImportedProductsRequest;
 import com.tomapedido.backend.dto.UpdateProductCategoryRequest;
 import com.tomapedido.backend.repository.UserRepository;
 import com.tomapedido.backend.service.BereyaImportedProductsPurgeService;
+import com.tomapedido.backend.service.ProductPermanentDeletionService;
 import com.tomapedido.backend.security.JwtAuthenticationFilter;
 import com.tomapedido.backend.security.JwtService;
 import com.tomapedido.backend.security.SecurityConfig;
@@ -64,6 +66,9 @@ class ProductImportedControllerSecurityTest {
 
     @MockitoBean
     private BereyaImportedProductsPurgeService bereyaImportedProductsPurgeService;
+
+    @MockitoBean
+    private ProductPermanentDeletionService productPermanentDeletionService;
 
     @MockitoBean
     private JwtService jwtService;
@@ -171,6 +176,32 @@ class ProductImportedControllerSecurityTest {
                 ArgumentCaptor.forClass(UpdateProductCategoryRequest.class);
         verify(productService).updateProductCategory(eq(10L), requestCaptor.capture());
         assertEquals("Didácticos", requestCaptor.getValue().getCategoryName());
+    }
+
+    @Test
+    void rejectsUnauthenticatedPermanentProductDeletionRequests() throws Exception {
+        mockMvc.perform(delete("/products/10/permanent"))
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(productPermanentDeletionService);
+    }
+
+    @Test
+    void rejectsPermanentProductDeletionRequestsFromNonAdminUsers() throws Exception {
+        mockMvc.perform(delete("/products/10/permanent")
+                        .with(user("customer").roles("USER")))
+                .andExpect(status().isForbidden());
+
+        verifyNoInteractions(productPermanentDeletionService);
+    }
+
+    @Test
+    void acceptsAdminPermanentProductDeletionRequests() throws Exception {
+        mockMvc.perform(delete("/products/10/permanent")
+                        .with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+
+        verify(productPermanentDeletionService).permanentlyDeleteProduct(10L);
     }
 
     @Test

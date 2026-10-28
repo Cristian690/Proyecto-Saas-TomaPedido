@@ -23,6 +23,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("""
             SELECT product
             FROM Product product
+            WHERE product.id = :productId
+                AND product.tenant.id = :tenantId
+            """)
+    Optional<Product> findByIdAndTenantIdForUpdate(
+            @Param("productId") Long productId,
+            @Param("tenantId") Long tenantId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT product
+            FROM Product product
             WHERE product.id IN :productIds
                 AND product.tenant.id = :tenantId
             ORDER BY product.id
