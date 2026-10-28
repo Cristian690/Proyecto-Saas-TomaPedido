@@ -22,8 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.tomapedido.backend.dto.CreateImportedProductRequest;
 import com.tomapedido.backend.dto.ProductResponse;
+import com.tomapedido.backend.dto.PurgeBereyaImportedProductsRequest;
 import com.tomapedido.backend.dto.UpdateProductCategoryRequest;
 import com.tomapedido.backend.repository.UserRepository;
+import com.tomapedido.backend.service.BereyaImportedProductsPurgeService;
 import com.tomapedido.backend.security.JwtAuthenticationFilter;
 import com.tomapedido.backend.security.JwtService;
 import com.tomapedido.backend.security.SecurityConfig;
@@ -35,6 +37,10 @@ class ProductImportedControllerSecurityTest {
 
     private static final String CATEGORY_BODY = """
             { "categoryName": "Didácticos" }
+            """;
+
+    private static final String PURGE_BODY = """
+            { "confirmation": "ELIMINAR 57 PRODUCTOS DE PRUEBA DE BEREYA (bereya-juegos-didacticos)" }
             """;
 
     private static final String IMPORT_BODY = """
@@ -55,6 +61,9 @@ class ProductImportedControllerSecurityTest {
 
     @MockitoBean
     private ProductService productService;
+
+    @MockitoBean
+    private BereyaImportedProductsPurgeService bereyaImportedProductsPurgeService;
 
     @MockitoBean
     private JwtService jwtService;
@@ -162,5 +171,48 @@ class ProductImportedControllerSecurityTest {
                 ArgumentCaptor.forClass(UpdateProductCategoryRequest.class);
         verify(productService).updateProductCategory(eq(10L), requestCaptor.capture());
         assertEquals("Didácticos", requestCaptor.getValue().getCategoryName());
+    }
+
+    @Test
+    void rejectsUnauthenticatedBereyaPurgeRequests() throws Exception {
+        mockMvc.perform(post("/products/imported/bereya-test/purge")
+                        .contentType("application/json")
+                        .content(PURGE_BODY))
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(bereyaImportedProductsPurgeService);
+    }
+
+    @Test
+    void rejectsBereyaPurgeRequestsFromNonAdminUsers() throws Exception {
+        mockMvc.perform(post("/products/imported/bereya-test/purge")
+                        .with(user("customer").roles("USER"))
+                        .contentType("application/json")
+                        .content(PURGE_BODY))
+                .andExpect(status().isForbidden());
+
+        verifyNoInteractions(bereyaImportedProductsPurgeService);
+    }
+
+    @Test
+    void acceptsAdminBereyaPurgeRequestsWithOnlyTheConfirmation() throws Exception {
+        when(bereyaImportedProductsPurgeService.purge(any(PurgeBereyaImportedProductsRequest.class)))
+                .thenReturn(new com.tomapedido.backend.dto.PurgeBereyaImportedProductsResponse(
+                        "bereya-juegos-didacticos", 57));
+
+        mockMvc.perform(post("/products/imported/bereya-test/purge")
+                        .with(user("admin").roles("ADMIN"))
+                        .contentType("application/json")
+                        .content(PURGE_BODY))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tenantSlug").value("bereya-juegos-didacticos"))
+                .andExpect(jsonPath("$.deletedCount").value(57));
+
+        ArgumentCaptor<PurgeBereyaImportedProductsRequest> requestCaptor =
+                ArgumentCaptor.forClass(PurgeBereyaImportedProductsRequest.class);
+        verify(bereyaImportedProductsPurgeService).purge(requestCaptor.capture());
+        assertEquals(
+                "ELIMINAR 57 PRODUCTOS DE PRUEBA DE BEREYA (bereya-juegos-didacticos)",
+                requestCaptor.getValue().getConfirmation());
     }
 }

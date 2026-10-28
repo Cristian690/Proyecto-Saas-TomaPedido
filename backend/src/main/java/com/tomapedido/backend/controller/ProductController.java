@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import com.tomapedido.backend.dto.CreateProductRequest;
 import com.tomapedido.backend.dto.CreateImportedProductRequest;
 import com.tomapedido.backend.dto.ProductResponse;
+import com.tomapedido.backend.dto.PurgeBereyaImportedProductsRequest;
+import com.tomapedido.backend.dto.PurgeBereyaImportedProductsResponse;
 import com.tomapedido.backend.dto.UpdateProductCategoryRequest;
+import com.tomapedido.backend.service.BereyaImportedProductsPurgeService;
 import com.tomapedido.backend.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -27,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductController {
 
     private final ProductService productService;
+    private final BereyaImportedProductsPurgeService bereyaImportedProductsPurgeService;
 
     @PostMapping
     public ProductResponse createProduct(@Valid @RequestBody CreateProductRequest request) {
@@ -37,6 +41,12 @@ public class ProductController {
     public ProductResponse createImportedProduct(
             @Valid @RequestBody CreateImportedProductRequest request) {
         return productService.createImportedProduct(request);
+    }
+
+    @PostMapping("/imported/bereya-test/purge")
+    public PurgeBereyaImportedProductsResponse purgeBereyaImportedProducts(
+            @Valid @RequestBody PurgeBereyaImportedProductsRequest request) {
+        return bereyaImportedProductsPurgeService.purge(request);
     }
 
     @GetMapping("/{id}")

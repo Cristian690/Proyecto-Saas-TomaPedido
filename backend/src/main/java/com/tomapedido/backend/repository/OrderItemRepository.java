@@ -10,4 +10,6 @@ import com.tomapedido.backend.entity.OrderItem;
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
     List<OrderItem> findByOrderIn(List<Order> orders);
+
+    boolean existsByProductIdIn(List<Long> productIds);
 }

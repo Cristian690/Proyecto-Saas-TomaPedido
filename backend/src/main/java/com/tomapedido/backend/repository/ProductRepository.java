@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 
 import com.tomapedido.backend.entity.Product;
 import com.tomapedido.backend.entity.Tenant;
@@ -16,6 +18,18 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByTenant(Tenant tenant);
 
     Optional<Product> findByIdAndTenantId(Long id, Long tenantId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT product
+            FROM Product product
+            WHERE product.id IN :productIds
+                AND product.tenant.id = :tenantId
+            ORDER BY product.id
+            """)
+    List<Product> findAllByIdInAndTenantIdForUpdate(
+            @Param("productIds") List<Long> productIds,
+            @Param("tenantId") Long tenantId);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
